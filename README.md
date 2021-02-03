@@ -6,7 +6,7 @@
 ❓WIP: 
 
 ## Course Link
-https://cs144.github.io/
+https://github.com/6035/fa19
 
 ## Learn
 `fa19` => course materials\
