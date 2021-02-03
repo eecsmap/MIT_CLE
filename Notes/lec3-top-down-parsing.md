@@ -34,7 +34,7 @@ Parser generates preorder traversal of parse tree
     - Search space (parse trees)
     - Search algorithm (parsing algorithm)
     - Goal to find (parse tree for input program)
-- Would like to (but can’t always) ensure that
+- Would like to (but can't always) ensure that
     - Find goal (hopefully quickly) if it exists
     - Search terminates if it does not
 - Handled in various ways in various contexts
@@ -55,17 +55,17 @@ Parser generates preorder traversal of parse tree
     - Decide which production to apply based on next tokens in input stream
     - We will use one token of lookahead
 #### A. Choice Points
-Assume Term’ is current position in parse tree
+Assume Term' is current position in parse tree
 - Have three possible productions to apply
 ```
-Term’ → * Int Term’
-Term’ → / Int Term’
-Term’ → e
+Term' → * Int Term'
+Term' → / Int Term'
+Term' → e
 ```
 - Use next token to decide
-    - If next token is *, apply Term’ → * Int Term’
-    - If next token is /, apply Term’ → / Int Term’
-    - Otherwise, apply Term’ → e
+    - If next token is *, apply Term' → * Int Term'
+    - If next token is /, apply Term' → / Int Term'
+    - Otherwise, apply Term' → e
 ### VI. Predictive Parsing + Hand Coding = Recursive Descent Parser
 - One procedure per nonterminal NT
     - Productions NT → β1 , …, NT → βn
@@ -90,9 +90,9 @@ Term’ → e
 #### A. Solution: Left Factor the Grammar
 New Grammar Factors Common Prefix Into Single Production
 ```
-NT → if then NT’
-NT’ → else
-NT’ → e
+NT → if then NT'
+NT' → else
+NT' → e
 ```
 - No choice when next token is if!
 - All choices have been unified in one production.
@@ -111,7 +111,7 @@ for all productions of the form NT → e
     set NT derives e to be true
 while (some NT derives e changed in last iteration)
     for all productions of the form NT → NT1 ... NTn
-        if (for all 1i n NTi derives e)
+        if (for all 1 <= i <= n NTi derives e)
             set NT derives e to be true
 ```
 ##### First(β)
@@ -119,7 +119,7 @@ while (some NT derives e changed in last iteration)
 1. T ∈ First(T)
 2. First(S) ⊆ First(Sβ)
 3. NT derives e implies First(β) ⊆ First(NTβ)
-4. NT → S β implies First(Sβ) ⊆ First(NT)
+4. NT → Sβ implies First(Sβ) ⊆ First(NT)
 - Notation
     - T is a terminal, NT is a nonterminal, S is a terminal or nonterminal, and β is a sequence of terminals or nonterminals
 ## Building A Parse Tree
@@ -127,11 +127,11 @@ while (some NT derives e changed in last iteration)
 - Use exceptions to make code structure clean
 ### I. Why use Hand-Coded Parser?
 - Why not use parser generator?
-- What do you do if your parser doesn’t work?
+- What do you do if your parser doesn't work?
     - Recursive descent parser – write more code
     - Parser generator
         - Hack grammar
-        - But if parser generator doesn’t work, nothing you can do
+        - But if parser generator doesn't work, nothing you can do
 - If you have complicated grammar
     - Increase chance of going outside comfort zone of parser generator
     - Your parser may NEVER work
