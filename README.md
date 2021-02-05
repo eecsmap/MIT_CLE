@@ -8,29 +8,32 @@
 ## Course Link
 https://github.com/6035/fa19
 
+## Environment
+- WSL2: Ubuntu 20.04
+- Java: openjdk 11.0.9
+
 ## Setting up - for Java
-### I. install java 10
+### I. install ant
+this will automatically install openjdk 11 for you
 ```
-wget https://download.java.net/java/GA/jdk10/10.0.2/19aef61b38124481863b1413dce1855f/13/openjdk-10.0.2_linux-x64_bin.tar.gz
-tar -xvf openjdk-10.0.2_linux-x64_bin.tar.gz
-sudo mkdir -p /usr/lib/jdk
-sudo mv jdk-10.0.2 /usr/lib/jdk
-sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jdk/jdk-10.0.2/bin/java" 1
-sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jdk/jdk-10.0.2/bin/javac" 1
+$ sudo apt-get update && sudo apt install ant
 ```
-### II. verify you installed successfully
+### II. check if installed successfully
 ```
 $ java -version
-openjdk version "10.0.2" 2018-07-17
-OpenJDK Runtime Environment 18.3 (build 10.0.2+13)
-OpenJDK 64-Bit Server VM 18.3 (build 10.0.2+13, mixed mode)
+openjdk version "11.0.9.1" 2020-11-04
+OpenJDK Runtime Environment (build 11.0.9.1+1-Ubuntu-0ubuntu1.20.04)
+OpenJDK 64-Bit Server VM (build 11.0.9.1+1-Ubuntu-0ubuntu1.20.04, mixed mode, sharing)
 ```
 ```
 $ javac -version
 javac 10.0.2
 ```
-### III. install ant
-
+```
+$ ant -version
+Apache Ant(TM) version 1.10.7 compiled on October 24 2019
+```
+### III. running parser
 
 ## Learn
 `Compiler` => lab source code\
