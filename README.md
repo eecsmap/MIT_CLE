@@ -34,6 +34,13 @@ $ ant -version
 Apache Ant(TM) version 1.10.7 compiled on October 24 2019
 ```
 ### III. running parser
+```
+java -ea -jar "dist/Compiler.jar" "$@"
+```
+### IV. run test
+```
+bash build_test.sh
+```
 
 ## Learn
 `Compiler` => lab source code\
