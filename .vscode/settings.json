@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "Compiler/phase1/lib/antlr.jar"
+    ]
+}
