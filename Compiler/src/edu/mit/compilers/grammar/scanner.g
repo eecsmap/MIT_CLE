@@ -43,22 +43,23 @@ tokens
   }
 }
 
-MINUS : "-";
-ADD : "+";
-MUL : "*";
-LT  : "<";
-LE  : "<=";
-GT  : ">";
-GE  : ">=";
-NE  : "!=";
-AND : "&&";
+// MINUS : "-";
+// ADD : "+";
+// MUL : "*";
+// LT  : "<";
+// LE  : "<=";
+// GT  : ">";
+// GE  : ">=";
+// NE  : "!=";
+// AND : "&&";
 
 LCURLY options { paraphrase = "{"; } : "{";
 RCURLY options { paraphrase = "}"; } : "}";
 
-ID options { paraphrase = "an identifier"; } 
-  : ('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*) 
-  // & ~("if" | "while" | "for")
+// KEYWORD : ("if" | "while" | "for");
+
+ID options { paraphrase = "an identifier"; testLiterals=true; } 
+  : ('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*
   ;
 
 // Note that here, the {} syntax allows you to literally command the lexer
