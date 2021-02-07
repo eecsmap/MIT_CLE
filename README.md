@@ -35,11 +35,12 @@ Apache Ant(TM) version 1.10.7 compiled on October 24 2019
 ```
 ### III. running parser
 ```
-java -ea -jar "dist/Compiler.jar" "$@"
+$ bash build.sh
+$ bash run.sh
 ```
-### IV. run test
+### IV. build and grade all
 ```
-bash build_test.sh
+bash grade_all.sh
 ```
 
 ## Learn
