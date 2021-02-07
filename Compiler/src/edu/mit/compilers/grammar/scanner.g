@@ -43,11 +43,23 @@ tokens
   }
 }
 
+// MINUS : "-";
+// ADD : "+";
+// MUL : "*";
+// LT  : "<";
+// LE  : "<=";
+// GT  : ">";
+// GE  : ">=";
+// NE  : "!=";
+// AND : "&&";
+
 LCURLY options { paraphrase = "{"; } : "{";
 RCURLY options { paraphrase = "}"; } : "}";
 
-ID options { paraphrase = "an identifier"; } : 
-  ('a'..'z' | 'A'..'Z')+;
+ID options { paraphrase = "an identifier"; } 
+  : (('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*) 
+  // & ~("if" | "while" | "for")
+  ;
 
 // Note that here, the {} syntax allows you to literally command the lexer
 // to skip mark this token as skipped, or to advance to the next line
@@ -55,8 +67,17 @@ ID options { paraphrase = "an identifier"; } :
 WS_ : (' ' | '\n' {newline();}) {_ttype = Token.SKIP; };
 SL_COMMENT : "//" (~'\n')* '\n' {_ttype = Token.SKIP; newline (); };
 
-CHAR : '\'' (ESC|~'\'') '\'';
-STRING : '"' (ESC|~'"')* '"';
+CHARLITERAL
+  :	'\'' ( ESC | ~('\''|'\n'|'\r'|'\\'|'"'|'\t') ) '\''
+  ;
+
+STRINGLITERAL : '"' (ESC|~'"')* '"';
 
 protected
-ESC :  '\\' ('n'|'"');
+
+ESC :  '\\' ('n'|'"'|'t'|'\\'|'\'');
+
+INTLITERAL
+  : ('0'..'9')+
+  | "0x" ('0'..'9' | 'A'..'F' | 'a'..'f')+
+  ;

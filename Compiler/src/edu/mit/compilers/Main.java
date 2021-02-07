@@ -1,6 +1,8 @@
 package edu.mit.compilers;
 
 import java.io.*;
+import java.text.DecimalFormat;
+
 import antlr.Token;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
@@ -28,6 +30,15 @@ class Main {
               String text = token.getText();
               switch (token.getType()) {
                // TODO: add strings for the other types here...
+               case DecafScannerTokenTypes.CHARLITERAL:
+                type = " CHARLITERAL";
+                break;
+               case DecafScannerTokenTypes.INTLITERAL:
+                type = " INTLITERAL";
+                break;
+               case DecafScannerTokenTypes.STRINGLITERAL:
+                type = " STRINGLITERAL";
+                break;
                case DecafScannerTokenTypes.ID:
                 type = " IDENTIFIER";
                 break;
