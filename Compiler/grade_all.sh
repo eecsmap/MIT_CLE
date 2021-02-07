@@ -16,8 +16,8 @@ function red {
 
 green "building"
 bash build.sh
-grades=$(find . -regextype sed -regex ".*/grade.sh$")
-tot=$(find . -regextype sed -regex ".*/grade.sh$" | wc -l)
+grades=$(find . -regextype sed -regex ".*/grade.sh$" | grep "$1")
+tot=$(find . -regextype sed -regex ".*/grade.sh$" | grep "$1" | wc -l)
 idx=1
 failed=0
 

@@ -40,7 +40,10 @@ $ bash run.sh
 ```
 ### IV. build and grade all
 ```
-bash grade_all.sh
+bash grade_all.sh # run all grades
+bash grade_all.sh scanner # run all scanner grades
+bash test_all.sh # run all tests
+bash test_all.sh scanner # run all scanner tests
 ```
 
 ## Learn
