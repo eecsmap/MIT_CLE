@@ -43,21 +43,21 @@ tokens
   }
 }
 
-// MINUS : "-";
-// ADD : "+";
-// MUL : "*";
-// LT  : "<";
-// LE  : "<=";
-// GT  : ">";
-// GE  : ">=";
-// NE  : "!=";
-// AND : "&&";
+MINUS : "-";
+ADD : "+";
+MUL : "*";
+LT  : "<";
+LE  : "<=";
+GT  : ">";
+GE  : ">=";
+NE  : "!=";
+AND : "&&";
 
 LCURLY options { paraphrase = "{"; } : "{";
 RCURLY options { paraphrase = "}"; } : "}";
 
 ID options { paraphrase = "an identifier"; } 
-  : (('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*) 
+  : ('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*) 
   // & ~("if" | "while" | "for")
   ;
 
