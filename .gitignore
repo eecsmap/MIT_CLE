@@ -1,6 +1,4 @@
 *.sw*
-*.smap
-*TokenTypes.txt
 .idea
 *.iml
 .vscode
