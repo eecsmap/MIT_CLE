@@ -66,6 +66,7 @@ OR  : "||";
 ME  : "-=";
 AE  : "+=";
 ASS : "=";
+QUE : "?";
 
 
 LCURLY options { paraphrase = "{"; } : "{";
