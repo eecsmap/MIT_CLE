@@ -19,6 +19,8 @@ tokens
 {
   "class"; 
   "if"; "while"; "for";
+  "return"; "break"; "continue";
+  "true"; "false";
 }
 
 // Selectively turns on debug tracing mode.
@@ -44,15 +46,23 @@ tokens
   }
 }
 
-MINUS : '-';
-ADD : '+';
-MUL : '*';
+SUB : "-";
+ADD : "+";
+MUL : "*";
+DIV : "/";
+MOD : "%";
 LT  : "<";
 LE  : "<=";
 GT  : ">";
 GE  : ">=";
 NE  : "!=";
 AND : "&&";
+OR  : "||";
+// INC : "++";
+// DEC : "--";
+ME  : "-=";
+AE  : "+=";
+ASS : "=";
 
 LCURLY options { paraphrase = "{"; } : "{";
 RCURLY options { paraphrase = "}"; } : "}";

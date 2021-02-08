@@ -43,6 +43,7 @@ class Main {
                 type = " IDENTIFIER";
                 break;
                default:
+                type = Integer.toString(token.getType());
                 type = "";
                 break;
               }
