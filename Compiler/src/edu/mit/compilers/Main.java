@@ -42,6 +42,9 @@ class Main {
                case DecafScannerTokenTypes.ID:
                 type = " IDENTIFIER";
                 break;
+               default:
+                type = "";
+                break;
               }
               outputStream.println(token.getLine() + type + " " + text);
             }
