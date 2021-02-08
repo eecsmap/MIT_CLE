@@ -20,7 +20,9 @@ tokens
   "class"; 
   "if"; "while"; "for";
   "return"; "break"; "continue";
-  "true"; "false";
+  "false"; "true";
+  "boolean"; "callout"; "else";
+  "void"; "int";
 }
 
 // Selectively turns on debug tracing mode.
@@ -56,6 +58,7 @@ LE  : "<=";
 GT  : ">";
 GE  : ">=";
 NE  : "!=";
+EQ  : "==";
 AND : "&&";
 OR  : "||";
 // INC : "++";
@@ -64,8 +67,17 @@ ME  : "-=";
 AE  : "+=";
 ASS : "=";
 
+
 LCURLY options { paraphrase = "{"; } : "{";
 RCURLY options { paraphrase = "}"; } : "}";
+COMMA   : ",";
+LPAR  : "(";
+RPAR  : ")";
+LBRA  : "[";
+RBRA  : "]";
+SEMICOLON : ";";
+
+
 
 ID options { paraphrase = "an identifier"; testLiterals=true; } 
   : ('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*
@@ -74,7 +86,7 @@ ID options { paraphrase = "an identifier"; testLiterals=true; }
 // Note that here, the {} syntax allows you to literally command the lexer
 // to skip mark this token as skipped, or to advance to the next line
 // by directly adding Java commands.
-WS_ : (' ' | '\n' {newline();}) {_ttype = Token.SKIP; };
+WS_ : (' ' | '\t' | '\n' {newline();}) {_ttype = Token.SKIP; };
 SL_COMMENT : "//" (~'\n')* '\n' {_ttype = Token.SKIP; newline (); };
 
 CHARLITERAL
