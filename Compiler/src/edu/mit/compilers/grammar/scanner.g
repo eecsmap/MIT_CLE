@@ -17,7 +17,10 @@ options
 
 tokens 
 {
-  "class";
+  "class"; 
+  // IF="if"; 
+  // WHILE="while"; 
+  // FOR="for";
 }
 
 // Selectively turns on debug tracing mode.
@@ -56,8 +59,6 @@ tokens
 LCURLY options { paraphrase = "{"; } : "{";
 RCURLY options { paraphrase = "}"; } : "}";
 
-// KEYWORD : ("if" | "while" | "for");
-
 ID options { paraphrase = "an identifier"; testLiterals=true; } 
   : ('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*
   ;
@@ -72,10 +73,9 @@ CHARLITERAL
   :	'\'' ( ESC | ~('\''|'\n'|'\r'|'\\'|'"'|'\t') ) '\''
   ;
 
-STRINGLITERAL : '"' (ESC|~'"')* '"';
+STRINGLITERAL : '"' ( ESC | ~('\''|'\n'|'\r'|'\\'|'"'|'\t') )* '"';
 
 protected
-
 ESC :  '\\' ('n'|'"'|'t'|'\\'|'\'');
 
 INTLITERAL
