@@ -15,14 +15,22 @@ options
   k = 2;
 }
 
-tokens 
+tokens
 {
-  "class"; 
-  "if"; "while"; "for";
-  "return"; "break"; "continue";
-  "false"; "true";
-  "boolean"; "callout"; "else";
-  "void"; "int";
+  // Decaf reversed keywords
+  "boolean";
+  "break";
+  "callout";
+  "continue";
+  "else";
+  "false";
+  "for";
+  "while";
+  "if";
+  "int";
+  "return";
+  "true";
+  "void";
 }
 
 // Selectively turns on debug tracing mode.
@@ -48,58 +56,68 @@ tokens
   }
 }
 
-SUB : "-";
-ADD : "+";
-MUL : "*";
-DIV : "/";
-MOD : "%";
-LT  : "<";
-LE  : "<=";
-GT  : ">";
-GE  : ">=";
-NE  : "!=";
-EQ  : "==";
-AND : "&&";
-OR  : "||";
-// INC : "++";
-// DEC : "--";
-ME  : "-=";
-AE  : "+=";
-ASS : "=";
-QUE : "?";
+// We need define some notations
+// otherwise they will be errors (unexpected char)
 
-
-LCURLY options { paraphrase = "{"; } : "{";
-RCURLY options { paraphrase = "}"; } : "}";
-COMMA   : ",";
-LPAR  : "(";
-RPAR  : ")";
-LBRA  : "[";
-RBRA  : "]";
+LCURLY : "{";
+RCURLY : "}";
+LSQUAR : "[";
+RSQUAR : "]";
+LPAREN : "(";
+RPAREN : ")";
 SEMICOLON : ";";
+MINUS : "-";
+PLUS : "+";
+ASSIGN : "=";
+TIMES : "*";
+GREATER : ">";
+LESS : "<";
+GE : ">=";
+LE : "<=";
+EQ : "==";
+NEQ : "!=";
+AND : "&&";
+OR : "||";
+COMMA : ",";
 
+// integers
 
+protected DIGIT : ('0'..'9');
+protected LOWERCASE : ('a'..'z');
+protected UPPERCASE : ('A'..'Z');
+protected HEXDIGIT : DIGIT | ('a'..'f') | ('A'..'F');
 
-ID options { paraphrase = "an identifier"; testLiterals=true; } 
-  : ('a'..'z' | 'A'..'Z' | '_' ) ('0'..'9' | 'a'..'z' | 'A'..'Z' | '_' )*
-  ;
+protected DEC : (DIGIT)+;
+protected HEX : "0x" (HEXDIGIT)+;
 
-// Note that here, the {} syntax allows you to literally command the lexer
-// to skip mark this token as skipped, or to advance to the next line
-// by directly adding Java commands.
+INTLITERAL : DEC | HEX;
+
+// char
+
+protected ESC : '\\' ('n'|'t'|'\"'|'\''|'\\');
+protected CHAR : (' '|'!'|('#'..'&')|('('..'[')|(']'..'~')|ESC);
+CHARLITERAL : "'" CHAR "'";
+
+// string
+
+STRINGLITERAL : '\"' (CHAR)* '\"';
+
+// identifiers
+
+protected ALPHA : LOWERCASE | UPPERCASE | '_';
+ID options { paraphrase = "an identifier"; } : ALPHA (ALPHA|DIGIT)*;
+
+// while space
 WS_ : (' ' | '\t' | '\n' {newline();}) {_ttype = Token.SKIP; };
+
+// single line comment
 SL_COMMENT : "//" (~'\n')* '\n' {_ttype = Token.SKIP; newline (); };
 
-CHARLITERAL
-  :	'\'' ( ESC | ~('\''|'\n'|'\r'|'\\'|'"'|'\t') ) '\''
-  ;
-
-STRINGLITERAL : '"' ( ESC | ~('\''|'\n'|'\r'|'\\'|'"'|'\t') )* '"';
-
-protected
-ESC :  '\\' ('n'|'"'|'t'|'\\'|'\'');
-
-INTLITERAL
-  : ('0'..'9')+
-  | "0x" ('0'..'9' | 'A'..'F' | 'a'..'f')+
-  ;
+QUESTION : "?";
+SLASH : "/";
+PERCENT : "%";
+PLUSASSIGN : "+=";
+MINUSASSIGN : "-=";
+AT : "@";
+EXCLAM : "!";
+COLON : ":";
