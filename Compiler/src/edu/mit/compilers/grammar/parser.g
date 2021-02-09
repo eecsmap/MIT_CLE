@@ -75,17 +75,19 @@ method_param : type ID;
 block : LCURLY! (field_decl)* (statement)* RCURLY!;
 
 statement :
-        assignment
+        assignment SEMICOLON!
     |   method_call SEMICOLON!
     |   if_
+    |   for_
     |   while_
     |   break_
     |   return_
     |   continue_;
 
-assignment : location (ASSIGN^|PLUSASSIGN^|MINUSASSIGN^) expr SEMICOLON!;
-if_ : TK_if^ LPAREN! expr RPAREN! block (else_)?;
-else_ : TL_else^ block;
+assignment : location (ASSIGN^|PLUSASSIGN^|MINUSASSIGN^) expr;
+if_ : TK_if^ LPAREN! expr RPAREN! block (TL_else block)?;
+// else_ : TL_else^ block;
+for_  : TK_for^ LPAREN! assignment COMMA! expr RPAREN! block;
 while_ : TK_while^ LPAREN! expr RPAREN! block;
 break_ : TK_break^ SEMICOLON!;
 return_ : TK_return^ (expr)? SEMICOLON!;
