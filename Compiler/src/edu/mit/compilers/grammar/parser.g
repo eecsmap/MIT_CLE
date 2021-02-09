@@ -104,12 +104,13 @@ expr : quesexpr;
 atom : location | literal | LPAREN! expr RPAREN! | method_call;
 lengthexpr : AT^ ID | atom;
 minusexpr : MINUS^ minusexpr | lengthexpr;
-multiexpr : minusexpr ((TIMES^|SLASH^|PERCENT^) minusexpr)*;
+exclamexpr : EXCLAM^ exclamexpr | minusexpr;
+multiexpr : exclamexpr ((TIMES^|SLASH^|PERCENT^) exclamexpr)*;
 addexpr : multiexpr ((PLUS^|MINUS^) multiexpr)*;
 compexpr : addexpr ((GTEATER^|LESS^|GE^|LE^) addexpr)*;
 eqexpr : compexpr ((EQ^|NEQ^) compexpr)*;
 andexpr : eqexpr (AND^ eqexpr)*;
 orexpr : andexpr (OR^ andexpr)*;
-quesexpr : orexpr (QUESTION^ quesexpr COLON! quesexpr)?;
+quesexpr : orexpr (QUESTION^ quesexpr COLON^ quesexpr)?;
 
 literal : INTLITERAL | CHARLITERAL | TK_true | TK_false;
