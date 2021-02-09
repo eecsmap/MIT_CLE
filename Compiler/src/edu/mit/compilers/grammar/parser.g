@@ -85,8 +85,8 @@ statement :
     |   continue_;
 
 assignment : location (ASSIGN^|PLUSASSIGN^|MINUSASSIGN^) expr;
-if_ : TK_if^ LPAREN! expr RPAREN! block (TL_else block)?;
-// else_ : TL_else^ block;
+if_ : TK_if^ LPAREN! expr RPAREN! block (else_)?;
+else_ : TK_else^ block;
 for_  : TK_for^ LPAREN! assignment COMMA! expr RPAREN! block;
 while_ : TK_while^ LPAREN! expr RPAREN! block;
 break_ : TK_break^ SEMICOLON!;
