@@ -26,10 +26,6 @@ OpenJDK Runtime Environment (build 11.0.9.1+1-Ubuntu-0ubuntu1.20.04)
 OpenJDK 64-Bit Server VM (build 11.0.9.1+1-Ubuntu-0ubuntu1.20.04, mixed mode, sharing)
 ```
 ```
-$ javac -version
-javac 10.0.2
-```
-```
 $ ant -version
 Apache Ant(TM) version 1.10.7 compiled on October 24 2019
 ```
