@@ -1,9 +1,9 @@
 # MIT_CLE
 
 ## Progress
-✔Passed all tests: -\
+✔Passed all tests: p1\
 ❌Partially passed: -\
-❓WIP: p1, p2, p3, p4, p5
+❓WIP: p2, p3, p4, p5
 
 ## Course Link
 https://github.com/6035/fa19
@@ -45,6 +45,9 @@ bash grade_all.sh scanner # run all scanner grades
 bash test_all.sh # run all tests
 bash test_all.sh scanner # run all scanner tests
 ```
+
+## Note
+Didn't find test cases on 6.035 git repo, downloaded from https://github.com/JasonQSY/6.035-compiler and modified some by myself
 
 ## Learn
 `Compiler` => lab source code\
