@@ -27,11 +27,13 @@ options
   @Override
   public void reportError (RecognitionException ex) {
     // Print the error via some kind of error reporting mechanism.
+    System.err.println(ex.toString());
     error = true;
   }
   @Override
   public void reportError (String s) {
     // Print the error via some kind of error reporting mechanism.
+    System.err.println(s);
     error = true;
   }
   public boolean getError () {
@@ -107,7 +109,7 @@ minusexpr : MINUS^ minusexpr | lengthexpr;
 exclamexpr : EXCLAM^ exclamexpr | minusexpr;
 multiexpr : exclamexpr ((TIMES^|SLASH^|PERCENT^) exclamexpr)*;
 addexpr : multiexpr ((PLUS^|MINUS^) multiexpr)*;
-compexpr : addexpr ((GTEATER^|LESS^|GE^|LE^) addexpr)*;
+compexpr : addexpr ((GREATER^|LESS^|GE^|LE^) addexpr)*;
 eqexpr : compexpr ((EQ^|NEQ^) compexpr)*;
 andexpr : eqexpr (AND^ eqexpr)*;
 orexpr : andexpr (OR^ andexpr)*;
