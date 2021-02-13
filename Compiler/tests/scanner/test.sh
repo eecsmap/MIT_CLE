@@ -3,12 +3,8 @@
 runscanner() {
     curdir=$PWD;
     cd `dirname $1`;
-    $(git rev-parse --show-toplevel)/Compiler/run.sh -t scan `basename $1`;
+    bash $(git rev-parse --show-toplevel)/Compiler/run.sh -t scan `basename $1`;
     cd $curdir;
-}
-
-tempfile() {
-  TMPDIR=`pwd` mktemp -t tmp
 }
 
 exitcode=0
@@ -23,8 +19,6 @@ for file in `dirname $0`/input/*; do
     echo "File $file scanner output mismatch.";
     exitcode=1;
     fail=$((fail+1));
-  else
-    echo "Test $file passed";
   fi
   count=$((count+1));
   rm -f $output;

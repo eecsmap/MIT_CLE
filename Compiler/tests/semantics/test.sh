@@ -1,7 +1,7 @@
 #!/bin/sh
 
 runsemantics() {
-  $(git rev-parse --show-toplevel)/Compiler/run.sh -t inter $1;
+  bash $(git rev-parse --show-toplevel)/Compiler/run.sh -t inter $1;
 }
 
 exitcode=0;
@@ -13,8 +13,6 @@ for file in `dirname $0`/illegal/*; do
     echo "Illegal file $file semantic checked successfully.";
     exitcode=1;
     fail=$((fail+1));
-  else
-    echo "Test $file passed";
   fi
   count=$((count+1));
 done
@@ -24,8 +22,6 @@ for file in `dirname $0`/legal/*; do
     echo "Legal file $file failed to pass semantic checks.";
     exitcode=1;
     fail=$((fail+1));
-  else
-    echo "Test $file passed";
   fi
   count=$((count+1));
 done

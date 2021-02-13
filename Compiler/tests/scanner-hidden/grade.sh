@@ -3,7 +3,7 @@
 runscanner() {
     curdir=$PWD
     cd `dirname $1`
-    $(git rev-parse --show-toplevel)/Compiler/run.sh -t scan `basename $1`
+    bash $(git rev-parse --show-toplevel)/Compiler/run.sh -t scan `basename $1`
     cd $curdir
 }
 
