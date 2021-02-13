@@ -62,9 +62,9 @@ options
   }
 }
 
-program : (callout_decl)* (field_decl)* (method_decl)* EOF!;
+program : (import_decl)* (field_decl)* (method_decl)* EOF!;
 
-callout_decl : TK_callout^ ID SEMICOLON!;
+import_decl : TK_import^ ID SEMICOLON!;
 
 field_decl : type field (COMMA! field)* SEMICOLON!;
 field : ID (LSQUAR! INTLITERAL RSQUAR!)?;
@@ -86,12 +86,11 @@ statement :
     |   return_
     |   continue_;
 
-assignment_ops : (ASSIGN^|PLUSASSIGN^|MINUSASSIGN^);
-increment : (PLUS PLUS|MINUS MINUS);
-assignment : location assignment_ops expr;
+increment : (INCRE|DECRE);
+assignment : location (ASSIGN^|PLUSASSIGN^|MINUSASSIGN^) expr;
 if_ : TK_if^ LPAREN! expr RPAREN! block (else_)?;
 else_ : TK_else^ block;
-for_  : TK_for^ LPAREN! assignment COMMA! expr (COMMA! location (assignment_ops expr|increment))? RPAREN! block;
+for_  : TK_for^ LPAREN! assignment SEMICOLON! expr SEMICOLON! location ((PLUSASSIGN^|MINUSASSIGN^) expr|increment) RPAREN! block;
 while_ : TK_while^ LPAREN! expr RPAREN! block;
 break_ : TK_break^ SEMICOLON!;
 return_ : TK_return^ (expr)? SEMICOLON!;
@@ -103,11 +102,10 @@ method_arg : expr | STRINGLITERAL;
 
 location : ID^ (LSQUAR! expr RSQUAR!)?;
 
-type : TK_int | TK_boolean;
+type : TK_int | TK_bool;
 expr : quesexpr;
 atom : location | literal | LPAREN! expr RPAREN! | method_call;
-lengthexpr : AT^ ID | atom;
-minusexpr : MINUS^ minusexpr | lengthexpr;
+minusexpr : MINUS^ minusexpr | atom;
 exclamexpr : EXCLAM^ exclamexpr | minusexpr;
 multiexpr : exclamexpr ((TIMES^|SLASH^|PERCENT^) exclamexpr)*;
 addexpr : multiexpr ((PLUS^|MINUS^) multiexpr)*;
