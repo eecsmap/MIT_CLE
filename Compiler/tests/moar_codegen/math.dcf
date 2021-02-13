@@ -1,7 +1,0 @@
-import printf;
-
-void main() {
-	int i;
-	i = 2*2 - 3*1;
-	printf("%d\n",i);
-}

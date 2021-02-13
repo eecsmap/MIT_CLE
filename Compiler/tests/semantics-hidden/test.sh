@@ -1,7 +1,7 @@
 #!/bin/sh
 
 runsemantics() {
-  $(git rev-parse --show-toplevel)/run.sh -t inter $1;
+  $(git rev-parse --show-toplevel)/Compiler/run.sh -t inter $1;
 }
 
 exitcode=0;

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 runparser() {
-  $(git rev-parse --show-toplevel)/run.sh -t parse $1;
+  $(git rev-parse --show-toplevel)/Compiler/run.sh -t parse $1;
 }
 
 exitcode=0;
