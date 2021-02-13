@@ -16,8 +16,7 @@
 - Merge adjacent nodes if
     - Only one edge from first node
     - Only one edge into second node
-### III. Program Points, Split and Join
-Points
+### III. Program Points, Split and Join Points
 - One program point before and after each statement in program
 - Split point has multiple successors 
     - conditional branch statements only split points
@@ -116,8 +115,17 @@ while (temp1 op temp2)
 - Assign a slot to each parameter/local
 ##### Questions
 - Why allocate activation records on a stack?
+```
+LIFO, caller lives longer than callee
+```
 - Why not statically preallocate activation records?
+```
+can you determine the parameter value before executing the code?
+```
 - Why not dynamically allocate activation records in the heap?
+```
+also can, but need to maintain a stack-like data structure
+```
 ### III. Generate procedure entry prologue
 - Push base pointer (%rbp) onto stack
 - Copy stack pointer (%rsp) to base pointer (%rbp)
@@ -145,10 +153,25 @@ movq %rdi, -24(%rbp)
     - Longer return values passed on the stack
 ##### Questions
 - Why have %rbp if also have %rsp?
+```
+we need two numbers to decide the range of a frame (begin, end), in this case, rbp is the begin, rsp is the end
+```
 - Why not pass all parameters in registers?
+```
+registers are limited lol
+```
 - Why not pass all parameters on stack?
+```
+pass by register is way faster than pass by stack (which is in memory)
+```
 - Why not pass return value in register(s) regardless of size?
+```
+actually it will be ok if we want to pass 2 registers, but it may be slower cuz every time you need to check 2 register value even if the return value is very small.
+```
 - Why not pass return value on stack regardless of size?
+```
+for small size, directly return in register is faster 
+```
 #### B. Callee vs caller save registers
 - Registers used to compute values in procedure
 - Should registers have same value after procedure as before procedure?
