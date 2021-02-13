@@ -37,9 +37,9 @@ $ bash run.sh
 ### IV. build and grade all
 ```
 bash grade_all.sh # run all grades
-bash grade_all.sh scanner # run all scanner grades
+bash grade_all.sh scanner # run grades for scanner only
 bash test_all.sh # run all tests
-bash test_all.sh scanner # run all scanner tests
+bash test_all.sh scanner # run tests for scanner only
 ```
 
 ## Note
