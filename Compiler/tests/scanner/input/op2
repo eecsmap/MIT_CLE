@@ -1,3 +1,5 @@
-// ++ is two tokens, so these two lines are equivalent
+// ++ and -- are now their own tokens, so these pair of lines are not equivalent
 a++
 a+ +
+b--
+b- -

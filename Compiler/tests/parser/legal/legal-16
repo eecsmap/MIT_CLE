@@ -1,6 +1,6 @@
-callout printf;
+import printf;
 void main ( ) {
-  int char;
-  char = 'a';
-  printf ( "%c\n", char );
+  int ch;
+  ch = 'a';
+  printf ( "%c\n", ch );
 }

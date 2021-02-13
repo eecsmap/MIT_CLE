@@ -1,4 +1,4 @@
-boolean b;
+bool b;
 void main ( ) {
   b = true > false;
   // operands of > must be ints

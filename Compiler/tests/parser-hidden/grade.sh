@@ -1,7 +1,7 @@
 #!/bin/bash
 
 runparser() {
-  bash $(git rev-parse --show-toplevel)/Compiler/run.sh -t parse `pwd`/$1
+  $(git rev-parse --show-toplevel)/run.sh -t parse `pwd`/$1
 }
 
 fail=0

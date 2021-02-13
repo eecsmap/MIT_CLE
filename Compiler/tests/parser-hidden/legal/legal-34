@@ -1,18 +1,4 @@
-
-
-void main() {
-
-
-    int x, y;
-    int a, b;
-
-    x = 3; y =2;
-
-    a = x > 0 ? -y : y;
-
-    b = x > 0? a > 0? 1 : 2 : 3;
-
-    return b > 1? a : b > 2? a : b;
-
-
+void main ( ) {
+  a[5] = '\t';
+  // semantically bad, but gramatically ok
 }

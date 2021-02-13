@@ -3,14 +3,14 @@
 runscanner() {
     curdir=$PWD
     cd `dirname $1`
-    bash $(git rev-parse --show-toplevel)/Compiler/run.sh -t scan `basename $1`
+    $(git rev-parse --show-toplevel)/run.sh -t scan `basename $1`
     cd $curdir
 }
 
 fail=0
 
 for file in `dirname $0`/input/*; do
-  output=`mktemp XXXXX`
+  output=`tempfile`
   runscanner $file > $output 2>&1;
   if ! diff -u $output `dirname $0`/output/`basename $file`.out; then
     let "fail += 1"

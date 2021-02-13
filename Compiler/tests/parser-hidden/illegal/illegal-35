@@ -1,3 +1,4 @@
-void foo ( int x, ) {
-  // extra comma
+void main ( ) {
+  false;
+  // not a statement
 }

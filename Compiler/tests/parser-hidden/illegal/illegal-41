@@ -1,4 +1,5 @@
+int a;
+foo ( );
+// statements must be inside functions
 void main ( ) {
-  a += int;
-  // int is not an expression
 }

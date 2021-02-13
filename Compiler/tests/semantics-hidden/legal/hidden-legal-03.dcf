@@ -1,5 +1,5 @@
 // OK
-boolean foo ( ) {
+bool foo ( ) {
   return true;
 }
 void main ( ) {

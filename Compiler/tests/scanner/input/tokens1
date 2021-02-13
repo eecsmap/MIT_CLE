@@ -1,6 +1,6 @@
-// Decaf keywords
-boolean
-callout
+// Decaf keywords and non-keywords
+bool
+import
 else
 false
 if
@@ -12,3 +12,5 @@ for
 forpar
 break
 continue
+len
+extern

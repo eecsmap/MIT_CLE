@@ -1,4 +1,8 @@
 void main ( ) {
-  int a[10];
-  // array decl in function
+  for ( a = 0; a < 100; a++ ) {
+    if ( a > b ) {
+      break;
+    }
+    foo ( );
+  }
 }

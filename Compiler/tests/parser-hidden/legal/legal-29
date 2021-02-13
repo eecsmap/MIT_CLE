@@ -1,3 +1,6 @@
 void main ( ) {
-  a = - ( 3 );
+  int j;
+  while ( j < 10 ) {
+    j = j + 2;
+  }
 }

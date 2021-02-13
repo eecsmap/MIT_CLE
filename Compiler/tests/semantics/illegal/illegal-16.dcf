@@ -1,5 +1,5 @@
-boolean b;
+bool b;
 void main ( ) {
   b = !5;
-  // operand of ! must be boolean
+  // operand of ! must be bool
 }

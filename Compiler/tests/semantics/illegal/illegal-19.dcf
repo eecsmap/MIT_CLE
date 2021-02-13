@@ -1,7 +1,7 @@
-boolean b;
+bool b;
 void main ( ) {
      b = true;
-     while (1)   { // must be boolean
+     while (1)   { // must be bool
      	   b = !b;
      } 
 }

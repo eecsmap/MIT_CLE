@@ -1,6 +1,6 @@
 // OK
 void main ( ) {
-  boolean b;
+  bool b;
   while (b) {
     int b;
     b = 0;

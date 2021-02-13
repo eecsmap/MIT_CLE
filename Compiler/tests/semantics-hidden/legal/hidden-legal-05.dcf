@@ -2,10 +2,10 @@
 void x ( ) {
 }
 void main ( ) {
-  boolean x;
+  bool x;
   while(x) {
     int x;
-    boolean y;
+    bool y;
     while (y) {
       int x;
     }

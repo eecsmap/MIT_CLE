@@ -1,4 +1,4 @@
-int foo ( int i, boolean b ) {
+int foo ( int i, bool b ) {
   return 4;
 }
 void main ( ) {

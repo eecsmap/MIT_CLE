@@ -1,4 +1,4 @@
 void main ( ) {
 }
-boolean a, b;
+bool a, b;
 // field decls must be first

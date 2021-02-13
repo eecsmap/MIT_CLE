@@ -1,4 +1,4 @@
-void foo ( int i, boolean b ) {
+void foo ( int i, bool b ) {
   return 3;
   // should not return value;
 }

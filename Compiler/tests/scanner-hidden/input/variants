@@ -16,3 +16,4 @@ _1		//
 '\''		// chars
 '\"'		//
 12n		// IDENTIFIER and INTEGERLITERAL (this is distinct from Java)
+1234lL // INTLITERAL and IDENTIFIER
