@@ -24,7 +24,6 @@ class Main {
                  CLI.target == Action.DEFAULT) {
         parse(inputStream, outputStream);
       } else if (CLI.target == Action.INTER) {
-        // System.out.println("666666666");
       }
     } catch(Exception e) {
       // print the error:

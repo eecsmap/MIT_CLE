@@ -18,9 +18,9 @@ options
 tokens
 {
   // Decaf reversed keywords
-  "boolean";
+  "bool";
   "break";
-  "callout";
+  "import";
   "continue";
   "else";
   "false";
@@ -31,6 +31,7 @@ tokens
   "return";
   "true";
   "void";
+  "len";
 }
 
 // Selectively turns on debug tracing mode.
@@ -96,7 +97,15 @@ INTLITERAL : DEC | HEX;
 
 protected ESC : '\\' ('n'|'t'|'\"'|'\''|'\\');
 protected CHAR : (' '|'!'|('#'..'&')|('('..'[')|(']'..'~')|ESC);
-CHARLITERAL : "'" CHAR "'";
+CHARLITERAL : "'" ( CHAR 
+exception
+catch [NoViableAltForCharException ex] {
+  if (ex.foundChar == '\n'){
+    newline();
+    setColumn(0);
+  }
+  throw ex;
+}) "'";
 
 // string
 
@@ -113,11 +122,14 @@ WS_ : (' ' | '\t' | '\n' {newline();}) {_ttype = Token.SKIP; };
 // single line comment
 SL_COMMENT : "//" (~'\n')* '\n' {_ttype = Token.SKIP; newline (); };
 
+IL_COMMENT : "/*" (~('\n'|'*') | '\n' {newline();} | '*' ~'/')* {_ttype = Token.SKIP; } "*/";
+
 QUESTION : "?";
 SLASH : "/";
 PERCENT : "%";
 PLUSASSIGN : "+=";
 MINUSASSIGN : "-=";
-AT : "@";
 EXCLAM : "!";
 COLON : ":";
+INCRE : "++";
+DECRE : "--";
