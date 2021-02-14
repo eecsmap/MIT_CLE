@@ -11,6 +11,7 @@ import antlr.collections.AST;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
 import edu.mit.compilers.tools.CLI.Action;
+import edu.mit.compilers.ir.AstUtils;
 
 class Main {
   public static void main(String[] args) {
@@ -97,6 +98,6 @@ class Main {
       System.exit(1);
     }
     AST t = parser.getAST();
-    // System.out.println(t.toString());
+    AstUtils.printAST(t, 0);
   }
 }
