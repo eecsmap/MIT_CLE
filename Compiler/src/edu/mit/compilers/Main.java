@@ -11,7 +11,7 @@ import antlr.collections.AST;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
 import edu.mit.compilers.tools.CLI.Action;
-import edu.mit.compilers.ir.AstUtils;
+import edu.mit.compilers.ir.*;
 
 class Main {
   public static void main(String[] args) {
@@ -56,7 +56,7 @@ class Main {
             case DecafScannerTokenTypes.STRINGLITERAL:
               type = " STRINGLITERAL";
               break;
-            case DecafScannerTokenTypes.ID:
+            case DecafScannerTokenTypes.Variable:
               type = " IDENTIFIER";
               break;
             case DecafScannerTokenTypes.TK_false:
