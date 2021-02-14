@@ -58,7 +58,7 @@ public class AstUtils {
         m1.put(47, "CHARLITERAL");
         m1.put(48, "STRINGLITERAL");
         m1.put(49, "ALPHA");
-        m1.put(50, "identifier");
+        m1.put(50, "ID");
         m1.put(51, "WS_");
         m1.put(52, "SL_COMMENT");
         m1.put(53, "IL_COMMENT");
@@ -80,7 +80,7 @@ public class AstUtils {
             for(int i = 0; i < tabs; i++) {
                 tab += "    ";
             }
-            System.out.printf("%s%s %s\n", tab, ast.getText(), t.get(ast.getType()));
+            System.out.printf("%s%s\t\t\t\t\t\t%s\n", tab, ast.getText(), t.get(ast.getType()));
             AST fc = ast.getFirstChild();
             if (fc != null) {
                 printAST(fc, tabs+1);

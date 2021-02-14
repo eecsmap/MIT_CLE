@@ -114,7 +114,7 @@ STRINGLITERAL : '\"' (CHAR)* '\"';
 // identifiers
 
 protected ALPHA : LOWERCASE | UPPERCASE | '_';
-ID options { paraphrase = "an identifier"; } : ALPHA (ALPHA|DIGIT)*;
+ID : ALPHA (ALPHA|DIGIT)*;
 
 // while space
 WS_ : (' ' | '\t' | '\n' {newline();}) {_ttype = Token.SKIP; };
