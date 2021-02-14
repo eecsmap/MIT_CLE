@@ -7,6 +7,7 @@ import antlr.CharStreamException;
 import antlr.RecognitionException;
 import antlr.Token;
 import antlr.TokenStreamException;
+import antlr.collections.AST;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
 import edu.mit.compilers.tools.CLI.Action;
@@ -20,10 +21,10 @@ class Main {
       PrintStream outputStream = CLI.outfile == null ? System.out : new java.io.PrintStream(new java.io.FileOutputStream(CLI.outfile));
       if (CLI.target == Action.SCAN) {
         scan(inputStream, outputStream);
-      } else if (CLI.target == Action.PARSE ||
-                 CLI.target == Action.DEFAULT) {
-        parse(inputStream, outputStream);
-      } else if (CLI.target == Action.INTER) {
+      } else if (CLI.target == Action.PARSE) {
+        parse(inputStream);
+      } else if (CLI.target == Action.INTER || CLI.target == Action.DEFAULT) {
+        inter(inputStream);
       }
     } catch(Exception e) {
       // print the error:
@@ -77,7 +78,7 @@ class Main {
     }
   }
 
-  private static void parse(InputStream inputStream, PrintStream outputStream) throws RecognitionException, TokenStreamException {
+  private static void parse(InputStream inputStream) throws RecognitionException, TokenStreamException {
     DecafScanner scanner = new DecafScanner(new DataInputStream(inputStream));
     DecafParser parser = new DecafParser(scanner);
     parser.setTrace(CLI.debug);
@@ -85,5 +86,17 @@ class Main {
     if(parser.getError()) {
       System.exit(1);
     }
+  }
+
+  private static void inter(InputStream inputStream) throws RecognitionException, TokenStreamException {
+    DecafScanner scanner = new DecafScanner(new DataInputStream(inputStream));
+    DecafParser parser = new DecafParser(scanner);
+    parser.setTrace(CLI.debug);
+    parser.program();
+    if(parser.getError()) {
+      System.exit(1);
+    }
+    AST t = parser.getAST();
+    // System.out.println(t.toString());
   }
 }
