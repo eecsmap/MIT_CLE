@@ -5,4 +5,8 @@ import antlr.collections.AST;
 public class IROps extends IR{
     public IROps(AST t) {
     }
+
+    public final String execute() {
+        return "";
+    }
 }

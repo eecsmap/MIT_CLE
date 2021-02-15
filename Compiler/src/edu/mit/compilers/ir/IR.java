@@ -3,11 +3,17 @@ package edu.mit.compilers.ir;
 import antlr.collections.AST;
 
 public abstract class IR {
+    private String type;
+
     private String text;
 
     private IR fc;
 
     private IR ns;
+
+    public final String getType() {
+        return type;
+    }
 
     public final String getText() {
         return text;
@@ -37,5 +43,6 @@ public abstract class IR {
         return true;
     }
 
-    public abstract Boolean execute();
+    // return type
+    public abstract String execute();
 }
