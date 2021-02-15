@@ -3,13 +3,13 @@ package edu.mit.compilers.ir;
 import antlr.collections.AST;
 
 public abstract class IR {
-    private String type;
+    protected String type;
 
-    private String text;
+    protected String text;
 
-    private IR fc;
+    protected IR fc;
 
-    private IR ns;
+    protected IR ns;
 
     public final String getType() {
         return type;
