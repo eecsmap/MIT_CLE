@@ -56,7 +56,7 @@ class Main {
             case DecafScannerTokenTypes.STRINGLITERAL:
               type = " STRINGLITERAL";
               break;
-            case DecafScannerTokenTypes.Variable:
+            case DecafScannerTokenTypes.ID:
               type = " IDENTIFIER";
               break;
             case DecafScannerTokenTypes.TK_false:
