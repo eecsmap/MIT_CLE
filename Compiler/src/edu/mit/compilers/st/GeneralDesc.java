@@ -5,11 +5,16 @@ package edu.mit.compilers.st;
 // ParamDesc -> "int" "name"
 // LocalDesc -> "int" "name"
 public class GeneralDesc extends Descriptor {
-    public final String findVar(String name) {
+    public GeneralDesc(String type, String text) {
+        this.type = type;
+        this.text = text;
+    }
+
+    public final String findVar(String text) {
         return null;
     }
 
-    public final String findMethod(String name) {
+    public final String findMethod(String text) {
         return null;
     }
 }

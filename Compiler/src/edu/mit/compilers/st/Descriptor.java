@@ -12,7 +12,7 @@ public abstract class Descriptor {
     
     public String text;
 
-    public abstract String findVar(String name);
+    public abstract String findVar(String text);
 
-    public abstract String findMethod(String name);
+    public abstract String findMethod(String text);
 }

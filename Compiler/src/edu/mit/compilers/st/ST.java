@@ -1,7 +1,6 @@
 package edu.mit.compilers.st;
 
 import java.util.ArrayList;
-import edu.mit.compilers.st.Descriptor;
 
 // field symbol table -> field desc []
 // param symbol table -> param desc [], last local ST (if have) used in for loop 
@@ -13,37 +12,42 @@ public class ST {
     private ArrayList<Descriptor> table;
 
     public String getType(String text) {
-        for(int i = 0; i < table.size(); i++) {
+        for (int i = 0; i < table.size(); i++) {
             Descriptor desc = table.get(i);
             if(desc.text == text) {
                 return desc.type;
             }
         }
-        if(subST != null) {
+        if (subST != null) {
             return subST.getType(text);
         }
         return null;
     }
 
-    // TODO
-    public boolean add(String type, String text) {
-        if(getType(text) != null) {
+    // only for GeneralDesc
+    public boolean push(String type, String text) {
+        if (getType(text) != null) {
             return false;
         }
-        // table.add();
+        table.add(new GeneralDesc(type, text));
         return true;
     }
 
-    public boolean add(Descriptor desc) {
-        if(getType(desc.text) != null) {
+    public boolean push(Descriptor desc) {
+        if (getType(desc.text) != null) {
             return false;
         }
         table.add(desc);
         return true;
     }
 
-    // TODO
-    public boolean delete(String text) {
-        return false;
+    // remove the last in array
+    public boolean pop() {
+        int last = table.size() - 1;
+        if (last < 0) {
+            return false;
+        }
+        table.remove(last);
+        return true;
     }
 }
