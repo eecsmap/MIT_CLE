@@ -6,11 +6,11 @@ public class ClassDesc extends Descriptor {
     private ST methodST;
     private ST fieldST;
 
-    public final boolean findVar(String name) {
-        return fieldST.contains(name);
+    public final String findVar(String name) {
+        return fieldST.getType(name);
     }
 
-    public final boolean findMethod(String name) {
-        return methodST.contains(name);
+    public final String findMethod(String name) {
+        return methodST.getType(name);
     }
 }
