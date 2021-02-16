@@ -9,7 +9,7 @@ import edu.mit.compilers.grammar.*;
 
 // for debug only
 public class AstUtils {
-    private static final Map<Integer, String> t;
+    public static final Map<Integer, String> t;
     static {
         Map<Integer, String> m1 = new HashMap<Integer, String>();
         m1.put(4, "TK_bool");
