@@ -12,6 +12,15 @@ public abstract class Descriptor {
     
     public String text;
 
+    public Descriptor() { 
+        // default descriptor
+    }
+
+    public Descriptor(String type, String text) {
+        this.type = type;
+        this.text = text;
+    }
+
     public abstract String findVar(String text);
 
     public abstract String findMethod(String text);

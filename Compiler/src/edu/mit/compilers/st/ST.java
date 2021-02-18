@@ -11,6 +11,11 @@ public class ST {
     private ST subST;
     private ArrayList<Descriptor> table;
 
+    public ST() {
+        subST = null;
+        table = new ArrayList<Descriptor>();
+    }
+
     public String getType(String text) {
         for (int i = 0; i < table.size(); i++) {
             Descriptor desc = table.get(i);
@@ -49,5 +54,18 @@ public class ST {
         }
         table.remove(last);
         return true;
+    }
+
+    public boolean setSubST(ST st) {
+        subST = st;
+        return true;
+    }
+
+    public void print(int level) {
+        String tab = new String(new char[level]).replace("\0", "\t");
+        for (Descriptor desc: table) {
+            System.out.println(tab + desc.type + " " + desc.text);
+        }
+        subST.print(level + 1);
     }
 }

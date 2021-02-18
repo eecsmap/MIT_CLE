@@ -1,21 +1,24 @@
 package edu.mit.compilers.ir;
 
 import antlr.collections.AST;
-import edu.mit.compilers.ir.AstUtils;
-import edu.mit.compilers.ir.IRImport;
+import edu.mit.compilers.st.MethodDesc;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.grammar.*;
 
 public class IrUtils {
     // parse an AST to IRTree with the help of Symbol Tree
     public static void IRparse(AST t) {
-
+        ST globalST = new ST();
+        parseImport(t, globalST);
+        
     }
 
     // TODO
-    private static AST parseImport(AST t) {
-        while(t.getType() == DecafParserTokenTypes.TK_import) {
-            break;
+    private static AST parseImport(AST t, ST globalST) {
+        for (; t.getType() == DecafParserTokenTypes.TK_import; t = t.getNextSibling()) {
+            // parse single import statement
+            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD, t.getText());
+            globalST.push(desc);
         }
         return t;
     }

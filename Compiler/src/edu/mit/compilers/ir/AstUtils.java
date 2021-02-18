@@ -74,16 +74,13 @@ public class AstUtils {
         t = Collections.unmodifiableMap(m1);
     }
 
-    public static void printAST(AST ast, int tabs) {
+    public static void printAST(AST ast, int level) {
         while(ast != null){
-            String tab = "";
-            for(int i = 0; i < tabs; i++) {
-                tab += "    ";
-            }
+            String tab = new String(new char[level]).replace("\0", "\t");
             System.out.printf("%s%s\t\t\t\t\t\t%s\n", tab, ast.getText(), t.get(ast.getType()));
             AST fc = ast.getFirstChild();
             if (fc != null) {
-                printAST(fc, tabs+1);
+                printAST(fc, level+1);
             }
             ast = ast.getNextSibling();
         }
