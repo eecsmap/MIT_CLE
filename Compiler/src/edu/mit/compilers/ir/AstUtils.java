@@ -10,8 +10,9 @@ import edu.mit.compilers.grammar.*;
 // for debug only
 public class AstUtils {
     public static final Map<Integer, String> t;
+    public static final Map<Integer, String> t0;
     static {
-        Map<Integer, String> m1 = new HashMap<Integer, String>();
+        Map<Integer, String> m1 = new HashMap<>();
         m1.put(4, "TK_bool");
         m1.put(5, "TK_break");
         m1.put(6, "TK_import");
@@ -72,17 +73,35 @@ public class AstUtils {
         m1.put(61, "INCRE");
         m1.put(62, "DECRE");
         t = Collections.unmodifiableMap(m1);
+        Map<Integer, String> m2 = new HashMap<>();
+        m2.put(4, "bool");
+        m2.put(13, "int");
+        m2.put(16, "void");
+        t0 = Collections.unmodifiableMap(m2);
     }
 
-    public static void printAST(AST ast, int level) {
-        while(ast != null){
+    public static void printAST(AST t, int level) {
+        while(t != null){
             String tab = new String(new char[level]).replace("\0", "\t");
-            System.out.printf("%s%s\t\t\t\t\t\t%s%n", tab, ast.getText(), t.get(ast.getType()));
-            AST fc = ast.getFirstChild();
+            System.out.printf("%s%s\t\t\t\t\t\t%s%n", tab, t.getText(), t.get(t.getType()));
+            AST fc = t.getFirstChild();
             if (fc != null) {
                 printAST(fc, level+1);
             }
-            ast = ast.getNextSibling();
+            t = t.getNextSibling();
         }
+    }
+
+    public static boolean isImport(AST t) {
+        return t.getType() == DecafParserTokenTypes.TK_import;
+    }
+
+    public static boolean isType(AST t) {
+        int type = t.getType();
+        return type == DecafParserTokenTypes.TK_int || type == DecafParserTokenTypes.TK_bool;
+    }
+
+    public static boolean isReturnType(AST t) {
+        return isType(t) || t.getType() == DecafParserTokenTypes.TK_void;
     }
 }

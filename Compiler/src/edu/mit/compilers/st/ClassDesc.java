@@ -1,8 +1,8 @@
 package edu.mit.compilers.st;
 
 public class ClassDesc extends Descriptor {
-    public ST methodST;
-    public ST fieldST;
+    public final ST methodST = new ST();
+    public final ST fieldST = new ST();
 
     public final String findVar(String text) {
         return fieldST.getType(text);

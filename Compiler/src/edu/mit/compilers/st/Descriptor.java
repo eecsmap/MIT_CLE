@@ -12,11 +12,11 @@ public abstract class Descriptor {
     
     public String text;
 
-    public Descriptor() { 
+    protected Descriptor() { 
         // default descriptor
     }
 
-    public Descriptor(String type, String text) {
+    protected Descriptor(String type, String text) {
         this.type = type;
         this.text = text;
     }
