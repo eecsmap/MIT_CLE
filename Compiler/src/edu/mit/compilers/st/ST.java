@@ -34,7 +34,7 @@ public class ST {
         if (getType(text) != null) {
             return false;
         }
-        table.add(new GeneralDesc(type, text));
+        table.add(new VarDesc(type, text));
         return true;
     }
 

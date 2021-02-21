@@ -25,19 +25,27 @@ public class IrUtils {
         return t;
     }
 
-    private static AST fieldDecl(AST t, ST globalST) {
+    private static AST fieldDecl(AST t, ST currentST) {
         for (; AstUtils.isType(t); t = t.getNextSibling()) {
             // parse single import statement
             String type = AstUtils.t0.get(t.getType());
-            GeneralDesc desc = new GeneralDesc(type, t.getText());
-            globalST.push(desc);
+            parseFields(t, type, currentST);
         }
         return t;
     }
 
   /**
+   * int x, y, z, A[100];
    * returns the type of @param t, in Defs format  */
-    private static String parseFields(AST t) {
-
+    private static String parseFields(AST t, String type, ST currentST) {
+        for (; t != null; t = t.getNextSibling()) {
+            AST child = t.getFirstChild();
+            if (child != null) {
+                currentST.push(new VarDesc("array_" + type, t.getText()));
+                continue;
+            }
+            currentST.push(new VarDesc(type, t.getText()));
+        }
+        return "";
     }
 }

@@ -4,8 +4,8 @@ package edu.mit.compilers.st;
 // ArrayDesc -> "array" "int"
 // ParamDesc -> "int" "name"
 // LocalDesc -> "int" "name"
-public class GeneralDesc extends Descriptor {
-    public GeneralDesc(String type, String text) {
+public class VarDesc extends Descriptor {
+    public VarDesc(String type, String text) {
         this.type = type;
         this.text = text;
     }

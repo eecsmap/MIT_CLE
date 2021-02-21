@@ -9,8 +9,8 @@ import edu.mit.compilers.grammar.*;
 
 // for debug only
 public class AstUtils {
-    public static final Map<Integer, String> t;
     public static final Map<Integer, String> t0;
+    public static final Map<Integer, String> t1;
     static {
         Map<Integer, String> m1 = new HashMap<>();
         m1.put(4, "TK_bool");
@@ -72,18 +72,18 @@ public class AstUtils {
         m1.put(60, "COLON");
         m1.put(61, "INCRE");
         m1.put(62, "DECRE");
-        t = Collections.unmodifiableMap(m1);
+        t0 = Collections.unmodifiableMap(m1);
         Map<Integer, String> m2 = new HashMap<>();
         m2.put(4, "bool");
         m2.put(13, "int");
         m2.put(16, "void");
-        t0 = Collections.unmodifiableMap(m2);
+        t1 = Collections.unmodifiableMap(m2);
     }
 
     public static void printAST(AST t, int level) {
         while(t != null){
             String tab = new String(new char[level]).replace("\0", "\t");
-            System.out.printf("%s%s\t\t\t\t\t\t%s%n", tab, t.getText(), t.get(t.getType()));
+            System.out.printf("%s%s\t\t\t\t\t\t%s%n", tab, t.getText(), t0.get(t.getType()));
             AST fc = t.getFirstChild();
             if (fc != null) {
                 printAST(fc, level+1);
