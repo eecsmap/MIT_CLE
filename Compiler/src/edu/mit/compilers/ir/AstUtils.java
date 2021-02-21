@@ -77,7 +77,7 @@ public class AstUtils {
     public static void printAST(AST ast, int level) {
         while(ast != null){
             String tab = new String(new char[level]).replace("\0", "\t");
-            System.out.printf("%s%s\t\t\t\t\t\t%s\n", tab, ast.getText(), t.get(ast.getType()));
+            System.out.printf("%s%s\t\t\t\t\t\t%s%n", tab, ast.getText(), t.get(ast.getType()));
             AST fc = ast.getFirstChild();
             if (fc != null) {
                 printAST(fc, level+1);

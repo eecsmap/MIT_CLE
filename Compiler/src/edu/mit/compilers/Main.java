@@ -64,7 +64,6 @@ class Main {
               type = " BOOLEANLITERAL";
               break;
             default:
-              type = Integer.toString(token.getType());
               type = "";
               break;
           }
