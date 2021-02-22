@@ -16,6 +16,11 @@ public class ST {
         table = new ArrayList<>();
     }
 
+    public ST(ST subst) {
+        this.subST = subst;
+        table = new ArrayList<>();
+    }
+
     public String getType(String text) {
         for (int i = 0; i < table.size(); i++) {
             Descriptor desc = table.get(i);

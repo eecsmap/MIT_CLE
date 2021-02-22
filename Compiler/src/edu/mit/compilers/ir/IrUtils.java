@@ -12,7 +12,7 @@ public class IrUtils {
         ST globalST = new ST();
         t = importDecl(t, importST);
         t = fieldDecl(t, globalST);
-
+        t = methodDecl(t, globalST);
     }
 
     // return the next AST to parse
@@ -48,5 +48,18 @@ public class IrUtils {
             currentST.push(new VarDesc(type, t.getText()));
         }
         return;
+    }
+
+    private static AST methodDecl(AST t, ST globalST) {
+        ST paramST = new ST(globalST);
+        ST localST = new ST(paramST);
+        // ================TODO===================
+        for (; AstUtils.isType(t); t = t.getNextSibling()) {
+            // parse single import statement
+            String type = AstUtils.t0.get(t.getType());
+            parseFields(t, type, currentST);
+        }
+        // ================TODO===================
+        return null;
     }
 }
