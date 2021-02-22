@@ -2,11 +2,11 @@ package edu.mit.compilers.st;
 
 public class ArrayDesc extends Descriptor {
     private int cap;
-    private boolean isCapSet = false;
 
-    public ArrayDesc(String type, String text) {
+    public ArrayDesc(String type, String text, String cap) {
         this.type = type;
         this.text = text;
+        this.cap = Integer.parseInt(cap);
     }
 
     // find if index is overbound
@@ -20,14 +20,5 @@ public class ArrayDesc extends Descriptor {
 
     public final String findMethod(String text) {
         return null;
-    }
-
-    public boolean setCap(String cap) {
-        if (isCapSet) {
-            return false;
-        }
-        this.cap = Integer.parseInt(cap);
-        isCapSet = true;
-        return true;
     }
 }

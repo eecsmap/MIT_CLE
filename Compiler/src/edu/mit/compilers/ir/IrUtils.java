@@ -35,18 +35,18 @@ public class IrUtils {
     }
 
   /**
-   * TODO
-   * int x, y, z, A[100];
-   * returns the type of @param t, in Defs format  */
-    private static String parseFields(AST t, String type, ST currentST) {
+   * int x, y, z, A[100]; */
+    private static void parseFields(AST t, String type, ST currentST) {
         for (; t != null; t = t.getNextSibling()) {
             AST child = t.getFirstChild();
             if (child != null) {
-                currentST.push(new VarDesc("array_" + type, t.getText()));
+                // child is null -> is array
+                currentST.push(new ArrayDesc("array_" + type, t.getText(), child.getText()));
                 continue;
             }
+            // child is null -> it's single Variable
             currentST.push(new VarDesc(type, t.getText()));
         }
-        return "";
+        return;
     }
 }

@@ -29,7 +29,6 @@ class Main {
               String type = "";
               String text = token.getText();
               switch (token.getType()) {
-               // TODO: add strings for the other types here...
                 case DecafScannerTokenTypes.CHARLITERAL:
                   type = " CHARLITERAL";
                   break;
