@@ -5,6 +5,12 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.grammar.*;
 
 public class IrUtils {
+    private static boolean hasErorr = false;
+
+    private static boolean hasErorr() {
+        return hasErorr;
+    }
+
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t) {
         // treat import Symbol Table as special one
@@ -53,13 +59,45 @@ public class IrUtils {
     private static AST methodDecl(AST t, ST globalST) {
         ST paramST = new ST(globalST);
         ST localST = new ST(paramST);
-        // ================TODO===================
-        for (; AstUtils.isType(t); t = t.getNextSibling()) {
-            // parse single import statement
-            String type = AstUtils.t0.get(t.getType());
-            parseFields(t, type, currentST);
+        // TODO============================================================================
+        for (; AstUtils.isID(t); t = t.getNextSibling()) {
+            // parse method type
+            AST child = t.getFirstChild();
+            globalST.push(new MethodDesc(child.getText(), t.getText()));
+            child = child.getNextSibling();
+            // parse parameters
+            for (; AstUtils.isID(child); child = child.getNextSibling()) {
+                paramST.push(new VarDesc(child.getText(), child.getFirstChild().getText()));
+            }
+            // parse block -> enter localST
+            for (; child != null; child = child.getNextSibling()) {
+                // parse fieldDecl
+                child = fieldDecl(child, localST);
+                // parse statements
+
+            }
         }
-        // ================TODO===================
+        // TODO============================================================================
         return null;
+    }
+
+    // TODO
+    private static void parseAssignment(ST st) {
+
+    }
+
+    // TODO
+    private static void parseMethodCall(ST st) {
+
+    }
+
+    // TODO
+    private static void parseIf(ST st) {
+
+    }
+
+    // TODO
+    private static void parseFor(ST st) {
+
     }
 }

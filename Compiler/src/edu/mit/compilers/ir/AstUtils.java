@@ -92,16 +92,20 @@ public class AstUtils {
         }
     }
 
-    public static boolean isImport(AST t) {
+    public static final boolean isImport(AST t) {
         return t.getType() == DecafParserTokenTypes.TK_import;
     }
 
-    public static boolean isType(AST t) {
+    public static final boolean isType(AST t) {
         int type = t.getType();
         return type == DecafParserTokenTypes.TK_int || type == DecafParserTokenTypes.TK_bool;
     }
 
-    public static boolean isReturnType(AST t) {
+    public static final boolean isReturnType(AST t) {
         return isType(t) || t.getType() == DecafParserTokenTypes.TK_void;
+    }
+
+    public static final boolean isID(AST t) {
+        return t.getType() == DecafParserTokenTypes.ID;
     }
 }
