@@ -4,7 +4,7 @@ public class MethodDesc extends Descriptor{
     public final ST localST = new ST();
 
     public MethodDesc(String type, String text) {
-        super(type, text);
+        super(Defs.DESC_METHOD + type, text);
     }
 
     public final String findVar(String text) {

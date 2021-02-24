@@ -82,22 +82,40 @@ public class IrUtils {
     }
 
     // TODO
-    private static void parseAssignment(ST st) {
+    private static void parseAssignment(AST t, ST st) {
+        AST c = t.getFirstChild();
+        String Op = "=";
+        String lhs = c.getText();
+        String lhsType = st.getType(lhs);
+        
+    }
+
+    // TODO
+    private static void parseMethodCall(AST t, ST st) {
+        Descriptor method = st.getMethod(t.getText());
+        if (method == null) {
+            // TODO - report error
+            return;
+        }
+        String returnType = method.type.substring(Defs.DESC_METHOD.length());
+        
+    }
+
+    // TODO
+    private static void parseIf(AST t, ST st) {
 
     }
 
     // TODO
-    private static void parseMethodCall(ST st) {
+    private static void parseFor(AST t, ST st) {
 
     }
 
-    // TODO
-    private static void parseIf(ST st) {
+    // TODO -> return the type of rhs
+    private static String parseExpr(AST t, ST st) {
+        if (AstUtils.isID(t)) {
 
-    }
-
-    // TODO
-    private static void parseFor(ST st) {
-
+        }
+        return null;
     }
 }
