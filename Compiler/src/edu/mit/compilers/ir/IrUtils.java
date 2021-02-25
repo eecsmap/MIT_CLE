@@ -65,7 +65,6 @@ public class IrUtils {
     private static AST methodDecl(AST t, ST globalST) {
         ST paramST = new ST(globalST);
         ST localST = new ST(paramST);
-        // TODO============================================================================
         for (; AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST child = t.getFirstChild();
@@ -77,6 +76,7 @@ public class IrUtils {
                 paramST.push(new VarDesc(child.getFirstChild().getText(), child.getText()));
                 params.add(child.getFirstChild().getText());
             }
+        // TODO============================================================================
             // parse block -> enter localST
             for (; child != null; child = child.getNextSibling()) {
                 // parse fieldDecl
@@ -84,21 +84,28 @@ public class IrUtils {
                 // parse statements
 
             }
-        }
         // TODO============================================================================
+        }
         return null;
     }
 
-    // TODO
     private static void parseAssignment(AST t, ST st) {
         AST c = t.getFirstChild();
         String Op = "=";
-        String lhs = c.getText();
-        String lhsType = st.getType(lhs);
-        
+        String lhsID = c.getText();
+        String lhsType = st.getType(lhsID);
+        c = c.getNextSibling();
+        String rhsType = parseExpr(c, st);
+        if (lhsType != rhsType) {
+            // TODO - report error
+        }
     }
 
     // TODO
+    private static void parseForAssign(AST t, ST st) {
+        return;
+    }
+
     private static String parseMethodCall(AST t, ST st) {
         Descriptor method = st.getMethod(t.getText());
         if (method == null) {
@@ -120,17 +127,33 @@ public class IrUtils {
             }
         }
 
-        return method.type.substring(Defs.DESC_METHOD.length());;
+        return method.type.substring(Defs.DESC_METHOD.length());
     }
 
-    // TODO
     private static void parseIf(AST t, ST st) {
-
+        AST c = t.getFirstChild();
+        if (Defs.DESC_TYPE_BOOL != parseExpr(c, st)) {
+            // report Error
+        }
+        c = parseBlock(c.getNextSibling(), st);
+        if (c == null) {
+            return;
+        }
+        // else
+        parseBlock(c.getFirstChild(), st);
     }
 
-    // TODO
     private static void parseFor(AST t, ST st) {
-
+        AST c = t.getFirstChild();
+        if (Defs.DESC_TYPE_BOOL != parseExpr(c, st)) {
+            // report Error
+        }
+        c = c.getNextSibling();
+        parseAssignment(c, st);
+        c = c.getNextSibling();
+        parseForAssign(c, st);
+        c = c.getNextSibling();
+        parseBlock(c, st);
     }
 
     // TODO -> return the type of rhs
@@ -138,6 +161,11 @@ public class IrUtils {
         if (AstUtils.isID(t)) {
 
         }
+        return null;
+    }
+
+    // TODO -> return if null or next is else
+    private static AST parseBlock(AST t, ST st) {
         return null;
     }
 }
