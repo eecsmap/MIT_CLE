@@ -1,11 +1,19 @@
 package edu.mit.compilers.ir;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.grammar.*;
 
 public class IrUtils {
     private static boolean hasErorr = false;
+
+    private static final ST importST = new ST();
+    private static final ST globalST = new ST();
+    private static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
 
     private static boolean hasErorr() {
         return hasErorr;
@@ -14,8 +22,6 @@ public class IrUtils {
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t) {
         // treat import Symbol Table as special one
-        ST importST = new ST();
-        ST globalST = new ST();
         t = importDecl(t, importST);
         t = fieldDecl(t, globalST);
         t = methodDecl(t, globalST);
@@ -66,8 +72,10 @@ public class IrUtils {
             globalST.push(new MethodDesc(child.getText(), t.getText()));
             child = child.getNextSibling();
             // parse parameters
-            for (; AstUtils.isID(child); child = child.getNextSibling()) {
-                paramST.push(new VarDesc(child.getText(), child.getFirstChild().getText()));
+            ArrayList<String> params = new ArrayList<>();
+            for (; child != null && AstUtils.isID(child); child = child.getNextSibling()) {
+                paramST.push(new VarDesc(child.getFirstChild().getText(), child.getText()));
+                params.add(child.getFirstChild().getText());
             }
             // parse block -> enter localST
             for (; child != null; child = child.getNextSibling()) {
@@ -91,14 +99,28 @@ public class IrUtils {
     }
 
     // TODO
-    private static void parseMethodCall(AST t, ST st) {
+    private static String parseMethodCall(AST t, ST st) {
         Descriptor method = st.getMethod(t.getText());
         if (method == null) {
-            // TODO - report error
-            return;
+            method = importST.getMethod(t.getText());
+            if (method == null) {
+                // TODO - report error
+                return null;
+            }
+            return "*";
         }
-        String returnType = method.type.substring(Defs.DESC_METHOD.length());
         
+        AST child = t.getFirstChild();
+        ArrayList<String> params = methodMap.get(method.text);
+        int i = 0;
+        for (; child != null; child = child.getNextSibling(), i++) {
+            String child_type = parseExpr(child, st);
+            if (params.get(i) != child_type) {
+                // TODO - report error
+            }
+        }
+
+        return method.type.substring(Defs.DESC_METHOD.length());;
     }
 
     // TODO
