@@ -65,28 +65,20 @@ public class IrUtils {
     private static AST methodDecl(AST t, ST globalST) {
         ST paramST = new ST(globalST);
         ST localST = new ST(paramST);
-        for (; AstUtils.isID(t); t = t.getNextSibling()) {
+        for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
-            AST child = t.getFirstChild();
-            globalST.push(new MethodDesc(child.getText(), t.getText()));
-            child = child.getNextSibling();
+            AST c = t.getFirstChild();
+            globalST.push(new MethodDesc(c.getText(), t.getText()));
+            c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
-            for (; child != null && AstUtils.isID(child); child = child.getNextSibling()) {
-                paramST.push(new VarDesc(child.getFirstChild().getText(), child.getText()));
-                params.add(child.getFirstChild().getText());
+            for (; c != null && AstUtils.isID(c); c = c.getNextSibling()) {
+                paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()));
+                params.add(c.getFirstChild().getText());
             }
-        // TODO============================================================================
-            // parse block -> enter localST
-            for (; child != null; child = child.getNextSibling()) {
-                // parse fieldDecl
-                child = fieldDecl(child, localST);
-                // parse statements
-
-            }
-        // TODO============================================================================
+            parseBlock(c, localST);
         }
-        return null;
+        return t;
     }
 
     private static void parseSimpleAssign(AST t, ST st) {
@@ -102,7 +94,6 @@ public class IrUtils {
         }
     }
 
-    // TODO
     private static void parseMoreAssign(AST t, ST st) {
         // +=, -=, =
         String op = t.getText();
@@ -133,6 +124,7 @@ public class IrUtils {
         }
     }
 
+    // return method type
     private static String parseMethodCall(AST t, ST st) {
         Descriptor method = st.getMethod(t.getText());
         if (method == null) {
@@ -141,7 +133,7 @@ public class IrUtils {
                 // TODO - report error
                 return null;
             }
-            return "*";
+            return Defs.DESC_TYPE_WILDCARD;
         }
         
         AST child = t.getFirstChild();
@@ -213,7 +205,35 @@ public class IrUtils {
         switch(t.getType()) {
             case DecafScannerTokenTypes.ID:
                 // TODO: location: method_call, array, var
-                return null;
+                String type = st.getType(t.getText());
+                if (type == null) {
+                    // TODO: report error
+                    return null;
+                }
+                // array
+                if (type.startsWith(Defs.ARRAY_PREFIX)) {
+                    AST c = t.getFirstChild();
+                    if (c == null) {
+                        // TODO: report error
+                        return null;
+                    }
+                    String subType = parseExpr(c, st);
+                    if (subType != Defs.DESC_TYPE_INT && subType != Defs.DESC_TYPE_WILDCARD) {
+                        // TODO: report error
+                        return null;
+                    }
+                    // TODO: boundary check
+                    if (type == Defs.DESC_ARRAY_BOOL) {
+                        return Defs.DESC_TYPE_INT;
+                    }
+                    return Defs.DESC_TYPE_BOOL;
+                }
+                // method
+                if (type == Defs.DESC_METHOD) {
+                    return parseMethodCall(t, st);
+                }
+                // var
+                return type;
             case DecafScannerTokenTypes.INTLITERAL:
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.TK_true:
@@ -238,7 +258,7 @@ public class IrUtils {
         return null;
     }
 
-    // return if null or next is else
+    // if null -> return; if TK_else -> return current AST
     private static AST parseBlock(AST t, ST st) {
         // parse fields
         t = fieldDecl(t, st);

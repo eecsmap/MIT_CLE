@@ -15,4 +15,6 @@ public class Defs {
     public static final String DESC_ARRAY_INT = "array_int";
     public static final String DESC_ARRAY_BOOL = "array_bool";
     public static final String DESC_THIS = "this";
+    public static final String ARRAY_PREFIX = "array_";
+    public static final String DESC_TYPE_WILDCARD = "*";
 }
