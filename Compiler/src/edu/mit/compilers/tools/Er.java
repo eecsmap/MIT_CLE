@@ -42,4 +42,12 @@ public class Er {
     public static final void errArrayOutbound(AST t, String arrayID, String given) {
         report(t, "array %s index %s is outbound", arrayID, given);
     }
+
+    public static final void errBreak(AST t) {
+        report(t, "not break inside loop");
+    }
+
+    public static final void errContinue(AST t) {
+        report(t, "not continue inside loop");
+    }
 }

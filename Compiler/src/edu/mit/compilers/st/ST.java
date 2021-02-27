@@ -1,6 +1,7 @@
 package edu.mit.compilers.st;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 // field symbol table -> field desc []
 // param symbol table -> param desc [], last local ST (if have) used in for loop 
@@ -10,52 +11,54 @@ import java.util.ArrayList;
 public class ST {
     private ST subST;
     private ArrayList<Descriptor> table;
+    private Stack<Integer> context;
 
     public ST() {
-        subST = null;
-        table = new ArrayList<>();
+        this.subST = null;
+        this.table = new ArrayList<>();
+        this.context = new Stack<>();
     }
 
     public ST(ST subst) {
         this.subST = subst;
-        table = new ArrayList<>();
+        this.table = new ArrayList<>();
     }
 
     public String getType(String text) {
-        for (int i = 0; i < table.size(); i++) {
-            Descriptor desc = table.get(i);
+        for (int i = 0; i < this.table.size(); i++) {
+            Descriptor desc = this.table.get(i);
             if(desc.text.equals(text)) {
                 return desc.type;
             }
         }
-        if (subST != null) {
-            return subST.getType(text);
+        if (this.subST != null) {
+            return this.subST.getType(text);
         }
         return null;
     }
 
     public Descriptor getMethod(String text) {
-        for (int i = 0; i < table.size(); i++) {
-            Descriptor desc = table.get(i);
+        for (int i = 0; i < this.table.size(); i++) {
+            Descriptor desc = this.table.get(i);
             if(desc.text.equals(text) && desc.type.startsWith(Defs.DESC_METHOD)) {
                 return desc;
             }
         }
-        if (subST != null) {
-            return subST.getMethod(text);
+        if (this.subST != null) {
+            return this.subST.getMethod(text);
         }
         return null;
     }
 
     public Descriptor getArray(String text) {
-        for (int i = 0; i < table.size(); i++) {
-            Descriptor desc = table.get(i);
+        for (int i = 0; i < this.table.size(); i++) {
+            Descriptor desc = this.table.get(i);
             if(desc.text.equals(text) && desc.type.startsWith(Defs.ARRAY_PREFIX)) {
                 return desc;
             }
         }
-        if (subST != null) {
-            return subST.getArray(text);
+        if (this.subST != null) {
+            return this.subST.getArray(text);
         }
         return null;
     }
@@ -65,7 +68,7 @@ public class ST {
         if (getType(text) != null) {
             return false;
         }
-        table.add(new VarDesc(type, text));
+        this.table.add(new VarDesc(type, text));
         return true;
     }
 
@@ -73,30 +76,42 @@ public class ST {
         if (getType(desc.text) != null) {
             return false;
         }
-        table.add(desc);
+        this.table.add(desc);
         return true;
     }
 
     // remove the last in array
     public boolean pop() {
-        int last = table.size() - 1;
+        int last = this.table.size() - 1;
         if (last < 0) {
             return false;
         }
-        table.remove(last);
+        this.table.remove(last);
         return true;
     }
 
     public boolean setSubST(ST st) {
-        subST = st;
+        this.subST = st;
         return true;
     }
 
     public void print(int level) {
         String tab = new String(new char[level]).replace("\0", "\t");
-        for (Descriptor desc: table) {
+        for (Descriptor desc: this.table) {
             System.out.println(tab + desc.type + " " + desc.text);
         }
-        subST.print(level + 1);
+        this.subST.print(level + 1);
+    }
+
+    public int getContext() {
+        return this.context.peek();
+    }
+
+    public void pushContext(int cxt) {
+        this.context.push(cxt);
+    }
+
+    public void popContext() {
+        this.context.pop();
     }
 }

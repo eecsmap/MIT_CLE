@@ -177,15 +177,18 @@ public class IrUtils {
 
     // doesn't suppeort declaration in for loop
     private static void parseFor(AST t, ST st) {
+        st.pushContext(t.getType());
         AST c = t.getFirstChild();
         parseSimpleAssign(c, st);
         c = c.getNextSibling();
         parseMoreAssign(c, st);
         c = c.getNextSibling();
         parseBlock(c, st);
+        st.popContext();
     }
 
     private static void parseWhile(AST t, ST st) {
+        st.pushContext(t.getType());
         AST c = t.getFirstChild();
         String type = parseExpr(c, st);
         if (Defs.DESC_TYPE_BOOL != type) {
@@ -193,6 +196,7 @@ public class IrUtils {
         }
         c = c.getNextSibling();
         parseBlock(c, st);
+        st.popContext();
     }
 
     // <expr>  => location
@@ -204,11 +208,26 @@ public class IrUtils {
     // | ! expr
     private static String parseExpr(AST t, ST st) {
         if (AstUtils.isBinaryOp(t)) {
-            // TODO
-            return null;
+            AST l = t.getFirstChild();
+            AST r = l.getNextSibling();
+            String lType = parseExpr(l, st);
+            String rType = parseExpr(r, st);
+            if (lType != rType) {
+                Er.errType(l, lType, rType);
+            }
+            return lType;
         }
         if (AstUtils.isBinaryBoolOp(t)) {
-            // TODO
+            AST l = t.getFirstChild();
+            AST r = l.getNextSibling();
+            String lType = parseExpr(l, st);
+            String rType = parseExpr(r, st);
+            if (lType != Defs.DESC_TYPE_BOOL) {
+                Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
+            }
+            if (rType != Defs.DESC_TYPE_BOOL) {
+                Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
+            }
             return Defs.DESC_TYPE_BOOL;
         }
         switch(t.getType()) {
@@ -246,8 +265,12 @@ public class IrUtils {
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_len:
-                // TODO: parse array
-                return null;
+                AST c = t.getFirstChild();
+                String subType1 = st.getType(c.getText());
+                if (subType1 == null || !subType1.startsWith(Defs.ARRAY_PREFIX)) {
+                    Er.errNotDefined(c, c.getText());
+                }
+                return Defs.DESC_TYPE_INT;
         }
         return null;
     }
@@ -287,13 +310,16 @@ public class IrUtils {
                 parseWhile(t, st);
                 break;
             case DecafScannerTokenTypes.TK_break:
-                // TODO: break
-                break;
-            case DecafScannerTokenTypes.TK_return:
-                // TODO: return
+                if (!AstUtils.isLoop(st.getContext())) {
+                    Er.errBreak(t);
+                }
                 break;
             case DecafScannerTokenTypes.TK_continue:
-                // TODO: continue
+                if (!AstUtils.isLoop(st.getContext())) {
+                    Er.errContinue(t);
+                }
+            case DecafScannerTokenTypes.TK_return:
+                // TODO 
                 break;
         }
         return null;
