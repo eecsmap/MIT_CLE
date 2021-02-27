@@ -9,15 +9,9 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.grammar.*;
 
 public class IrUtils {
-    private static boolean hasErorr = false;
-
     private static final ST importST = new ST();
     private static final ST globalST = new ST();
     private static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
-
-    private static boolean hasErorr() {
-        return hasErorr;
-    }
 
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t) {
@@ -41,15 +35,16 @@ public class IrUtils {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             // parse single import statement
             String type = AstUtils.t0.get(t.getType());
-            for (; t != null; t = t.getNextSibling()) {
-                AST child = t.getFirstChild();
-                if (child != null) {
-                    // child is null -> is array
-                    st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, t.getText(), child.getText()));
+            AST c = t.getFirstChild();
+            for (; c != null; c = c.getNextSibling()) {
+                AST cc = c.getFirstChild();
+                if (cc != null) {
+                    // cc is null -> is array
+                    st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, c.getText(), cc.getText()));
                     continue;
                 }
-                // child is null -> it's single Variable
-                st.push(new VarDesc(type, t.getText()));
+                // cc is null -> it's single Variable
+                st.push(new VarDesc(type, c.getText()));
             }
         }
         return t;
