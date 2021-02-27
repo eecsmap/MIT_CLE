@@ -112,16 +112,21 @@ public class IrUtils {
         AST c = t.getFirstChild();
         String lhsID = c.getText();
         String lhsType = st.getType(lhsID);
-        c = c.getNextSibling();
-        // if it's normal ID
-        if (c == null) {
+        if (lhsType == null) {
+            // TODO: report erro
             return;
         }
-        // if array element
-        String rhsType = parseExpr(c, st);
-        if (rhsType != Defs.DESC_TYPE_INT) {
-            // TODO - report error
+        if (lhsType.startsWith(Defs.ARRAY_PREFIX)) {
+            String type = parseArrayElement(c, st);
+            if (type != Defs.DESC_TYPE_INT) {
+                // TODO: report error
+            }
+            return;
         }
+        if (lhsType != Defs.DESC_TYPE_INT) {
+            // TODO: report error
+        }
+        return;
     }
 
     // return method type
@@ -147,6 +152,25 @@ public class IrUtils {
         }
 
         return method.type.substring(Defs.DESC_METHOD.length());
+    }
+
+    private static String parseArrayElement(AST t, ST st) {
+        String type = st.getType(t.getText());
+        AST c = t.getFirstChild();
+        if (c == null) {
+            // TODO: report error
+            return null;
+        }
+        String subType = parseExpr(c, st);
+        if (subType != Defs.DESC_TYPE_INT && subType != Defs.DESC_TYPE_WILDCARD) {
+            // TODO: report error
+            return null;
+        }
+        // TODO: boundary check
+        if (type == Defs.DESC_ARRAY_BOOL) {
+            return Defs.DESC_TYPE_INT;
+        }
+        return Defs.DESC_TYPE_BOOL;
     }
 
     private static void parseIf(AST t, ST st) {
@@ -212,21 +236,7 @@ public class IrUtils {
                 }
                 // array
                 if (type.startsWith(Defs.ARRAY_PREFIX)) {
-                    AST c = t.getFirstChild();
-                    if (c == null) {
-                        // TODO: report error
-                        return null;
-                    }
-                    String subType = parseExpr(c, st);
-                    if (subType != Defs.DESC_TYPE_INT && subType != Defs.DESC_TYPE_WILDCARD) {
-                        // TODO: report error
-                        return null;
-                    }
-                    // TODO: boundary check
-                    if (type == Defs.DESC_ARRAY_BOOL) {
-                        return Defs.DESC_TYPE_INT;
-                    }
-                    return Defs.DESC_TYPE_BOOL;
+                    return parseArrayElement(t, st);
                 }
                 // method
                 if (type == Defs.DESC_METHOD) {
