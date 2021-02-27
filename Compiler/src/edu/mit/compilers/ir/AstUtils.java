@@ -1,7 +1,9 @@
 package edu.mit.compilers.ir;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Collections;
 import antlr.collections.AST;
 
@@ -9,8 +11,14 @@ import edu.mit.compilers.grammar.*;
 
 // for debug only
 public class AstUtils {
+    // num to strignn
     public static final Map<Integer, String> t0;
+    // type (method)
     public static final Map<Integer, String> t1;
+    // binary ops (boolean)
+    public static final Set<Integer> s0;
+    // binary ops (original type)
+    public static final Set<Integer> s1;
     static {
         Map<Integer, String> m1 = new HashMap<>();
         m1.put(4, "TK_bool");
@@ -78,6 +86,19 @@ public class AstUtils {
         m2.put(13, "int");
         m2.put(16, "void");
         t1 = Collections.unmodifiableMap(m2);
+        s0 = new HashSet<>();
+        s1 = new HashSet<>();
+        s0.add(DecafParserTokenTypes.GREATER);
+        s0.add(DecafParserTokenTypes.LESS);
+        s0.add(DecafParserTokenTypes.GE);
+        s0.add(DecafParserTokenTypes.LE);
+        s0.add(DecafParserTokenTypes.EQ);
+        s0.add(DecafParserTokenTypes.NEQ);
+        s0.add(DecafParserTokenTypes.AND);
+        s0.add(DecafParserTokenTypes.OR);
+        s1.add(DecafParserTokenTypes.MINUS);
+        s1.add(DecafParserTokenTypes.PLUS);
+        s1.add(DecafParserTokenTypes.TIMES);
     }
 
     public static void printAST(AST t, int level) {
@@ -107,5 +128,13 @@ public class AstUtils {
 
     public static final boolean isID(AST t) {
         return t.getType() == DecafParserTokenTypes.ID;
+    }
+
+    public static final boolean isBinaryOp(AST t) {
+        return s0.contains(t.getType());
+    }
+
+    public static final boolean isBinaryBoolOp(AST t) {
+        return s1.contains(t.getType());
     }
 }
