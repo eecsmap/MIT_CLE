@@ -201,10 +201,39 @@ public class IrUtils {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    // | ( expr )
     private static String parseExpr(AST t, ST st) {
-        if (AstUtils.isID(t)) {
+        if (AstUtils.isBinaryOp(t)) {
 
+            return null;
+        }
+        if (AstUtils.isBinaryBoolOp(t)) {
+
+            return Defs.DESC_TYPE_BOOL;
+        }
+        switch(t.getType()) {
+            case DecafScannerTokenTypes.ID:
+                // TODO: location: method_call, array, var
+                return null;
+            case DecafScannerTokenTypes.INTLITERAL:
+                return Defs.DESC_TYPE_INT;
+            case DecafScannerTokenTypes.TK_true:
+            case DecafScannerTokenTypes.TK_false:
+                return Defs.DESC_TYPE_BOOL;
+            case DecafScannerTokenTypes.MINUS:
+                String subType = parseExpr(t.getFirstChild(), st);
+                if (subType != Defs.DESC_TYPE_INT) {
+                    // TODO: report error
+                }
+                return Defs.DESC_TYPE_INT;
+            case DecafScannerTokenTypes.EXCLAM:
+                String subType = parseExpr(t.getFirstChild(), st);
+                if (subType != Defs.DESC_TYPE_BOOL) {
+                    // TODO: report error   
+                }
+                return Defs.DESC_TYPE_BOOL;
+            case DecafScannerTokenTypes.TK_len:
+                // TODO: parse array
+                return null;
         }
         return null;
     }
