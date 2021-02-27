@@ -6,6 +6,7 @@ import java.util.Map;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 public class IrUtils {
@@ -91,7 +92,7 @@ public class IrUtils {
         c = c.getNextSibling();
         String rhsType = parseExpr(c, st);
         if (lhsType != rhsType) {
-            // TODO - report error
+            Er.report(c, "assignment type not match '%d' '%d'", lhsType, rhsType);
         }
     }
 
@@ -101,18 +102,18 @@ public class IrUtils {
         String lhsID = c.getText();
         String lhsType = st.getType(lhsID);
         if (lhsType == null) {
-            // TODO: report erro
+            Er.errNotDefined(c, lhsID);
             return;
         }
         if (lhsType.startsWith(Defs.ARRAY_PREFIX)) {
             String type = parseArrayElement(c, st);
             if (type != Defs.DESC_TYPE_INT) {
-                // TODO: report error
+                Er.errType(c, Defs.DESC_TYPE_INT, type);
             }
             return;
         }
         if (lhsType != Defs.DESC_TYPE_INT) {
-            // TODO: report error
+            Er.errType(c, Defs.DESC_TYPE_INT, lhsType);
         }
         return;
     }
@@ -123,19 +124,19 @@ public class IrUtils {
         if (method == null) {
             method = importST.getMethod(t.getText());
             if (method == null) {
-                // TODO - report error
+                Er.errNotDefined(t, t.getText());
                 return null;
             }
             return Defs.DESC_TYPE_WILDCARD;
         }
         
-        AST child = t.getFirstChild();
+        AST c = t.getFirstChild();
         ArrayList<String> params = methodMap.get(method.text);
         int i = 0;
-        for (; child != null; child = child.getNextSibling(), i++) {
-            String child_type = parseExpr(child, st);
-            if (params.get(i) != child_type) {
-                // TODO - report error
+        for (; c != null; c = c.getNextSibling(), i++) {
+            String cType = parseExpr(c, st);
+            if (params.get(i) != cType) {
+                Er.errType(c, params.get(i), cType);
             }
         }
 
@@ -145,13 +146,9 @@ public class IrUtils {
     private static String parseArrayElement(AST t, ST st) {
         String type = st.getType(t.getText());
         AST c = t.getFirstChild();
-        if (c == null) {
-            // TODO: report error
-            return null;
-        }
         String subType = parseExpr(c, st);
         if (subType != Defs.DESC_TYPE_INT && subType != Defs.DESC_TYPE_WILDCARD) {
-            // TODO: report error
+            Er.errArrayIndexNotInt(t, t.getText(), subType);
             return null;
         }
         // TODO: boundary check
@@ -163,8 +160,9 @@ public class IrUtils {
 
     private static void parseIf(AST t, ST st) {
         AST c = t.getFirstChild();
-        if (Defs.DESC_TYPE_BOOL != parseExpr(c, st)) {
-            // report Error
+        String type = parseExpr(c, st);
+        if (Defs.DESC_TYPE_BOOL != type) {
+            Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         c = parseBlock(c.getNextSibling(), st);
         if (c == null) {
@@ -177,10 +175,6 @@ public class IrUtils {
     // doesn't suppeort declaration in for loop
     private static void parseFor(AST t, ST st) {
         AST c = t.getFirstChild();
-        if (Defs.DESC_TYPE_BOOL != parseExpr(c, st)) {
-            // report Error
-        }
-        c = c.getNextSibling();
         parseSimpleAssign(c, st);
         c = c.getNextSibling();
         parseMoreAssign(c, st);
@@ -190,14 +184,14 @@ public class IrUtils {
 
     private static void parseWhile(AST t, ST st) {
         AST c = t.getFirstChild();
-        if (Defs.DESC_TYPE_BOOL != parseExpr(c, st)) {
-            // report Error
+        String type = parseExpr(c, st);
+        if (Defs.DESC_TYPE_BOOL != type) {
+            Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         c = c.getNextSibling();
         parseBlock(c, st);
     }
 
-    // TODO -> return the type of rhs
     // <expr>  => location
     // | method_call
     // | literal
@@ -207,19 +201,18 @@ public class IrUtils {
     // | ! expr
     private static String parseExpr(AST t, ST st) {
         if (AstUtils.isBinaryOp(t)) {
-
+            // TODO
             return null;
         }
         if (AstUtils.isBinaryBoolOp(t)) {
-
+            // TODO
             return Defs.DESC_TYPE_BOOL;
         }
         switch(t.getType()) {
             case DecafScannerTokenTypes.ID:
-                // TODO: location: method_call, array, var
                 String type = st.getType(t.getText());
                 if (type == null) {
-                    // TODO: report error
+                    Er.errNotDefined(t, t.getText());
                     return null;
                 }
                 // array
@@ -240,13 +233,13 @@ public class IrUtils {
             case DecafScannerTokenTypes.MINUS:
                 String subType = parseExpr(t.getFirstChild(), st);
                 if (subType != Defs.DESC_TYPE_INT) {
-                    // TODO: report error
+                    Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
                 String subType0 = parseExpr(t.getFirstChild(), st);
                 if (subType0 != Defs.DESC_TYPE_BOOL) {
-                    // TODO: report error   
+                    Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_len:
