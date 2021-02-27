@@ -19,6 +19,7 @@ public class AstUtils {
     public static final Set<Integer> s0;
     // binary ops (original type)
     public static final Set<Integer> s1;
+
     static {
         Map<Integer, String> m1 = new HashMap<>();
         m1.put(4, "TK_bool");

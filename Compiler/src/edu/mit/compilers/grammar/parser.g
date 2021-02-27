@@ -78,7 +78,6 @@ block : LCURLY! (field_decl)* (statement)* RCURLY!;
 
 statement :
         location ((ASSIGN^|PLUSASSIGN^|MINUSASSIGN^) expr | (INCRE^|DECRE^)) SEMICOLON!
-    |   (INCRE^|DECRE^)
     |   method_call SEMICOLON!
     |   if_
     |   for_
