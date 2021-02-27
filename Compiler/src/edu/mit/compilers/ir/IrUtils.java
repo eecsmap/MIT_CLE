@@ -244,8 +244,8 @@ public class IrUtils {
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
-                String subType = parseExpr(t.getFirstChild(), st);
-                if (subType != Defs.DESC_TYPE_BOOL) {
+                String subType0 = parseExpr(t.getFirstChild(), st);
+                if (subType0 != Defs.DESC_TYPE_BOOL) {
                     // TODO: report error   
                 }
                 return Defs.DESC_TYPE_BOOL;
