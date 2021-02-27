@@ -89,7 +89,21 @@ public class IrUtils {
         return null;
     }
 
-    private static void parseAssignment(AST t, ST st) {
+    private static void parseSimpleAssign(AST t, ST st) {
+        // =
+        String op = "=";
+        AST c = t.getFirstChild();
+        String lhsID = c.getText();
+        String lhsType = st.getType(lhsID);
+        c = c.getNextSibling();
+        String rhsType = parseExpr(c, st);
+        if (lhsType != rhsType) {
+            // TODO - report error
+        }
+    }
+
+    // TODO
+    private static void parseMoreAssign(AST t, ST st) {
         // +=, -=, =
         String op = t.getText();
         AST c = t.getFirstChild();
@@ -117,11 +131,6 @@ public class IrUtils {
         if (rhsType != Defs.DESC_TYPE_INT) {
             // TODO - report error
         }
-    }
-
-    // TODO
-    private static void parseForAssign(AST t, ST st) {
-        return;
     }
 
     private static String parseMethodCall(AST t, ST st) {
@@ -161,15 +170,16 @@ public class IrUtils {
         parseBlock(c.getFirstChild(), st);
     }
 
+    // doesn't suppeort declaration in for loop
     private static void parseFor(AST t, ST st) {
         AST c = t.getFirstChild();
         if (Defs.DESC_TYPE_BOOL != parseExpr(c, st)) {
             // report Error
         }
         c = c.getNextSibling();
-        parseAssignment(c, st);
+        parseSimpleAssign(c, st);
         c = c.getNextSibling();
-        parseForAssign(c, st);
+        parseMoreAssign(c, st);
         c = c.getNextSibling();
         parseBlock(c, st);
     }
@@ -184,6 +194,14 @@ public class IrUtils {
     }
 
     // TODO -> return the type of rhs
+    // <expr>  => location
+    // | method_call
+    // | literal
+    // | len ( id )
+    // | expr bin_op expr
+    // | - expr
+    // | ! expr
+    // | ( expr )
     private static String parseExpr(AST t, ST st) {
         if (AstUtils.isID(t)) {
 
@@ -210,30 +228,30 @@ public class IrUtils {
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
             case DecafScannerTokenTypes.MINUSASSIGN:
-                parseAssignment(t, st);
-                continue;
+                parseMoreAssign(t, st);
+                break;
             case DecafScannerTokenTypes.INCRE:
             case DecafScannerTokenTypes.DECRE:
                 parseIncre(t, st);
-                continue;
+                break;
             case DecafScannerTokenTypes.TK_if:
                 parseIf(t, st);
-                continue;
+                break;
             case DecafScannerTokenTypes.TK_for:
                 parseFor(t, st);
-                continue;
+                break;
             case DecafScannerTokenTypes.TK_while:
                 parseWhile(t, st);
-                continue;
+                break;
             case DecafScannerTokenTypes.TK_break:
                 // TODO: break
-                continue;
+                break;
             case DecafScannerTokenTypes.TK_return:
-                // TODO: break
-                continue;
+                // TODO: return
+                break;
             case DecafScannerTokenTypes.TK_continue:
                 // TODO: continue
-                continue;
+                break;
         }
         return null;
     }
