@@ -70,8 +70,8 @@ public class IrUtils {
         return t;
     }
 
+    // only =
     private static void parseSimpleAssign(AST t, ST st) {
-        // =
         String op = "=";
         AST c = t.getFirstChild();
         String lhsID = c.getText();
@@ -79,12 +79,12 @@ public class IrUtils {
         c = c.getNextSibling();
         String rhsType = parseExpr(c, st);
         if (lhsType != rhsType) {
-            // TODO - report error
+            Er.errType(c, lhsType, rhsType);
         }
     }
 
+    // +=, -=, =
     private static void parseMoreAssign(AST t, ST st) {
-        // +=, -=, =
         String op = t.getText();
         AST c = t.getFirstChild();
         String lhsID = c.getText();
@@ -92,7 +92,7 @@ public class IrUtils {
         c = c.getNextSibling();
         String rhsType = parseExpr(c, st);
         if (lhsType != rhsType) {
-            Er.report(c, "assignment type not match '%d' '%d'", lhsType, rhsType);
+            Er.errType(c, lhsType, rhsType);
         }
     }
 
