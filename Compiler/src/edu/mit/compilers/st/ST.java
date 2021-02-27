@@ -9,22 +9,27 @@ import java.util.Stack;
 // method symbol table -> method desc []
 // type symbol table -> type desc []
 public class ST {
-    private ST subST;
-    private ArrayList<Descriptor> table;
-    private Stack<Integer> context;
+    private ST subST = null;
+    private String returnType = null;
+    private ArrayList<Descriptor> table = new ArrayList<>();
+    private Stack<Integer> context = new Stack<>();
 
-    public ST() {
-        this.subST = null;
-        this.table = new ArrayList<>();
-        this.context = new Stack<>();
+    public ST() {}
+
+    public ST(String type) {
+        this.returnType = type;
     }
 
     public ST(ST subst) {
         this.subST = subst;
-        this.table = new ArrayList<>();
     }
 
-    public String getType(String text) {
+    public ST(ST subst, String type) {
+        this.subST = subst;
+        this.returnType = type;
+    }
+
+    public final String getType(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
             if(desc.text.equals(text)) {
@@ -37,7 +42,7 @@ public class ST {
         return null;
     }
 
-    public Descriptor getMethod(String text) {
+    public final Descriptor getMethod(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
             if(desc.text.equals(text) && desc.type.startsWith(Defs.DESC_METHOD)) {
@@ -50,7 +55,7 @@ public class ST {
         return null;
     }
 
-    public Descriptor getArray(String text) {
+    public final Descriptor getArray(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
             if(desc.text.equals(text) && desc.type.startsWith(Defs.ARRAY_PREFIX)) {
@@ -64,7 +69,7 @@ public class ST {
     }
 
     // only for GeneralDesc
-    public boolean push(String type, String text) {
+    public final boolean push(String type, String text) {
         if (getType(text) != null) {
             return false;
         }
@@ -72,7 +77,7 @@ public class ST {
         return true;
     }
 
-    public boolean push(Descriptor desc) {
+    public final boolean push(Descriptor desc) {
         if (getType(desc.text) != null) {
             return false;
         }
@@ -81,7 +86,7 @@ public class ST {
     }
 
     // remove the last in array
-    public boolean pop() {
+    public final boolean pop() {
         int last = this.table.size() - 1;
         if (last < 0) {
             return false;
@@ -90,12 +95,12 @@ public class ST {
         return true;
     }
 
-    public boolean setSubST(ST st) {
+    public final boolean setSubST(ST st) {
         this.subST = st;
         return true;
     }
 
-    public void print(int level) {
+    public final void print(int level) {
         String tab = new String(new char[level]).replace("\0", "\t");
         for (Descriptor desc: this.table) {
             System.out.println(tab + desc.type + " " + desc.text);
@@ -103,15 +108,19 @@ public class ST {
         this.subST.print(level + 1);
     }
 
-    public int getContext() {
+    public final int getContext() {
         return this.context.peek();
     }
 
-    public void pushContext(int cxt) {
+    public final void pushContext(int cxt) {
         this.context.push(cxt);
     }
 
-    public void popContext() {
+    public final void popContext() {
         this.context.pop();
+    }
+
+    public final String getReturnType() {
+        return this.returnType;
     }
 }

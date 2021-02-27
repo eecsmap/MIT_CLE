@@ -52,12 +52,12 @@ public class IrUtils {
     }
 
     private static AST methodDecl(AST t, ST globalST) {
-        ST paramST = new ST(globalST);
-        ST localST = new ST(paramST);
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
             globalST.push(new MethodDesc(c.getText(), t.getText()));
+            ST paramST = new ST(globalST);
+            ST localST = new ST(paramST, c.getText());
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -207,6 +207,9 @@ public class IrUtils {
     // | - expr
     // | ! expr
     private static String parseExpr(AST t, ST st) {
+        if (t == null) {
+            return null;
+        }
         if (AstUtils.isBinaryOp(t)) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
@@ -319,7 +322,18 @@ public class IrUtils {
                     Er.errContinue(t);
                 }
             case DecafScannerTokenTypes.TK_return:
-                // TODO 
+                String returnType = st.getReturnType();
+                if (returnType == null) {
+                    Er.report(t, "null return");
+                    break;
+                }
+                String thisReturnType = parseExpr(t, st);
+                if (thisReturnType == null) {
+                    thisReturnType = Defs.DESC_TYPE_VOID;
+                }
+                if (thisReturnType != returnType) {
+                    Er.errType(t, returnType, thisReturnType);
+                }
                 break;
         }
         return null;
