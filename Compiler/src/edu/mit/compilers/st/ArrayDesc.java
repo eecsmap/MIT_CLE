@@ -13,7 +13,7 @@ public class ArrayDesc extends Descriptor {
     public final String findVar(String idxStr) {
         int idx = Integer.parseInt(idxStr);
         if (idx >= cap) {
-            return "";
+            return "ok";
         }
         return null;
     }

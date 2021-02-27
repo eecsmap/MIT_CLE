@@ -38,4 +38,8 @@ public class Er {
     public static final void errType(AST t, String expectedType, String givenType) {
         report(t, "expect type %s, given %s", expectedType, givenType);
     }
+
+    public static final void errArrayOutbound(AST t, String arrayID, String given) {
+        report(t, "array %s index %s is outbound", arrayID, given);
+    }
 }

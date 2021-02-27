@@ -8,9 +8,8 @@ package edu.mit.compilers.st;
 // LocalDesc -> "int" "name"
 // ThisDesc -> "this" "classdesc name", ""
 public abstract class Descriptor {
-    public String type;
-    
-    public String text;
+    protected String type;
+    protected String text;
 
     protected Descriptor() { 
         // default descriptor
@@ -24,4 +23,20 @@ public abstract class Descriptor {
     public abstract String findVar(String text);
 
     public abstract String findMethod(String text);
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getType() {
+        return type;
+    }
+    
+    public String getText() {
+        return text;
+    }
 }

@@ -47,6 +47,19 @@ public class ST {
         return null;
     }
 
+    public Descriptor getArray(String text) {
+        for (int i = 0; i < table.size(); i++) {
+            Descriptor desc = table.get(i);
+            if(desc.text.equals(text) && desc.type.startsWith(Defs.ARRAY_PREFIX)) {
+                return desc;
+            }
+        }
+        if (subST != null) {
+            return subST.getArray(text);
+        }
+        return null;
+    }
+
     // only for GeneralDesc
     public boolean push(String type, String text) {
         if (getType(text) != null) {

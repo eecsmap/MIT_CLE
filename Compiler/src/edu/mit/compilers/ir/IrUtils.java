@@ -131,7 +131,7 @@ public class IrUtils {
         }
         
         AST c = t.getFirstChild();
-        ArrayList<String> params = methodMap.get(method.text);
+        ArrayList<String> params = methodMap.get(method.getText());
         int i = 0;
         for (; c != null; c = c.getNextSibling(), i++) {
             String cType = parseExpr(c, st);
@@ -140,22 +140,25 @@ public class IrUtils {
             }
         }
 
-        return method.type.substring(Defs.DESC_METHOD.length());
+        return method.getType().substring(Defs.DESC_METHOD.length());
     }
 
     private static String parseArrayElement(AST t, ST st) {
-        String type = st.getType(t.getText());
+        Descriptor desc = st.getArray(t.getText());
+        if (desc == null) {
+            Er.errNotDefined(t, t.getText());
+        }
+        String type = desc.getType();
         AST c = t.getFirstChild();
         String subType = parseExpr(c, st);
         if (subType != Defs.DESC_TYPE_INT && subType != Defs.DESC_TYPE_WILDCARD) {
             Er.errArrayIndexNotInt(t, t.getText(), subType);
-            return null;
+            return type.substring(Defs.ARRAY_PREFIX.length());
         }
-        // TODO: boundary check
-        if (type == Defs.DESC_ARRAY_BOOL) {
-            return Defs.DESC_TYPE_INT;
+        if (c.getType() == DecafScannerTokenTypes.INTLITERAL && desc.findVar(c.getText()) == null) {
+            Er.errArrayOutbound(t, desc.getText(), c.getText());
         }
-        return Defs.DESC_TYPE_BOOL;
+        return type.substring(Defs.ARRAY_PREFIX.length());
     }
 
     private static void parseIf(AST t, ST st) {
