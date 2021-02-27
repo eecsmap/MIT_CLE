@@ -37,29 +37,22 @@ public class IrUtils {
         return t;
     }
 
-    private static AST fieldDecl(AST t, ST currentST) {
-        for (; AstUtils.isType(t); t = t.getNextSibling()) {
+    private static AST fieldDecl(AST t, ST st) {
+        for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             // parse single import statement
             String type = AstUtils.t0.get(t.getType());
-            parseFields(t, type, currentST);
+            for (; t != null; t = t.getNextSibling()) {
+                AST child = t.getFirstChild();
+                if (child != null) {
+                    // child is null -> is array
+                    st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, t.getText(), child.getText()));
+                    continue;
+                }
+                // child is null -> it's single Variable
+                st.push(new VarDesc(type, t.getText()));
+            }
         }
         return t;
-    }
-
-  /**
-   * int x, y, z, A[100]; */
-    private static void parseFields(AST t, String type, ST currentST) {
-        for (; t != null; t = t.getNextSibling()) {
-            AST child = t.getFirstChild();
-            if (child != null) {
-                // child is null -> is array
-                currentST.push(new ArrayDesc("array_" + type, t.getText(), child.getText()));
-                continue;
-            }
-            // child is null -> it's single Variable
-            currentST.push(new VarDesc(type, t.getText()));
-        }
-        return;
     }
 
     private static AST methodDecl(AST t, ST globalST) {
