@@ -26,7 +26,7 @@ public class IrUtils {
     private static AST importDecl(AST t, ST importST) {
         for (; AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
-            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD, t.getText());
+            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, t.getText());
             importST.push(desc);
         }
         return t;
@@ -48,7 +48,7 @@ public class IrUtils {
                 AST cc = c.getFirstChild();
                 if (cc != null) {
                     // cc is null -> is array
-                    if (!st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, c.getText(), cc.getText()))) {
+                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cc.getText()))) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     continue;
@@ -66,7 +66,7 @@ public class IrUtils {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
-            globalST.push(new MethodDesc(c.getText(), t.getText()));
+            globalST.push(new MethodDesc(Defs.makeMethodType(t.getText()), t.getText()));
             String methodName = c.getText();
             ST paramST = new ST(globalST);
             ST localST = new ST(paramST, methodName);
@@ -90,7 +90,7 @@ public class IrUtils {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
         }
-        if (lType.startsWith(Defs.ARRAY_PREFIX)) {
+        if (Defs.isArrayType(lType)) {
             lType = parseArrayElement(c, st);
         }
         c = c.getNextSibling();
@@ -123,7 +123,7 @@ public class IrUtils {
             Er.errNotDefined(c, lID);
             return;
         }
-        if (lType.startsWith(Defs.ARRAY_PREFIX)) {
+        if (Defs.isArrayType(lType)) {
             String type = parseArrayElement(c, st);
             if (type != null && !type.equals(Defs.DESC_TYPE_INT)) {
                 System.err.printf("6 ");
@@ -167,7 +167,7 @@ public class IrUtils {
             }
         }
 
-        return method.getType().substring(Defs.DESC_METHOD.length());
+        return Defs.getMethodType(method.getType());
     }
 
     private static String parseArrayElement(AST t, ST st) {
@@ -181,18 +181,18 @@ public class IrUtils {
         AST c = t.getFirstChild();
         String subType = parseExpr(c, st);
         if (subType == null) {
-            return type.substring(Defs.ARRAY_PREFIX.length());
+            return Defs.getArrayType(type);
         }
         if (!subType.equals(Defs.DESC_TYPE_INT) && !subType.equals(Defs.DESC_TYPE_WILDCARD)) {
             System.err.printf("12 ");
             Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, subType);
-            return type.substring(Defs.ARRAY_PREFIX.length());
+            return Defs.getArrayType(type);
         }
         if (c.getType() == DecafScannerTokenTypes.INTLITERAL && desc.findVar(c.getText()) == null) {
             System.err.printf("13 ");
             Er.errArrayOutbound(t, desc.getText(), c.getText());
         }
-        return type.substring(Defs.ARRAY_PREFIX.length());
+        return Defs.getArrayType(type);
     }
 
     private static void parseIf(AST t, ST st) {
@@ -298,11 +298,11 @@ public class IrUtils {
                     return null;
                 }
                 // array
-                if (type.startsWith(Defs.ARRAY_PREFIX)) {
+                if (Defs.isArrayType(type)) {
                     return parseArrayElement(t, st);
                 }
                 // method
-                if (type.equals(Defs.DESC_METHOD)) {
+                if (Defs.isMethodType(type)) {
                     return parseMethodCall(t, st);
                 }
                 // var
@@ -329,7 +329,7 @@ public class IrUtils {
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
                 String subType1 = st.getType(c.getText());
-                if (subType1 == null || !subType1.startsWith(Defs.ARRAY_PREFIX)) {
+                if (subType1 == null || !Defs.isArrayType(subType1)) {
                     System.err.printf("22 ");
                     Er.errNotDefined(c, c.getText());
                 }
