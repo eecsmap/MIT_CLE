@@ -21,6 +21,14 @@ public class Er {
         return error;
     }
 
+    public static final void errMainNotDefined(AST t) {
+        setError();
+        if (!trace) {
+            return;
+        }
+        System.err.printf("line %d, col %d: main() is not defined\n", -1, -1);
+    }
+
     public static final void report(AST t, String fmt, Object... args) {
         setError();
         if (!trace) {
@@ -56,5 +64,17 @@ public class Er {
 
     public static final void errContinue(AST t) {
         report(t, "not continue inside loop\n");
+    }
+
+    public static final void errBadImport(AST t, String var) {
+        report(t, "bad import name $%s\n", var);
+    }
+
+    public static final void errBadArrayCap(AST t) {
+        report(t, "bad array capacity\n");
+    }
+
+    public static final void errArrayArgsMismatch(AST t) {
+        report(t, "array args length mismatch\n");
     }
 }

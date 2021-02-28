@@ -20,13 +20,21 @@ public class IrUtils {
         t = importDecl(t, importST);
         t = fieldDecl(t, globalST);
         t = methodDecl(t, globalST);
+        if (globalST.getMethod("main") == null) {
+            Er.errMainNotDefined(t);
+        }
     }
 
     // return the next AST to parse
     private static AST importDecl(AST t, ST importST) {
         for (; AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
-            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, t.getFirstChild().getText());
+            String methodName = t.getFirstChild().getText();
+            if (methodName.equals("main")) {
+                Er.errBadImport(t.getFirstChild(), methodName);
+                continue;
+            }
+            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, methodName);
             importST.push(desc);
         }
         return t;
@@ -48,7 +56,12 @@ public class IrUtils {
                 AST cc = c.getFirstChild();
                 if (cc != null) {
                     // cc is null -> is array
-                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cc.getText()))) {
+                    String cap = cc.getText();
+                    if(Integer.parseInt(cap) <= 0) {
+                        Er.errBadArrayCap(cc);
+                        cap = "9999999";
+                    }
+                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cap))) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     continue;
@@ -90,7 +103,7 @@ public class IrUtils {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
         }
-        if (Defs.isArrayType(lType)) {
+        if (lType != null && Defs.isArrayType(lType)) {
             lType = parseArrayElement(c, st);
         }
         c = c.getNextSibling();
@@ -157,6 +170,10 @@ public class IrUtils {
             System.err.printf("9 ");
             Er.errNotDefined(c, method.getText());
             return Defs.DESC_TYPE_WILDCARD;
+        }
+        if (params.size() != t.getNumberOfChildren()) {
+            Er.errArrayArgsMismatch(t);
+            return Defs.getMethodType(method.getType());
         }
         int i = 0;
         for (; c != null; c = c.getNextSibling(), i++) {

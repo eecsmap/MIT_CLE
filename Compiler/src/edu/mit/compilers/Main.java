@@ -30,10 +30,11 @@ class Main {
       } else if (CLI.target == Action.INTER || CLI.target == Action.DEFAULT) {
         inter(inputStream);
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       // print the error:
       e.printStackTrace(new java.io.PrintStream(System.err));
       // System.err.println(CLI.infile+" "+e);
+      // System.exit(1);
     }
   }
 
