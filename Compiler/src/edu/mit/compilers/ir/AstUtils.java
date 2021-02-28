@@ -89,17 +89,17 @@ public class AstUtils {
         t1 = Collections.unmodifiableMap(m2);
         s0 = new HashSet<>();
         s1 = new HashSet<>();
-        s0.add(DecafParserTokenTypes.GREATER);
-        s0.add(DecafParserTokenTypes.LESS);
-        s0.add(DecafParserTokenTypes.GE);
-        s0.add(DecafParserTokenTypes.LE);
-        s0.add(DecafParserTokenTypes.EQ);
-        s0.add(DecafParserTokenTypes.NEQ);
-        s0.add(DecafParserTokenTypes.AND);
-        s0.add(DecafParserTokenTypes.OR);
-        s1.add(DecafParserTokenTypes.MINUS);
-        s1.add(DecafParserTokenTypes.PLUS);
-        s1.add(DecafParserTokenTypes.TIMES);
+        s0.add(DecafParserTokenTypes.MINUS);
+        s0.add(DecafParserTokenTypes.PLUS);
+        s0.add(DecafParserTokenTypes.TIMES);
+        s1.add(DecafParserTokenTypes.GREATER);
+        s1.add(DecafParserTokenTypes.LESS);
+        s1.add(DecafParserTokenTypes.GE);
+        s1.add(DecafParserTokenTypes.LE);
+        s1.add(DecafParserTokenTypes.EQ);
+        s1.add(DecafParserTokenTypes.NEQ);
+        s1.add(DecafParserTokenTypes.AND);
+        s1.add(DecafParserTokenTypes.OR);
     }
 
     public static void printAST(AST t, int level) {

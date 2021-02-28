@@ -289,7 +289,7 @@ public class IrUtils {
                     return parseArrayElement(t, st);
                 }
                 // method
-                if (!type.equals(Defs.DESC_METHOD)) {
+                if (type.equals(Defs.DESC_METHOD)) {
                     return parseMethodCall(t, st);
                 }
                 // var
