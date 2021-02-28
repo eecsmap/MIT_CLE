@@ -95,20 +95,21 @@ public class IrUtils {
         return t;
     }
 
-    private static void parseAssign(AST t, ST st) {
+    private static void parseAssign(AST t, ST st, boolean simple) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
         if (lType == null) {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
-        }
-        if (lType != null && Defs.isArrayType(lType)) {
+        } else if (Defs.isArrayType(lType)) {
             lType = parseArrayElement(c, st);
+        } else if (c.getNumberOfChildren() > 0) {
+            Er.errVarIsNotArray(c, lID);
         }
         c = c.getNextSibling();
         String rType = parseExpr(c, st);
-        if (lType != null && !Defs.equals(lType, rType)) {
+        if (lType != null && (!Defs.equals(lType, rType) || (!simple && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
         }        
@@ -117,13 +118,13 @@ public class IrUtils {
     // only =
     private static void parseSimpleAssign(AST t, ST st) {
         String op = "=";
-        parseAssign(t, st);
+        parseAssign(t, st, true);
     }
 
     // +=, -=, =
     private static void parseMoreAssign(AST t, ST st) {
         String op = t.getText();
-        parseAssign(t, st);
+        parseAssign(t, st, op.equals("="));
     }
 
     private static void parseIncre(AST t, ST st) {
@@ -328,6 +329,11 @@ public class IrUtils {
                 // var
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
+                try {
+                    Integer.parseInt(t.getText());
+                } catch (NumberFormatException e) {
+                    Er.errIntegerTooLarge(t, t.getText());
+                }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.TK_true:
             case DecafScannerTokenTypes.TK_false:

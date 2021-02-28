@@ -77,4 +77,12 @@ public class Er {
     public static final void errArrayArgsMismatch(AST t) {
         report(t, "array args length mismatch\n");
     }
+
+    public static final void errVarIsNotArray(AST t, String var) {
+        report(t, "$%s cannot be accessed by subscript\n", var);
+    }
+
+    public static final void errIntegerTooLarge(AST t, String intLiteral) {
+        report(t, "int literal '%s' is too large\n", intLiteral);
+    }
 }
