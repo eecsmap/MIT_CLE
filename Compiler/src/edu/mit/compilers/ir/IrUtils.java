@@ -49,15 +49,14 @@ public class IrUtils {
                 if (cc != null) {
                     // cc is null -> is array
                     if (!st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, c.getText(), cc.getText()))) {
-
+                        Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     continue;
                 }
                 // cc is null -> it's single Variable
                 if (!st.push(new VarDesc(type, c.getText()))) {
-                    
+                    Er.errDuplicatedDeclaration(c, c.getText());
                 }
-                
             }
         }
         return t;
