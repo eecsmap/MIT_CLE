@@ -148,6 +148,10 @@ public class IrUtils {
         
         AST c = t.getFirstChild();
         ArrayList<String> params = methodMap.get(method.getText());
+        if (params == null) {
+            Er.errNotDefined(c, method.getText());
+            return Defs.DESC_TYPE_WILDCARD;
+        }
         int i = 0;
         for (; c != null; c = c.getNextSibling(), i++) {
             String cType = parseExpr(c, st);
