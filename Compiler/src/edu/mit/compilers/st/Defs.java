@@ -51,4 +51,8 @@ public class Defs {
     public static final boolean isMethodType(String type) {
         return type.startsWith(METHOD_PREFIX);
     }
+
+    public static final boolean equals(String lType, String rType) {
+        return lType.equals(rType) || rType.equals(Defs.DESC_TYPE_WILDCARD);
+    }
 }

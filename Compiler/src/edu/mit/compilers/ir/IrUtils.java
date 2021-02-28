@@ -26,7 +26,7 @@ public class IrUtils {
     private static AST importDecl(AST t, ST importST) {
         for (; AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
-            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, t.getText());
+            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, t.getFirstChild().getText());
             importST.push(desc);
         }
         return t;
@@ -66,10 +66,9 @@ public class IrUtils {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
-            globalST.push(new MethodDesc(Defs.makeMethodType(t.getText()), t.getText()));
-            String methodName = c.getText();
+            globalST.push(new MethodDesc(Defs.makeMethodType(c.getText()), t.getText()));
             ST paramST = new ST(globalST);
-            ST localST = new ST(paramST, methodName);
+            ST localST = new ST(paramST, c.getText());
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -77,6 +76,7 @@ public class IrUtils {
                 paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()));
                 params.add(c.getFirstChild().getText());
             }
+            methodMap.put(t.getText(), params);
             parseBlock(c, localST);
         }
         return t;
@@ -95,7 +95,7 @@ public class IrUtils {
         }
         c = c.getNextSibling();
         String rType = parseExpr(c, st);
-        if (lType != null && !lType.equals(rType)) {
+        if (lType != null && !Defs.equals(lType, rType)) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
         }        
@@ -125,13 +125,13 @@ public class IrUtils {
         }
         if (Defs.isArrayType(lType)) {
             String type = parseArrayElement(c, st);
-            if (type != null && !type.equals(Defs.DESC_TYPE_INT)) {
+            if (type != null && !Defs.equals(Defs.DESC_TYPE_INT, type)) {
                 System.err.printf("6 ");
                 Er.errType(c, Defs.DESC_TYPE_INT, type);
             }
             return;
         }
-        if (!lType.equals(Defs.DESC_TYPE_INT)) {
+        if (!Defs.equals(Defs.DESC_TYPE_INT, lType)) {
             System.err.printf("7 ");
             Er.errType(c, Defs.DESC_TYPE_INT, lType);
         }
@@ -161,7 +161,7 @@ public class IrUtils {
         int i = 0;
         for (; c != null; c = c.getNextSibling(), i++) {
             String cType = parseExpr(c, st);
-            if (params.get(i) != cType) {
+            if (!Defs.equals(params.get(i), cType)) {
                 System.err.printf("10 ");
                 Er.errType(c, params.get(i), cType);
             }
@@ -183,7 +183,7 @@ public class IrUtils {
         if (subType == null) {
             return Defs.getArrayType(type);
         }
-        if (!subType.equals(Defs.DESC_TYPE_INT) && !subType.equals(Defs.DESC_TYPE_WILDCARD)) {
+        if (!Defs.equals(Defs.DESC_TYPE_INT, subType)) {
             System.err.printf("12 ");
             Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, subType);
             return Defs.getArrayType(type);
@@ -198,7 +198,7 @@ public class IrUtils {
     private static void parseIf(AST t, ST st) {
         AST c = t.getFirstChild();
         String type = parseExpr(c, st);
-        if (type != null && !type.equals(Defs.DESC_TYPE_BOOL)) {
+        if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("14 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
@@ -228,7 +228,7 @@ public class IrUtils {
         st.pushContext(t.getType());
         AST c = t.getFirstChild();
         String type = parseExpr(c, st);
-        if (type != null && !type.equals(Defs.DESC_TYPE_BOOL)) {
+        if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("15 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
@@ -253,7 +253,7 @@ public class IrUtils {
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
             String rType = parseExpr(r, st);
-            if (lType != null && !lType.equals(rType)) {
+            if (lType != null && !Defs.equals(lType, rType)) {
                 System.err.printf("16 ");
                 Er.errType(l, lType, rType);
             }
@@ -264,11 +264,11 @@ public class IrUtils {
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
             String rType = parseExpr(r, st);
-            if (lType != null && !lType.equals(Defs.DESC_TYPE_BOOL)) {
+            if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
                 System.err.printf("17 ");
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
             }
-            if (rType != null && !rType.equals(Defs.DESC_TYPE_BOOL)) {
+            if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
                 System.err.printf("18 ");
                 Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
             }
@@ -279,11 +279,11 @@ public class IrUtils {
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
             String rType = parseExpr(r, st);
-            if (lType != null && !lType.equals(Defs.DESC_TYPE_INT)) {
+            if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
                 System.err.printf("27 ");
                 Er.errType(l, Defs.DESC_TYPE_INT, lType);
             }
-            if (rType != null && !rType.equals(Defs.DESC_TYPE_INT)) {
+            if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
                 System.err.printf("28 ");
                 Er.errType(r, Defs.DESC_TYPE_INT, rType);
             }
@@ -293,9 +293,12 @@ public class IrUtils {
             case DecafScannerTokenTypes.ID:
                 String type = st.getType(t.getText());
                 if (type == null) {
-                    System.out.printf("19 ");
-                    Er.errNotDefined(t, t.getText());
-                    return null;
+                    type = importST.getType(t.getText());
+                    if (type == null) {
+                        System.out.printf("19 ");
+                        Er.errNotDefined(t, t.getText());
+                        return null;
+                    }
                 }
                 // array
                 if (Defs.isArrayType(type)) {
@@ -314,14 +317,14 @@ public class IrUtils {
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 String subType = parseExpr(t.getFirstChild(), st);
-                if (subType != null && !subType.equals(Defs.DESC_TYPE_INT)) {
+                if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
                     System.err.printf("20 ");
                     Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
                 String subType0 = parseExpr(t.getFirstChild(), st);
-                if (subType0 != null && !subType0.equals(Defs.DESC_TYPE_BOOL)) {
+                if (subType0 != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType0)) {
                     System.err.printf("21 ");
                     Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
                 }
@@ -395,7 +398,7 @@ public class IrUtils {
                 if (actualReturnType == null) {
                     actualReturnType = Defs.DESC_TYPE_VOID;
                 }
-                if (!actualReturnType.equals(expectedReturnType)) {
+                if (!Defs.equals(expectedReturnType, actualReturnType)) {
                     System.err.printf("26 ");
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
