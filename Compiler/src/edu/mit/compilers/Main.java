@@ -10,6 +10,7 @@ import antlr.TokenStreamException;
 import antlr.collections.AST;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
+import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.tools.CLI.Action;
 import edu.mit.compilers.ir.*;
 
@@ -91,12 +92,18 @@ class Main {
   private static void inter(InputStream inputStream) throws RecognitionException, TokenStreamException {
     DecafScanner scanner = new DecafScanner(new DataInputStream(inputStream));
     DecafParser parser = new DecafParser(scanner);
-    parser.setTrace(CLI.debug);
     parser.program();
     if(parser.getError()) {
       System.exit(1);
     }
     AST t = parser.getAST();
-    AstUtils.printAST(t, 0);
+    // AstUtils.printAST(t, 0);
+    IrUtils.irParse(t);
+    if (CLI.debug) {
+      Er.setTrace();
+    }
+    if(Er.hasError()) {
+      System.exit(1);
+    }
   }
 }
