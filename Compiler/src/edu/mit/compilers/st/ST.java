@@ -70,7 +70,7 @@ public class ST {
 
     // only for GeneralDesc
     public final boolean push(String type, String text) {
-        if (getType(text) != null) {
+        if (this.getType(text) != null) {
             return false;
         }
         this.table.add(new VarDesc(type, text));
@@ -78,7 +78,7 @@ public class ST {
     }
 
     public final boolean push(Descriptor desc) {
-        if (getType(desc.getText()) != null) {
+        if (this.getType(desc.getText()) != null) {
             return false;
         }
         this.table.add(desc);
