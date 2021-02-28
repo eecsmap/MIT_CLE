@@ -48,7 +48,7 @@ public class ST {
     public final Descriptor getMethod(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
-            if(desc.getText().equals(text) && desc.getType().startsWith(Defs.DESC_METHOD)) {
+            if(desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
                 return desc;
             }
         }
@@ -61,7 +61,7 @@ public class ST {
     public final Descriptor getArray(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
-            if(desc.getText().equals(text) && desc.getType().startsWith(Defs.ARRAY_PREFIX)) {
+            if(desc.getText().equals(text) && Defs.isArrayType(desc.getType())) {
                 return desc;
             }
         }
