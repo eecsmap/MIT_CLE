@@ -82,12 +82,12 @@ public class IrUtils {
     private static void parseSimpleAssign(AST t, ST st) {
         String op = "=";
         AST c = t.getFirstChild();
-        String lhsID = c.getText();
-        String lhsType = st.getType(lhsID);
+        String lID = c.getText();
+        String lType = st.getType(lID);
         c = c.getNextSibling();
-        String rhsType = parseExpr(c, st);
-        if (lhsType != rhsType) {
-            Er.errType(c, lhsType, rhsType);
+        String rType = parseExpr(c, st);
+        if (!lType.equals(rType)) {
+            Er.errType(c, lType, rType);
         }
     }
 
@@ -95,33 +95,33 @@ public class IrUtils {
     private static void parseMoreAssign(AST t, ST st) {
         String op = t.getText();
         AST c = t.getFirstChild();
-        String lhsID = c.getText();
-        String lhsType = st.getType(lhsID);
+        String lID = c.getText();
+        String lType = st.getType(lID);
         c = c.getNextSibling();
-        String rhsType = parseExpr(c, st);
-        if (lhsType != rhsType) {
-            Er.errType(c, lhsType, rhsType);
+        String rType = parseExpr(c, st);
+        if (!lType.equals(rType)) {
+            Er.errType(c, lType, rType);
         }
     }
 
     private static void parseIncre(AST t, ST st) {
         String op = t.getText();
         AST c = t.getFirstChild();
-        String lhsID = c.getText();
-        String lhsType = st.getType(lhsID);
-        if (lhsType == null) {
-            Er.errNotDefined(c, lhsID);
+        String lID = c.getText();
+        String lType = st.getType(lID);
+        if (lType == null) {
+            Er.errNotDefined(c, lID);
             return;
         }
-        if (lhsType.startsWith(Defs.ARRAY_PREFIX)) {
+        if (lType.startsWith(Defs.ARRAY_PREFIX)) {
             String type = parseArrayElement(c, st);
-            if (type != Defs.DESC_TYPE_INT) {
+            if (!type.equals(Defs.DESC_TYPE_INT)) {
                 Er.errType(c, Defs.DESC_TYPE_INT, type);
             }
             return;
         }
-        if (lhsType != Defs.DESC_TYPE_INT) {
-            Er.errType(c, Defs.DESC_TYPE_INT, lhsType);
+        if (!lType.equals(Defs.DESC_TYPE_INT)) {
+            Er.errType(c, Defs.DESC_TYPE_INT, lType);
         }
         return;
     }
@@ -159,8 +159,8 @@ public class IrUtils {
         String type = desc.getType();
         AST c = t.getFirstChild();
         String subType = parseExpr(c, st);
-        if (subType != Defs.DESC_TYPE_INT && subType != Defs.DESC_TYPE_WILDCARD) {
-            Er.errArrayIndexNotInt(t, t.getText(), subType);
+        if (!subType.equals(Defs.DESC_TYPE_INT) && !subType.equals(Defs.DESC_TYPE_WILDCARD)) {
+            Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, subType);
             return type.substring(Defs.ARRAY_PREFIX.length());
         }
         if (c.getType() == DecafScannerTokenTypes.INTLITERAL && desc.findVar(c.getText()) == null) {
@@ -172,7 +172,7 @@ public class IrUtils {
     private static void parseIf(AST t, ST st) {
         AST c = t.getFirstChild();
         String type = parseExpr(c, st);
-        if (Defs.DESC_TYPE_BOOL != type) {
+        if (!type.equals(Defs.DESC_TYPE_BOOL)) {
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         c = parseBlock(c.getNextSibling(), st);
@@ -199,7 +199,7 @@ public class IrUtils {
         st.pushContext(t.getType());
         AST c = t.getFirstChild();
         String type = parseExpr(c, st);
-        if (Defs.DESC_TYPE_BOOL != type) {
+        if (!type.equals(Defs.DESC_TYPE_BOOL)) {
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         c = c.getNextSibling();
@@ -223,7 +223,7 @@ public class IrUtils {
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
             String rType = parseExpr(r, st);
-            if (lType != rType) {
+            if (!lType.equals(rType)) {
                 Er.errType(l, lType, rType);
             }
             return lType;
@@ -233,10 +233,10 @@ public class IrUtils {
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
             String rType = parseExpr(r, st);
-            if (lType != Defs.DESC_TYPE_BOOL) {
+            if (!lType.equals(Defs.DESC_TYPE_BOOL)) {
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
             }
-            if (rType != Defs.DESC_TYPE_BOOL) {
+            if (!rType.equals(Defs.DESC_TYPE_BOOL)) {
                 Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
             }
             return Defs.DESC_TYPE_BOOL;
@@ -253,7 +253,7 @@ public class IrUtils {
                     return parseArrayElement(t, st);
                 }
                 // method
-                if (type == Defs.DESC_METHOD) {
+                if (!type.equals(Defs.DESC_METHOD)) {
                     return parseMethodCall(t, st);
                 }
                 // var
@@ -265,13 +265,13 @@ public class IrUtils {
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 String subType = parseExpr(t.getFirstChild(), st);
-                if (subType != Defs.DESC_TYPE_INT) {
+                if (!subType.equals(Defs.DESC_TYPE_INT)) {
                     Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
                 String subType0 = parseExpr(t.getFirstChild(), st);
-                if (subType0 != Defs.DESC_TYPE_BOOL) {
+                if (!subType0.equals(Defs.DESC_TYPE_BOOL)) {
                     Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
                 }
                 return Defs.DESC_TYPE_BOOL;
@@ -339,7 +339,7 @@ public class IrUtils {
                 if (thisReturnType == null) {
                     thisReturnType = Defs.DESC_TYPE_VOID;
                 }
-                if (thisReturnType != returnType) {
+                if (!thisReturnType.equals(returnType)) {
                     Er.errType(t, returnType, thisReturnType);
                 }
                 break;
