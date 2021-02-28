@@ -3,11 +3,13 @@ package edu.mit.compilers;
 import java.io.*;
 import java.text.DecimalFormat;
 
+import antlr.ASTFactory;
 import antlr.CharStreamException;
 import antlr.RecognitionException;
 import antlr.Token;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
+import edu.mit.compilers.ast.myAST;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
 import edu.mit.compilers.tools.Er;
@@ -92,7 +94,11 @@ class Main {
 
   private static void inter(InputStream inputStream) throws RecognitionException, TokenStreamException {
     DecafScanner scanner = new DecafScanner(new DataInputStream(inputStream));
+
     DecafParser parser = new DecafParser(scanner);
+    ASTFactory factory = new ASTFactory();                         
+    factory.setASTNodeClass(myAST.class);
+    parser.setASTFactory(factory);
     parser.program();
     if(parser.getError()) {
       System.exit(1);

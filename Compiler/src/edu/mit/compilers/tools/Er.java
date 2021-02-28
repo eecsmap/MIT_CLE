@@ -26,7 +26,7 @@ public class Er {
         if (!trace) {
             return;
         }
-        System.err.printf("%d, %d: ", t.getLine(), t.getColumn());
+        System.err.printf("line %d, col %d: ", t.getLine(), t.getColumn());
         System.err.printf(fmt, args);
     }
 
