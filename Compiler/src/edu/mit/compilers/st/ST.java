@@ -32,8 +32,8 @@ public class ST {
     public final String getType(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
-            if(desc.text.equals(text)) {
-                return desc.type;
+            if(desc.getText().equals(text)) {
+                return desc.getType();
             }
         }
         if (this.subST != null) {
@@ -45,7 +45,7 @@ public class ST {
     public final Descriptor getMethod(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
-            if(desc.text.equals(text) && desc.type.startsWith(Defs.DESC_METHOD)) {
+            if(desc.getText().equals(text) && desc.getType().startsWith(Defs.DESC_METHOD)) {
                 return desc;
             }
         }
@@ -58,7 +58,7 @@ public class ST {
     public final Descriptor getArray(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
-            if(desc.text.equals(text) && desc.type.startsWith(Defs.ARRAY_PREFIX)) {
+            if(desc.getText().equals(text) && desc.getType().startsWith(Defs.ARRAY_PREFIX)) {
                 return desc;
             }
         }
@@ -78,7 +78,7 @@ public class ST {
     }
 
     public final boolean push(Descriptor desc) {
-        if (getType(desc.text) != null) {
+        if (getType(desc.getText()) != null) {
             return false;
         }
         this.table.add(desc);
@@ -103,7 +103,7 @@ public class ST {
     public final void print(int level) {
         String tab = new String(new char[level]).replace("\0", "\t");
         for (Descriptor desc: this.table) {
-            System.out.println(tab + desc.type + " " + desc.text);
+            System.out.println(tab + desc.getType() + " " + desc.getText());
         }
         this.subST.print(level + 1);
     }
