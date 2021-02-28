@@ -90,6 +90,7 @@ class Main {
     if(parser.getError()) {
       System.exit(1);
     }
+    AstUtils.printAST(parser.getAST(), 0);
   }
 
   private static void inter(InputStream inputStream) throws RecognitionException, TokenStreamException {
