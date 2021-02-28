@@ -15,13 +15,16 @@ public class AstUtils {
     public static final Map<Integer, String> t0;
     // type (method)
     public static final Map<Integer, String> t1;
-    // binary ops (boolean)
-    public static final Set<Integer> s0;
-    // binary ops (original type)
-    public static final Set<Integer> s1;
+    // binary ops (int -> int)
+    public static final Set<Integer> s0 = new HashSet<>();
+    // binary ops (int -> bool)
+    public static final Set<Integer> s1 = new HashSet<>();
+    // binary ops (bool -> bool)
+    public static final Set<Integer> s2 = new HashSet<>();
 
     static {
         Map<Integer, String> m1 = new HashMap<>();
+        Map<Integer, String> m2 = new HashMap<>();
         m1.put(4, "TK_bool");
         m1.put(5, "TK_break");
         m1.put(6, "TK_import");
@@ -82,13 +85,10 @@ public class AstUtils {
         m1.put(61, "INCRE");
         m1.put(62, "DECRE");
         t0 = Collections.unmodifiableMap(m1);
-        Map<Integer, String> m2 = new HashMap<>();
         m2.put(4, "bool");
         m2.put(13, "int");
         m2.put(16, "void");
         t1 = Collections.unmodifiableMap(m2);
-        s0 = new HashSet<>();
-        s1 = new HashSet<>();
         s0.add(DecafParserTokenTypes.MINUS);
         s0.add(DecafParserTokenTypes.PLUS);
         s0.add(DecafParserTokenTypes.TIMES);
@@ -98,8 +98,8 @@ public class AstUtils {
         s1.add(DecafParserTokenTypes.LE);
         s1.add(DecafParserTokenTypes.EQ);
         s1.add(DecafParserTokenTypes.NEQ);
-        s1.add(DecafParserTokenTypes.AND);
-        s1.add(DecafParserTokenTypes.OR);
+        s2.add(DecafParserTokenTypes.AND);
+        s2.add(DecafParserTokenTypes.OR);
     }
 
     public static void printAST(AST t, int level) {
@@ -135,8 +135,12 @@ public class AstUtils {
         return s0.contains(t.getType());
     }
 
-    public static final boolean isBinaryBoolOp(AST t) {
+    public static final boolean isBinaryCompOp(AST t) {
         return s1.contains(t.getType());
+    }
+
+    public static final boolean isBinaryBoolOp(AST t) {
+        return s2.contains(t.getType());
     }
 
     public static final boolean isLoop(int token) {

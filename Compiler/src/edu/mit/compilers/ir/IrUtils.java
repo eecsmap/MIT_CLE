@@ -281,6 +281,21 @@ public class IrUtils {
             }
             return Defs.DESC_TYPE_BOOL;
         }
+        if (AstUtils.isBinaryCompOp(t)) {
+            AST l = t.getFirstChild();
+            AST r = l.getNextSibling();
+            String lType = parseExpr(l, st);
+            String rType = parseExpr(r, st);
+            if (lType != null && !lType.equals(Defs.DESC_TYPE_INT)) {
+                System.err.printf("27 ");
+                Er.errType(l, Defs.DESC_TYPE_INT, lType);
+            }
+            if (rType != null && !rType.equals(Defs.DESC_TYPE_INT)) {
+                System.err.printf("28 ");
+                Er.errType(r, Defs.DESC_TYPE_INT, rType);
+            }
+            return Defs.DESC_TYPE_BOOL;
+        }
         switch(t.getType()) {
             case DecafScannerTokenTypes.ID:
                 String type = st.getType(t.getText());
