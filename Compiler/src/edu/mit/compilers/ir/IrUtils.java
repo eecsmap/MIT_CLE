@@ -34,7 +34,6 @@ public class IrUtils {
 
     private static AST fieldDecl(AST t, ST st) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
-            // parse single import statement
             String type = null;
             switch (t.getType()) {
                 case DecafScannerTokenTypes.TK_bool:
@@ -49,11 +48,16 @@ public class IrUtils {
                 AST cc = c.getFirstChild();
                 if (cc != null) {
                     // cc is null -> is array
-                    st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, c.getText(), cc.getText()));
+                    if (!st.push(new ArrayDesc(Defs.ARRAY_PREFIX + type, c.getText(), cc.getText()))) {
+
+                    }
                     continue;
                 }
                 // cc is null -> it's single Variable
-                st.push(new VarDesc(type, c.getText()));
+                if (!st.push(new VarDesc(type, c.getText()))) {
+                    
+                }
+                
             }
         }
         return t;
@@ -66,6 +70,7 @@ public class IrUtils {
             globalST.push(new MethodDesc(c.getText(), t.getText()));
             String methodName = c.getText();
             ST paramST = new ST(globalST);
+            ST localST = new ST(paramST, methodName);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -73,7 +78,6 @@ public class IrUtils {
                 paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()));
                 params.add(c.getFirstChild().getText());
             }
-            ST localST = new ST(paramST, methodName);
             parseBlock(c, localST);
         }
         return t;

@@ -34,6 +34,10 @@ public class Er {
         report(t, "not defined $%s\n", var);
     }
 
+    public static final void errDuplicatedDeclaration(AST t, String var) {
+        report(t, "$%s is already defined\n", var);
+    }
+
     public static final void errArrayIndexNotInt(AST t, String arrayID, String type) {
         report(t, "array $%s index is not <int>, given <%s>\n", arrayID, type);
     }
