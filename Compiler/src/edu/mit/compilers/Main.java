@@ -98,10 +98,10 @@ class Main {
     }
     AST t = parser.getAST();
     // AstUtils.printAST(t, 0);
-    IrUtils.irParse(t);
     if (CLI.debug) {
       Er.setTrace();
     }
+    IrUtils.irParse(t);
     if(Er.hasError()) {
       System.exit(1);
     }
