@@ -84,6 +84,10 @@ public class IrUtils {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
+        if (lType == null) {
+            Er.errNotDefined(c, c.getText());
+            return;
+        }
         c = c.getNextSibling();
         String rType = parseExpr(c, st);
         if (!lType.equals(rType)) {
@@ -97,6 +101,10 @@ public class IrUtils {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
+        if (lType == null) {
+            Er.errNotDefined(c, c.getText());
+            return;
+        }
         c = c.getNextSibling();
         String rType = parseExpr(c, st);
         if (!lType.equals(rType)) {
@@ -115,7 +123,7 @@ public class IrUtils {
         }
         if (lType.startsWith(Defs.ARRAY_PREFIX)) {
             String type = parseArrayElement(c, st);
-            if (!type.equals(Defs.DESC_TYPE_INT)) {
+            if (type != null && !type.equals(Defs.DESC_TYPE_INT)) {
                 Er.errType(c, Defs.DESC_TYPE_INT, type);
             }
             return;
@@ -155,6 +163,7 @@ public class IrUtils {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
             Er.errNotDefined(t, t.getText());
+            return null;
         }
         String type = desc.getType();
         AST c = t.getFirstChild();
