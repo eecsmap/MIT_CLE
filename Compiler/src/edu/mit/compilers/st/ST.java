@@ -30,13 +30,16 @@ public class ST {
     }
 
     public final String getType(String text) {
+        // System.out.println("search " + text);
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
             if(desc.getText().equals(text)) {
                 return desc.getType();
             }
+            // System.out.println("has " + desc.getText() + " " + desc.getType());
         }
         if (this.subST != null) {
+            // System.out.println("search in subST");
             return this.subST.getType(text);
         }
         return null;
