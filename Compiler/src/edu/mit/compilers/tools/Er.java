@@ -85,4 +85,8 @@ public class Er {
     public static final void errIntegerTooLarge(AST t, String intLiteral) {
         report(t, "int literal '%s' is too large\n", intLiteral);
     }
+
+    public static final void errMalformedMain(AST t, String returnType, int paramCount) {
+        report(t, "main returns %s and has %d params\n", returnType, paramCount);
+    }
 }

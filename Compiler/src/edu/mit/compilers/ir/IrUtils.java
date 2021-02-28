@@ -13,6 +13,7 @@ public class IrUtils {
     private static final ST importST = new ST();
     private static final ST globalST = new ST();
     private static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
+    private static boolean mainDeclared = false;
 
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t) {
@@ -20,7 +21,7 @@ public class IrUtils {
         t = importDecl(t, importST);
         t = fieldDecl(t, globalST);
         t = methodDecl(t, globalST);
-        if (globalST.getMethod("main") == null) {
+        if (!mainDeclared) {
             Er.errMainNotDefined(t);
         }
     }
@@ -89,9 +90,16 @@ public class IrUtils {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
-            globalST.push(new MethodDesc(Defs.makeMethodType(c.getText()), t.getText()));
+            String returnType = c.getText();
+            if (!globalST.push(new MethodDesc(Defs.makeMethodType(returnType), t.getText()))) {
+                Er.errDuplicatedDeclaration(t, t.getText());
+            }
+            boolean isMain = t.getText().equals("main");
+            if (isMain) {
+                mainDeclared = true;
+            }
             ST paramST = new ST(globalST);
-            ST localST = new ST(paramST, c.getText());
+            ST localST = new ST(paramST, returnType);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -99,7 +107,10 @@ public class IrUtils {
                 paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()));
                 params.add(c.getFirstChild().getText());
             }
-            methodMap.put(t.getText(), params);
+            if (isMain && (params.size() > 0 || !returnType.equals(Defs.DESC_TYPE_VOID))) {
+                Er.errMalformedMain(t, returnType, params.size());
+            }
+            methodMap.put(t.getText(), params); 
             parseBlock(c, localST);
         }
         return t;
