@@ -82,42 +82,35 @@ public class IrUtils {
         return t;
     }
 
-    // only =
-    private static void parseSimpleAssign(AST t, ST st) {
-        String op = "=";
+    private static void parseAssign(AST t, ST st) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
         if (lType == null) {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
-            return;
+        }
+        if (lType.startsWith(Defs.ARRAY_PREFIX)) {
+            lType = parseArrayElement(c, st);
         }
         c = c.getNextSibling();
         String rType = parseExpr(c, st);
-        if (!lType.equals(rType)) {
+        if (lType != null && !lType.equals(rType)) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
-        }
+        }        
+    }
+
+    // only =
+    private static void parseSimpleAssign(AST t, ST st) {
+        String op = "=";
+        parseAssign(t, st);
     }
 
     // +=, -=, =
     private static void parseMoreAssign(AST t, ST st) {
         String op = t.getText();
-        AST c = t.getFirstChild();
-        String lID = c.getText();
-        String lType = st.getType(lID);
-        if (lType == null) {
-            System.err.printf("3 ");
-            Er.errNotDefined(c, c.getText());
-            return;
-        }
-        c = c.getNextSibling();
-        String rType = parseExpr(c, st);
-        if (!lType.equals(rType)) {
-            System.err.printf("4 ");
-            Er.errType(c, lType, rType);
-        }
+        parseAssign(t, st);
     }
 
     private static void parseIncre(AST t, ST st) {
