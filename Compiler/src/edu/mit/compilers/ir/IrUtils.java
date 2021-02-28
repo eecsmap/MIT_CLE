@@ -248,7 +248,7 @@ public class IrUtils {
         if (t == null) {
             return null;
         }
-        if (AstUtils.isBinaryOp(t)) {
+        if (AstUtils.isBinaryOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
@@ -259,7 +259,7 @@ public class IrUtils {
             }
             return lType;
         }
-        if (AstUtils.isBinaryBoolOp(t)) {
+        if (AstUtils.isBinaryBoolOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
@@ -274,7 +274,7 @@ public class IrUtils {
             }
             return Defs.DESC_TYPE_BOOL;
         }
-        if (AstUtils.isBinaryCompOp(t)) {
+        if (AstUtils.isBinaryCompOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);
@@ -352,7 +352,7 @@ public class IrUtils {
         return null;
     }
 
-    private static AST parseStmt(AST t, ST st) {
+    private static void parseStmt(AST t, ST st) {
         switch (t.getType()) {
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
@@ -383,23 +383,23 @@ public class IrUtils {
                     System.err.printf("24 ");
                     Er.errContinue(t);
                 }
+                break;
             case DecafScannerTokenTypes.TK_return:
-                String returnType = st.getReturnType();
-                if (returnType == null) {
+                String expectedReturnType = st.getReturnType();
+                if (expectedReturnType == null) {
                     System.err.printf("25 ");
                     Er.report(t, "null return");
                     break;
                 }
-                String thisReturnType = parseExpr(t, st);
-                if (thisReturnType == null) {
-                    thisReturnType = Defs.DESC_TYPE_VOID;
+                String actualReturnType = parseExpr(t.getFirstChild(), st);
+                if (actualReturnType == null) {
+                    actualReturnType = Defs.DESC_TYPE_VOID;
                 }
-                if (!thisReturnType.equals(returnType)) {
+                if (!actualReturnType.equals(expectedReturnType)) {
                     System.err.printf("26 ");
-                    Er.errType(t, returnType, thisReturnType);
+                    Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 break;
         }
-        return null;
     }
 }
