@@ -31,19 +31,19 @@ public class Er {
     }
 
     public static final void errNotDefined(AST t, String var) { 
-        report(t, "not defined '%s'\n", var);
+        report(t, "not defined $%s\n", var);
     }
 
     public static final void errArrayIndexNotInt(AST t, String arrayID, String type) {
-        report(t, "array (%s) index is not int, given %s\n", arrayID, type);
+        report(t, "array $%s index is not <int>, given <%s>\n", arrayID, type);
     }
 
     public static final void errType(AST t, String expectedType, String givenType) {
-        report(t, "expect type %s, given %s\n", expectedType, givenType);
+        report(t, "expect type <%s>, given <%s>\n", expectedType, givenType);
     }
 
     public static final void errArrayOutbound(AST t, String arrayID, String given) {
-        report(t, "array %s index %s is outbound\n", arrayID, given);
+        report(t, "array $%s index %s is outbound\n", arrayID, given);
     }
 
     public static final void errBreak(AST t) {

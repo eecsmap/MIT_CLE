@@ -35,7 +35,15 @@ public class IrUtils {
     private static AST fieldDecl(AST t, ST st) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             // parse single import statement
-            String type = AstUtils.t0.get(t.getType());
+            String type = null;
+            switch (t.getType()) {
+                case DecafScannerTokenTypes.TK_bool:
+                    type = Defs.DESC_TYPE_BOOL;
+                    break;
+                case DecafScannerTokenTypes.TK_int:
+                    type = Defs.DESC_TYPE_INT;
+                    break;
+            }
             AST c = t.getFirstChild();
             for (; c != null; c = c.getNextSibling()) {
                 AST cc = c.getFirstChild();
