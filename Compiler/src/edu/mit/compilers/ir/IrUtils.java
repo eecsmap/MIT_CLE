@@ -225,6 +225,8 @@ public class IrUtils {
         c = c.getNextSibling();
         parseMoreAssign(c, st);
         c = c.getNextSibling();
+        parseExpr(c, st);
+        c = c.getNextSibling();
         parseBlock(c, st);
         st.popContext();
     }
