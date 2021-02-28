@@ -35,7 +35,9 @@ public class IrUtils {
                 continue;
             }
             MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, methodName);
-            importST.push(desc);
+            if (!importST.push(desc)) {
+                Er.errDuplicatedDeclaration(t, methodName);
+            }
         }
         return t;
     }
@@ -61,9 +63,17 @@ public class IrUtils {
                         Er.errBadArrayCap(cc);
                         cap = "9999999";
                     }
+                    if (importST.getMethod(c.getText()) != null) {
+                        Er.errDuplicatedDeclaration(c, c.getText());
+                        continue;
+                    }
                     if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cap))) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
+                    continue;
+                }
+                if (importST.getMethod(c.getText()) != null) {
+                    Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
                 // cc is null -> it's single Variable
