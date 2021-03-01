@@ -91,7 +91,7 @@ public class IrUtils {
             // parse method type
             AST c = t.getFirstChild();
             String returnType = c.getText();
-            if (!globalST.push(new MethodDesc(Defs.makeMethodType(returnType), t.getText()))) {
+            if (importST.getMethod(t.getText()) != null || !globalST.push(new MethodDesc(Defs.makeMethodType(returnType), t.getText()))) {
                 Er.errDuplicatedDeclaration(t, t.getText());
             }
             boolean isMain = t.getText().equals("main");
@@ -104,7 +104,10 @@ public class IrUtils {
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
-                paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()));
+                if (!paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()))) {
+                    Er.errDuplicatedDeclaration(c, c.getText());
+                    continue;
+                }
                 params.add(c.getFirstChild().getText());
             }
             if (isMain && (params.size() > 0 || !returnType.equals(Defs.DESC_TYPE_VOID))) {
