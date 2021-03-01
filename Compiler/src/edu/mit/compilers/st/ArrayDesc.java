@@ -12,7 +12,7 @@ public class ArrayDesc extends Descriptor {
     // find if index is overbound
     public final String findVar(String idxStr) {
         int idx = Integer.parseInt(idxStr);
-        if (idx >= cap) {
+        if (idx < cap) {
             return "ok";
         }
         return null;
