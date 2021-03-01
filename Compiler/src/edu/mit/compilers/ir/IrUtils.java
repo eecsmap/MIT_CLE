@@ -28,7 +28,7 @@ public class IrUtils {
 
     // return the next AST to parse
     private static AST importDecl(AST t, ST importST) {
-        for (; AstUtils.isImport(t); t = t.getNextSibling()) {
+        for (; t != null && AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
             String methodName = t.getFirstChild().getText();
             if (methodName.equals("main")) {
