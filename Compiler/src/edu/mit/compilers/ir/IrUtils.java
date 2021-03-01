@@ -391,7 +391,7 @@ public class IrUtils {
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
                 try {
-                    Integer.parseInt(t.getText());
+                    Long.parseLong(t.getText());
                 } catch (NumberFormatException e) {
                     Er.errIntegerTooLarge(t, t.getText());
                 }
