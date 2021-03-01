@@ -324,6 +324,17 @@ public class IrUtils {
             }
             return lType;
         }
+        if (AstUtils.isBinaryCompOp(t) && t.getNumberOfChildren() == 2) {
+            AST l = t.getFirstChild();
+            AST r = l.getNextSibling();
+            String lType = parseExpr(l, st);
+            String rType = parseExpr(r, st);
+            if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
+                System.err.printf("31 ");
+                Er.errType(r, lType, rType);
+            }
+            return Defs.DESC_TYPE_BOOL;
+        }
         if (AstUtils.isBinaryBoolOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
@@ -339,7 +350,7 @@ public class IrUtils {
             }
             return Defs.DESC_TYPE_BOOL;
         }
-        if (AstUtils.isBinaryCompOp(t) && t.getNumberOfChildren() == 2) {
+        if (AstUtils.isBinaryIntCompOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
             String lType = parseExpr(l, st);

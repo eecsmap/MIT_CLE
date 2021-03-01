@@ -25,6 +25,8 @@ public class AstUtils {
     public static final Set<Integer> s3 = new HashSet<>();
     // unary ops (assignment: ++, --)
     public static final Set<Integer> s4 = new HashSet<>();
+    // binary ops (* -> bool)
+    public static final Set<Integer> s5 = new HashSet<>();
 
     static {
         Map<Integer, String> m1 = new HashMap<>();
@@ -100,8 +102,6 @@ public class AstUtils {
         s1.add(DecafParserTokenTypes.LESS);
         s1.add(DecafParserTokenTypes.GE);
         s1.add(DecafParserTokenTypes.LE);
-        s1.add(DecafParserTokenTypes.EQ);
-        s1.add(DecafParserTokenTypes.NEQ);
         s2.add(DecafParserTokenTypes.AND);
         s2.add(DecafParserTokenTypes.OR);
         s3.add(DecafParserTokenTypes.ASSIGN);
@@ -109,6 +109,8 @@ public class AstUtils {
         s3.add(DecafParserTokenTypes.PLUSASSIGN);
         s4.add(DecafParserTokenTypes.INCRE);
         s4.add(DecafParserTokenTypes.DECRE);
+        s5.add(DecafParserTokenTypes.EQ);
+        s5.add(DecafParserTokenTypes.NEQ);
     }
 
     public static void printAST(AST t, int level) {
@@ -145,6 +147,10 @@ public class AstUtils {
     }
 
     public static final boolean isBinaryCompOp(AST t) {
+        return s5.contains(t.getType());
+    }
+
+    public static final boolean isBinaryIntCompOp(AST t) {
         return s1.contains(t.getType());
     }
 
