@@ -29,17 +29,24 @@ public class ST {
         this.returnType = type;
     }
 
-    public final String getType(String text) {
-        // System.out.println("search " + text);
+    private final String getTypeNonRecursive(String text) {
         for (int i = 0; i < this.table.size(); i++) {
             Descriptor desc = this.table.get(i);
             if(desc.getText().equals(text)) {
                 return desc.getType();
             }
-            // System.out.println("has " + desc.getText() + " " + desc.getType());
+        }
+        return null;
+    }
+
+    public final String getType(String text) {
+        for (int i = 0; i < this.table.size(); i++) {
+            Descriptor desc = this.table.get(i);
+            if(desc.getText().equals(text)) {
+                return desc.getType();
+            }
         }
         if (this.subST != null) {
-            // System.out.println("search in subST");
             return this.subST.getType(text);
         }
         return null;
@@ -73,7 +80,7 @@ public class ST {
 
     // only for GeneralDesc
     public final boolean push(String type, String text) {
-        if (this.getType(text) != null) {
+        if (this.getTypeNonRecursive(text) != null) {
             return false;
         }
         this.table.add(new VarDesc(type, text));
