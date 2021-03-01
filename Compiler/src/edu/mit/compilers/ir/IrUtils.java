@@ -164,7 +164,7 @@ public class IrUtils {
         if (AstUtils.isBinaryAssignOp(t)) {
             parseBinaryAssign(t, st, op.equals("="));
         } else {
-
+            parseUnaryAssign(t, st);
         }
     }
 
