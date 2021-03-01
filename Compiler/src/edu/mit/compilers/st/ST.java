@@ -88,7 +88,7 @@ public class ST {
     }
 
     public final boolean push(Descriptor desc) {
-        if (this.getType(desc.getText()) != null) {
+        if (this.getTypeNonRecursive(desc.getText()) != null) {
             return false;
         }
         this.table.add(desc);

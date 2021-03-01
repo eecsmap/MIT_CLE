@@ -64,7 +64,7 @@ public class IrUtils {
                         Er.errBadArrayCap(cc);
                         cap = "9999999";
                     }
-                    if (importST.getMethod(c.getText()) != null) {
+                    if (st == globalST && importST.getMethod(c.getText()) != null) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
@@ -98,13 +98,12 @@ public class IrUtils {
             if (isMain) {
                 mainDeclared = true;
             }
-            ST paramST = new ST(globalST);
-            ST localST = new ST(paramST, returnType);
+            ST localST = new ST(globalST, returnType);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
-                if (!paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()))) {
+                if (!localST.push(new VarDesc(c.getFirstChild().getText(), c.getText()))) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
@@ -190,12 +189,17 @@ public class IrUtils {
 
     // return method type
     private static String parseMethodCall(AST t, ST st) {
-        Descriptor method = st.getMethod(t.getText());
+        String methodName = t.getText();
+        String _type = st.getType(methodName);
+        if (_type != null && !Defs.isMethodType(_type)) {
+            Er.errDuplicatedDeclaration(t, methodName);
+        }
+        Descriptor method = st.getMethod(methodName);
         if (method == null) {
-            method = importST.getMethod(t.getText());
+            method = importST.getMethod(methodName);
             if (method == null) {
                 System.err.printf("8 ");
-                Er.errNotDefined(t, t.getText());
+                Er.errNotDefined(t, methodName);
                 return null;
             }
             return Defs.DESC_TYPE_WILDCARD;
