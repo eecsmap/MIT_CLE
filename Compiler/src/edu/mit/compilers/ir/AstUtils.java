@@ -21,6 +21,10 @@ public class AstUtils {
     public static final Set<Integer> s1 = new HashSet<>();
     // binary ops (bool -> bool)
     public static final Set<Integer> s2 = new HashSet<>();
+    // binary ops (assignment: =, +=, -=)
+    public static final Set<Integer> s3 = new HashSet<>();
+    // unary ops (assignment: ++, --)
+    public static final Set<Integer> s4 = new HashSet<>();
 
     static {
         Map<Integer, String> m1 = new HashMap<>();
@@ -100,6 +104,11 @@ public class AstUtils {
         s1.add(DecafParserTokenTypes.NEQ);
         s2.add(DecafParserTokenTypes.AND);
         s2.add(DecafParserTokenTypes.OR);
+        s3.add(DecafParserTokenTypes.ASSIGN);
+        s3.add(DecafParserTokenTypes.MINUSASSIGN);
+        s3.add(DecafParserTokenTypes.PLUSASSIGN);
+        s4.add(DecafParserTokenTypes.INCRE);
+        s4.add(DecafParserTokenTypes.DECRE);
     }
 
     public static void printAST(AST t, int level) {
@@ -141,6 +150,14 @@ public class AstUtils {
 
     public static final boolean isBinaryBoolOp(AST t) {
         return s2.contains(t.getType());
+    }
+
+    public static final boolean isBinaryAssignOp(AST t) {
+        return s3.contains(t.getType());
+    }
+
+    public static final boolean isUnaryAssignOp(AST t) {
+        return s4.contains(t.getType());
     }
 
     public static final boolean isLoop(int token) {

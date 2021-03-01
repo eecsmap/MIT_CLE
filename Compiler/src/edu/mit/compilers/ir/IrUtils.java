@@ -116,7 +116,8 @@ public class IrUtils {
         return t;
     }
 
-    private static void parseAssign(AST t, ST st, boolean simple) {
+    // return lType
+    private static String parseAssign(AST t, ST st) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
@@ -128,24 +129,43 @@ public class IrUtils {
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
         }
+        return lType;
+    }
+
+    private static void parseBinaryAssign(AST t, ST st, boolean simple) {
+        String lType = parseAssign(t, st);
+        AST c = t.getFirstChild();
         c = c.getNextSibling();
         String rType = parseExpr(c, st);
         if (lType != null && (!Defs.equals(lType, rType) || (!simple && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
-        }        
+        }
+    }
+
+    private static void parseUnaryAssign(AST t, ST st) {
+        String lType = parseAssign(t, st);
+        AST c = t.getFirstChild();
+        if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
+            System.err.printf("31 ");
+            Er.errType(c, Defs.DESC_TYPE_INT, lType);
+        }
     }
 
     // only =
     private static void parseSimpleAssign(AST t, ST st) {
         String op = "=";
-        parseAssign(t, st, true);
+        parseBinaryAssign(t, st, true);
     }
 
-    // +=, -=, =
+    // +=, -=, =, ++, --
     private static void parseMoreAssign(AST t, ST st) {
         String op = t.getText();
-        parseAssign(t, st, op.equals("="));
+        if (AstUtils.isBinaryAssignOp(t)) {
+            parseBinaryAssign(t, st, op.equals("="));
+        } else {
+
+        }
     }
 
     private static void parseIncre(AST t, ST st) {
@@ -257,9 +277,12 @@ public class IrUtils {
         AST c = t.getFirstChild();
         parseSimpleAssign(c, localST);
         c = c.getNextSibling();
-        parseMoreAssign(c, localST);
+        String secondExprType = parseExpr(c, localST);
+        if (!Defs.equals(Defs.DESC_TYPE_BOOL, secondExprType)) {
+            Er.errType(c, Defs.DESC_TYPE_BOOL, secondExprType);
+        }
         c = c.getNextSibling();
-        parseExpr(c, localST);
+        parseMoreAssign(c, localST);
         c = c.getNextSibling();
         parseBlock(c, localST);
         localST.popContext();
