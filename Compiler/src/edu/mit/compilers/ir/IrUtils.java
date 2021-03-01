@@ -344,6 +344,9 @@ public class IrUtils {
                 }
                 // array
                 if (Defs.isArrayType(type)) {
+                    if (t.getNumberOfChildren() == 0) {
+                        return type;
+                    }
                     return parseArrayElement(t, st);
                 }
                 // method
@@ -384,6 +387,8 @@ public class IrUtils {
                     Er.errNotDefined(c, c.getText());
                 }
                 return Defs.DESC_TYPE_INT;
+            case DecafScannerTokenTypes.STRINGLITERAL:
+                return Defs.TYPE_STRING_LITERAL;
         }
         return null;
     }

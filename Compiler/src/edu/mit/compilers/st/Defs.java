@@ -21,6 +21,7 @@ public class Defs {
     public static final String DESC_ARRAY_BOOL = "array_bool";
     public static final String DESC_THIS = "this";
     public static final String DESC_TYPE_WILDCARD = "*";
+    public static final String TYPE_STRING_LITERAL = "literal_string";
 
     public static final String getArrayType(String arrayType) {
         if (!isArrayType(arrayType)) {
