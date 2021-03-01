@@ -168,31 +168,6 @@ public class IrUtils {
         }
     }
 
-    private static void parseIncre(AST t, ST st) {
-        String op = t.getText();
-        AST c = t.getFirstChild();
-        String lID = c.getText();
-        String lType = st.getType(lID);
-        if (lType == null) {
-            System.err.printf("5 ");
-            Er.errNotDefined(c, lID);
-            return;
-        }
-        if (Defs.isArrayType(lType)) {
-            String type = parseArrayElement(c, st);
-            if (type != null && !Defs.equals(Defs.DESC_TYPE_INT, type)) {
-                System.err.printf("6 ");
-                Er.errType(c, Defs.DESC_TYPE_INT, type);
-            }
-            return;
-        }
-        if (!Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-            System.err.printf("7 ");
-            Er.errType(c, Defs.DESC_TYPE_INT, lType);
-        }
-        return;
-    }
-
     // return method type
     private static String parseMethodCall(AST t, ST st) {
         Descriptor method = st.getMethod(t.getText());
@@ -438,11 +413,9 @@ public class IrUtils {
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
             case DecafScannerTokenTypes.MINUSASSIGN:
-                parseMoreAssign(t, st);
-                break;
             case DecafScannerTokenTypes.INCRE:
             case DecafScannerTokenTypes.DECRE:
-                parseIncre(t, st);
+                parseMoreAssign(t, st);
                 break;
             case DecafScannerTokenTypes.TK_if:
                 parseIf(t, st);
