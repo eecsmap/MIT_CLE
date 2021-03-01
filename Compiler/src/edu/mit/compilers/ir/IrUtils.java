@@ -1,5 +1,6 @@
 package edu.mit.compilers.ir;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -393,7 +394,11 @@ public class IrUtils {
                 try {
                     Long.parseLong(t.getText());
                 } catch (NumberFormatException e) {
-                    Er.errIntegerTooLarge(t, t.getText());
+                    try {
+                        Long.decode(t.getText());
+                    } catch (Exception ee) {
+                        Er.errIntegerTooLarge(t, t.getText());
+                    }
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.TK_true:
