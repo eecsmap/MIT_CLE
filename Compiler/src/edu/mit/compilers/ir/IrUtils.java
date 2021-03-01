@@ -232,6 +232,7 @@ public class IrUtils {
         AST c = t.getFirstChild();
         String subType = parseExpr(c, st);
         if (subType == null) {
+            Er.errType(t, Defs.getArrayType(type), type);
             return Defs.getArrayType(type);
         }
         if (!Defs.equals(Defs.DESC_TYPE_INT, subType)) {
