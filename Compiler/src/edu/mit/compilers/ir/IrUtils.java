@@ -404,6 +404,8 @@ public class IrUtils {
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 return Defs.TYPE_STRING_LITERAL;
+            case DecafScannerTokenTypes.CHARLITERAL: 
+                return Defs.TYPE_CHAR_LITERAL;
             case DecafScannerTokenTypes.COLON:
                 return parseRelOps(t, st);
         }
