@@ -112,7 +112,14 @@ public class ST {
     }
 
     public final int getContext() {
-        return this.context.peek();
+        try {
+            return this.context.peek();
+        } catch (Exception e) {
+            if (this.subST == null) {
+                return -1;
+            }
+            return this.subST.getContext();
+        }
     }
 
     public final void pushContext(int cxt) {
@@ -124,6 +131,9 @@ public class ST {
     }
 
     public final String getReturnType() {
+        if (this.returnType == null && this.subST != null) {
+            return this.subST.getReturnType();
+        }
         return this.returnType;
     }
 }

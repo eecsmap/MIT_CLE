@@ -235,45 +235,48 @@ public class IrUtils {
     }
 
     private static void parseIf(AST t, ST st) {
+        ST localST = new ST(st);
         AST c = t.getFirstChild();
-        String type = parseExpr(c, st);
+        String type = parseExpr(c, localST);
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("14 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
-        c = parseBlock(c.getNextSibling(), st);
+        c = parseBlock(c.getNextSibling(), localST);
         if (c == null) {
             return;
         }
         // else
-        parseBlock(c.getFirstChild(), st);
+        parseBlock(c.getFirstChild(), localST);
     }
 
     // doesn't suppeort declaration in for loop
     private static void parseFor(AST t, ST st) {
-        st.pushContext(t.getType());
+        ST localST = new ST(st);
+        localST.pushContext(t.getType());
         AST c = t.getFirstChild();
-        parseSimpleAssign(c, st);
+        parseSimpleAssign(c, localST);
         c = c.getNextSibling();
-        parseMoreAssign(c, st);
+        parseMoreAssign(c, localST);
         c = c.getNextSibling();
-        parseExpr(c, st);
+        parseExpr(c, localST);
         c = c.getNextSibling();
-        parseBlock(c, st);
-        st.popContext();
+        parseBlock(c, localST);
+        localST.popContext();
     }
 
     private static void parseWhile(AST t, ST st) {
-        st.pushContext(t.getType());
+        ST localST = new ST(st);
+        localST.pushContext(t.getType());
         AST c = t.getFirstChild();
-        String type = parseExpr(c, st);
+        String type = parseExpr(c, localST);
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("15 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         c = c.getNextSibling();
-        parseBlock(c, st);
-        st.popContext();
+        parseBlock(c, localST);
+        localST.popContext();
     }
 
     // <expr>  => location
@@ -336,7 +339,7 @@ public class IrUtils {
                     if (type == null) {
                         System.out.printf("19 ");
                         Er.errNotDefined(t, t.getText());
-                        return null;
+                        return Defs.DESC_TYPE_WILDCARD;
                     }
                 }
                 // array
