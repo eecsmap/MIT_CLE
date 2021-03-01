@@ -103,14 +103,14 @@ public class IrUtils {
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
-            for (; c != null && AstUtils.isID(c); c = c.getNextSibling()) {
+            for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
                 paramST.push(new VarDesc(c.getFirstChild().getText(), c.getText()));
                 params.add(c.getFirstChild().getText());
             }
             if (isMain && (params.size() > 0 || !returnType.equals(Defs.DESC_TYPE_VOID))) {
                 Er.errMalformedMain(t, returnType, params.size());
             }
-            methodMap.put(t.getText(), params); 
+            methodMap.put(t.getText(), params);
             parseBlock(c, localST);
         }
         return t;
@@ -401,6 +401,9 @@ public class IrUtils {
 
     private static void parseStmt(AST t, ST st) {
         switch (t.getType()) {
+            case DecafScannerTokenTypes.ID:
+                parseMethodCall(t, st);
+                break;
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
             case DecafScannerTokenTypes.MINUSASSIGN:
