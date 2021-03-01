@@ -168,6 +168,23 @@ public class IrUtils {
         }
     }
 
+    private static String parseRelOps(AST t, ST st) {
+        AST c = t.getFirstChild();
+        AST cc = c.getFirstChild();
+        String cond = parseExpr(cc, st);
+        if (!Defs.equals(Defs.DESC_TYPE_BOOL, cond)) {
+            Er.errType(t, Defs.DESC_TYPE_BOOL, cond);
+        }
+        cc = cc.getNextSibling();
+        String trueType = parseExpr(cc, st);
+        c = c.getNextSibling();
+        String falseType = parseExpr(c, st);
+        if (!Defs.equals(trueType, falseType)) {
+            Er.errType(t, trueType, falseType);
+        }
+        return trueType;
+    }
+
     // return method type
     private static String parseMethodCall(AST t, ST st) {
         Descriptor method = st.getMethod(t.getText());
@@ -387,6 +404,8 @@ public class IrUtils {
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 return Defs.TYPE_STRING_LITERAL;
+            case DecafScannerTokenTypes.COLON:
+                return parseRelOps(t, st);
         }
         return null;
     }
