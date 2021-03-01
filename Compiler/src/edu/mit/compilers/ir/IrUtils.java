@@ -303,6 +303,25 @@ public class IrUtils {
         localST.popContext();
     }
 
+    private static String parseIntLiteral(AST t, boolean isNegative) {
+        String number;
+        if (isNegative) {
+            number = "-" + t.getText();
+        } else {
+            number = t.getText();
+        }
+        try {
+            Long.parseLong(number);
+        } catch (NumberFormatException e) {
+            try {
+                Long.decode(number);
+            } catch (Exception ee) {
+                Er.errIntegerTooLarge(t, number);
+            }
+        }
+        return Defs.DESC_TYPE_INT;
+    }
+
     // <expr>  => location
     // | method_call
     // | literal
@@ -391,20 +410,14 @@ public class IrUtils {
                 // var
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
-                try {
-                    Long.parseLong(t.getText());
-                } catch (NumberFormatException e) {
-                    try {
-                        Long.decode(t.getText());
-                    } catch (Exception ee) {
-                        Er.errIntegerTooLarge(t, t.getText());
-                    }
-                }
-                return Defs.DESC_TYPE_INT;
+                return parseIntLiteral(t, false);
             case DecafScannerTokenTypes.TK_true:
             case DecafScannerTokenTypes.TK_false:
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
+                if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
+                    return parseIntLiteral(t.getFirstChild(), true);
+                }
                 String subType = parseExpr(t.getFirstChild(), st);
                 if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
                     System.err.printf("20 ");
