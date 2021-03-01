@@ -1,9 +1,9 @@
 # MIT_CLE
 
 ## Progress
-✔Passed all tests: p1\
+✔Passed all tests: p1, p2\
 ❌Partially passed: -\
-❓WIP: p2, p3, p4, p5
+❓WIP: p3, p4, p5
 
 ## Course Link
 https://github.com/6035/fa19
