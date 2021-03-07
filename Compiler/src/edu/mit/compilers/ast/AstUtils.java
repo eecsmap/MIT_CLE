@@ -1,4 +1,4 @@
-package edu.mit.compilers.ir;
+package edu.mit.compilers.ast;
 
 import java.util.Map;
 import java.util.Set;

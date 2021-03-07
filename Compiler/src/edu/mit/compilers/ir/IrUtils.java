@@ -7,6 +7,7 @@ import java.util.Map;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
