@@ -10,6 +10,7 @@ package edu.mit.compilers.st;
 public abstract class Descriptor {
     protected String type;
     protected String text;
+    protected String addr;
 
     protected Descriptor() { 
         // default descriptor
@@ -33,10 +34,14 @@ public abstract class Descriptor {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
     
     public String getText() {
-        return text;
+        return this.text;
+    }
+
+    public String getAddr() {
+        return this.addr;
     }
 }
