@@ -1,15 +1,16 @@
-package edu.mit.compilers.ir;
+package edu.mit.compilers.cfg;
 
 import edu.mit.compilers.st.Descriptor;
 
 // TODO: which descriptor?
 // action: [load store]
-public class IrTerm {
+public class Term {
     private Descriptor desc;
     private String action;
 
-    public IrTerm() {
-
+    public Term(Descriptor desc, String action) {
+        this.desc = desc;
+        this.action = action;
     }
 
     public String getAction() {
