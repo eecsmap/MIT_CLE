@@ -1,0 +1,3 @@
+code gen
+1. if encountered error, stop codegen, but continues doing semantics checking
+2. 
