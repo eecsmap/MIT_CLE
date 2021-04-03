@@ -10,5 +10,8 @@ public class Defs {
         FOR,
     }
 
-    
+    public static enum Action {
+        LOAD,
+        STORE,
+    }
 }

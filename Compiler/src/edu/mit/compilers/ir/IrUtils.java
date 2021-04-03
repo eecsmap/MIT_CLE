@@ -60,7 +60,7 @@ public class IrUtils {
             for (; c != null; c = c.getNextSibling()) {
                 AST cc = c.getFirstChild();
                 if (cc != null) {
-                    // cc is null -> is array
+                    // cc is not null -> is array
                     String cap = cc.getText();
                     if(Integer.parseInt(cap) <= 0) {
                         Er.errBadArrayCap(cc);

@@ -6,8 +6,7 @@ package edu.mit.compilers.st;
 // LocalDesc -> "int" "name"
 public class VarDesc extends Descriptor {
     public VarDesc(String type, String text) {
-        this.type = type;
-        this.text = text;
+        super(type, text);
     }
 
     public final String findVar(String text) {

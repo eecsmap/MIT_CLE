@@ -4,8 +4,7 @@ public class ArrayDesc extends Descriptor {
     private int cap;
 
     public ArrayDesc(String type, String text, String cap) {
-        this.type = type;
-        this.text = text;
+        super(type, text);
         this.cap = Integer.parseInt(cap);
     }
 

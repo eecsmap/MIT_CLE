@@ -33,6 +33,11 @@ public abstract class Descriptor {
         this.text = text;
     }
 
+    public void setAddr(String addr) {
+        // TODO
+        this.addr = addr;
+    }
+
     public String getType() {
         return this.type;
     }

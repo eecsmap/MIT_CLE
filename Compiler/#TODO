@@ -1,3 +1,6 @@
 code gen
 1. if encountered error, stop codegen, but continues doing semantics checking
 2. each function returns a `Node` instance
+
+
+-1, change private ArrayList<Descriptor> table = new ArrayList<>(); in ST to HashTable implementation
