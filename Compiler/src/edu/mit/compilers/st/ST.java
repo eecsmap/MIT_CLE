@@ -1,6 +1,8 @@
 package edu.mit.compilers.st;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 // field symbol table -> field desc []
@@ -11,7 +13,8 @@ import java.util.Stack;
 public class ST {
     private ST subST = null;
     private String returnType = null;
-    private ArrayList<Descriptor> table = new ArrayList<>();
+    // text -> Descriptor
+    private Map<String, Descriptor> table = new HashMap<>();
     private Stack<Integer> context = new Stack<>();
 
     public ST() {}
@@ -30,21 +33,14 @@ public class ST {
     }
 
     private final String getTypeNonRecursive(String text) {
-        for (int i = 0; i < this.table.size(); i++) {
-            Descriptor desc = this.table.get(i);
-            if(desc.getText().equals(text)) {
-                return desc.getType();
-            }
-        }
-        return null;
+        Descriptor desc = this.table.get(text);
+        return (desc != null) ? desc.getType() : null;
     }
 
     public final String getType(String text) {
-        for (int i = 0; i < this.table.size(); i++) {
-            Descriptor desc = this.table.get(i);
-            if(desc.getText().equals(text)) {
-                return desc.getType();
-            }
+        String type = getTypeNonRecursive(text);
+        if (type != null) {
+            return type;
         }
         if (this.subST != null) {
             return this.subST.getType(text);
@@ -53,11 +49,9 @@ public class ST {
     }
 
     public final Descriptor getMethod(String text) {
-        for (int i = 0; i < this.table.size(); i++) {
-            Descriptor desc = this.table.get(i);
-            if(desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
-                return desc;
-            }
+        Descriptor desc = this.table.get(text);
+        if(desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
+            return desc;
         }
         if (this.subST != null) {
             return this.subST.getMethod(text);
@@ -66,11 +60,9 @@ public class ST {
     }
 
     public final Descriptor getArray(String text) {
-        for (int i = 0; i < this.table.size(); i++) {
-            Descriptor desc = this.table.get(i);
-            if(desc.getText().equals(text) && Defs.isArrayType(desc.getType())) {
-                return desc;
-            }
+        Descriptor desc = this.table.get(text);
+        if(desc.getText().equals(text) && Defs.isArrayType(desc.getType())) {
+            return desc;
         }
         if (this.subST != null) {
             return this.subST.getArray(text);
@@ -83,7 +75,7 @@ public class ST {
         if (this.getTypeNonRecursive(text) != null) {
             return false;
         }
-        this.table.add(new VarDesc(type, text));
+        this.table.put(text, new VarDesc(type, text));
         return true;
     }
 
@@ -91,17 +83,7 @@ public class ST {
         if (this.getTypeNonRecursive(desc.getText()) != null) {
             return false;
         }
-        this.table.add(desc);
-        return true;
-    }
-
-    // remove the last in array
-    public final boolean pop() {
-        int last = this.table.size() - 1;
-        if (last < 0) {
-            return false;
-        }
-        this.table.remove(last);
+        this.table.put(desc.getText(), desc);
         return true;
     }
 
@@ -112,7 +94,7 @@ public class ST {
 
     public final void print(int level) {
         String tab = new String(new char[level]).replace("\0", "\t");
-        for (Descriptor desc: this.table) {
+        for (Descriptor desc: this.table.values()) {
             System.out.println(tab + desc.getType() + " " + desc.getText());
         }
         this.subST.print(level + 1);
