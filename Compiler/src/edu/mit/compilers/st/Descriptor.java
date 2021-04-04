@@ -1,5 +1,7 @@
 package edu.mit.compilers.st;
- 
+
+import edu.mit.compilers.asm.Addr;
+
 // ClassDesc -> "class name" "name", "fieldST" "methodST"
 // MethodDesc -> "return type" "name", "localST"
 // TypeDesc -> "type" "int" | "bool" | "$class"
@@ -10,7 +12,7 @@ package edu.mit.compilers.st;
 public abstract class Descriptor {
     protected String type;
     protected String text;
-    protected String addr;
+    protected Addr addr;
 
     protected Descriptor() { 
         // default descriptor
@@ -33,8 +35,7 @@ public abstract class Descriptor {
         this.text = text;
     }
 
-    public void setAddr(String addr) {
-        // TODO
+    public void setAddr(Addr addr) {
         this.addr = addr;
     }
 
@@ -46,7 +47,7 @@ public abstract class Descriptor {
         return this.text;
     }
 
-    public String getAddr() {
+    public Addr getAddr() {
         return this.addr;
     }
 }
