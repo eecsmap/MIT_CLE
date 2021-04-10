@@ -63,13 +63,19 @@ public class Defs {
         FIELD,
         FUNCTION_DECLARE,
         IF,
+        IF_ELSE,
         WHILE,
         FOR,
-        ELSE,
     }
 
     public static enum Action {
         LOAD,
         STORE,
+    }
+
+    public static enum FlowOp {
+        CONTINUE,
+        BREAK,
+        RETURN,
     }
 }

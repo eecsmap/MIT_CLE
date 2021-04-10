@@ -8,23 +8,24 @@ import java.util.Map;
 
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.asm.*;
+import edu.mit.compilers.ir.IrTriple;
 
 // =, +, -, ++, --, unary -, ? :, unary !, &&, ||, ==, <, >
 // IT'S NOT CHAINED!
 // in the form of `d = l op r` for +, -, &&, ||, ==
 // `d++`, `d--`
-public class BinaryOp {
+public class BinaryOp extends Operator {
     private String op;
     private Descriptor d; // dest
     private Descriptor l;
     private Descriptor r;
     private List<String> codeList;
     
-    public BinaryOp(String op, Descriptor d, Descriptor l, Descriptor r) {
-        this.op = op;
-        this.d = d;
-        this.l = l;
-        this.r = r;
+    public BinaryOp(IrTriple triple) {
+        this.op = triple.op();
+        this.d = triple.d();
+        this.l = triple.l();
+        this.r = triple.r();
         this.codeList = makeCodeList();
     }
 

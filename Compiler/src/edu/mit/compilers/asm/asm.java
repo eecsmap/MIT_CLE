@@ -17,4 +17,8 @@ public class asm {
     public static String jmp(String instruction, Label dst) {
         return String.format("\t%s %s", instruction, dst);
     }
+
+    public static String run(String instruction) {
+        return instruction;
+    }
 }
