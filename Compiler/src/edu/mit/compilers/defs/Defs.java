@@ -1,4 +1,4 @@
-package edu.mit.compilers.st;
+package edu.mit.compilers.defs;
 
 // ClassDesc -> "class name" "name", "fieldST" "methodST"
 // MethodDesc -> "return type" "name", "localST"
@@ -56,5 +56,20 @@ public class Defs {
 
     public static final boolean equals(String lType, String rType) {
         return lType.equals(rType) || rType.equals(Defs.DESC_TYPE_WILDCARD);
+    }
+
+    public static enum Type {
+        IMPORT,
+        FIELD,
+        FUNCTION_DECLARE,
+        IF,
+        WHILE,
+        FOR,
+        ELSE,
+    }
+
+    public static enum Action {
+        LOAD,
+        STORE,
     }
 }

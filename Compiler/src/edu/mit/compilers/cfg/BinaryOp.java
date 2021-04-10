@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.asm.*;
@@ -19,12 +18,14 @@ public class BinaryOp {
     private Descriptor d; // dest
     private Descriptor l;
     private Descriptor r;
+    private List<String> codeList;
     
     public BinaryOp(String op, Descriptor d, Descriptor l, Descriptor r) {
         this.op = op;
         this.d = d;
         this.l = l;
         this.r = r;
+        this.codeList = makeCodeList();
     }
 
     private static final Map<String, String> cmpOpcodeMap = new HashMap<>() {{
@@ -35,7 +36,7 @@ public class BinaryOp {
         put("<", "setl");
     }};
 
-    public List<String> codegen() {
+    private List<String> makeCodeList() {
         List<String> codes = new ArrayList<>();
         if (this.op.equals("+") || (this.op.equals("-") && this.r != null)) {
             String opcode = this.op.equals("+") ? "addl" : "subl";
@@ -69,8 +70,8 @@ public class BinaryOp {
             String jeWhenAnd = this.op.equals("&&") ? "je" : "jne";
             Num oneWhenAnd = this.op.equals("&&") ? new Num(1) : new Num(0);
             Num zeroWhenAnd = this.op.equals("&&") ? new Num(0) : new Num(1);
-            Label l1 = Label.init();
-            Label l2 = Label.init();
+            Label l1 = new Label();
+            Label l2 = new Label();
             Collections.addAll(codes,
                 asm.bin("cmpl", new Num(0), this.l.getAddr()),
                 asm.jmp(jeWhenAnd, l1),
@@ -92,8 +93,11 @@ public class BinaryOp {
                 asm.bin("movzbl", Reg.al, Reg.eax),
                 asm.bin("movl", Reg.eax, this.d.getAddr())
             );
-        } else if () {
         }
         return codes;
+    }
+
+    public List<String> getCodeList() {
+        return this.codeList;
     }
 }
