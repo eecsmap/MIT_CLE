@@ -8,6 +8,10 @@ int main() {
     e = (f == g);
     f = (e && g);
     g = (e || f);
+    e = (f <= g);
+    e = (f >= g);
+    e = (f < g);
+    e = (f > g);
     e = !f;
     e = -f;
     return 0;

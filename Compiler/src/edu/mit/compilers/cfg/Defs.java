@@ -8,6 +8,7 @@ public class Defs {
         IF,
         WHILE,
         FOR,
+        ELSE,
     }
 
     public static enum Action {

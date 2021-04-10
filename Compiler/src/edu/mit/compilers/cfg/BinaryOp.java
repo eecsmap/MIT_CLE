@@ -2,11 +2,15 @@ package edu.mit.compilers.cfg;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.asm.*;
 
-// =, +, -, ++, --, unary -, ? :, unary !, &&, ||, ==
+// =, +, -, ++, --, unary -, ? :, unary !, &&, ||, ==, <, >
 // IT'S NOT CHAINED!
 // in the form of `d = l op r` for +, -, &&, ||, ==
 // `d++`, `d--`
@@ -22,6 +26,14 @@ public class BinaryOp {
         this.l = l;
         this.r = r;
     }
+
+    private static final Map<String, String> cmpOpcodeMap = new HashMap<>() {{
+        put("==", "sete");
+        put("<=", "setle");
+        put(">=", "setge");
+        put(">", "setg");
+        put("<", "setl");
+    }};
 
     public List<String> codegen() {
         List<String> codes = new ArrayList<>();
@@ -71,15 +83,17 @@ public class BinaryOp {
                 asm.label(l2),
                 asm.bin("movl", Reg.eax, this.d.getAddr())
             );
-        } else if (this.op.equals("==")) {
+        } else if (cmpOpcodeMap.containsKey(this.op)) {
+            String opcode = cmpOpcodeMap.get(this.op);
             Collections.addAll(codes,
                 asm.bin("movl", this.l.getAddr(), Reg.eax),
                 asm.bin("cmpl", this.r.getAddr(), Reg.eax),
-                asm.uni("sete", Reg.al),
+                asm.uni(opcode, Reg.al),
                 asm.bin("movzbl", Reg.al, Reg.eax),
                 asm.bin("movl", Reg.eax, this.d.getAddr())
             );
+        } else if () {
         }
-        return null;
+        return codes;
     }
 }
