@@ -27,7 +27,6 @@ public class FlowOp extends Operator {
         }
     }
 
-    // TODO: wrong
     public FlowOp(Defs.FlowOp op, Addr returnVar) {
         if (op == Defs.FlowOp.RETURN) {
             Collections.addAll(codeList,
@@ -37,6 +36,7 @@ public class FlowOp extends Operator {
         }
     }
 
+    @Override
     public List<String> getCodeList() {
         return this.codeList;
     }

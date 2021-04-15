@@ -9,6 +9,7 @@ public class ArrayDesc extends Descriptor {
     }
 
     // find if index is overbound
+    @Override
     public final String findVar(String idxStr) {
         int idx = Integer.parseInt(idxStr);
         if (idx < cap) {
@@ -17,6 +18,7 @@ public class ArrayDesc extends Descriptor {
         return null;
     }
 
+    @Override
     public final String findMethod(String text) {
         return null;
     }

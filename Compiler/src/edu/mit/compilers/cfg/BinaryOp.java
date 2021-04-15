@@ -98,6 +98,7 @@ public class BinaryOp extends Operator {
         return codes;
     }
 
+    @Override
     public List<String> getCodeList() {
         return this.codeList;
     }
