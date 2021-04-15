@@ -19,10 +19,6 @@ public class ST {
 
     public ST() {}
 
-    public ST(String type) {
-        this.returnType = type;
-    }
-
     public ST(ST subst) {
         this.subST = subst;
     }
@@ -50,7 +46,7 @@ public class ST {
 
     public final Descriptor getMethod(String text) {
         Descriptor desc = this.table.get(text);
-        if(desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
+        if(desc != null && desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
             return desc;
         }
         if (this.subST != null) {
@@ -61,7 +57,7 @@ public class ST {
 
     public final Descriptor getArray(String text) {
         Descriptor desc = this.table.get(text);
-        if(desc.getText().equals(text) && Defs.isArrayType(desc.getType())) {
+        if(desc != null && desc.getText().equals(text) && Defs.isArrayType(desc.getType())) {
             return desc;
         }
         if (this.subST != null) {
@@ -70,25 +66,11 @@ public class ST {
         return null;
     }
 
-    // only for GeneralDesc
-    public final boolean push(String type, String text) {
-        if (this.getTypeNonRecursive(text) != null) {
-            return false;
-        }
-        this.table.put(text, new VarDesc(type, text));
-        return true;
-    }
-
     public final boolean push(Descriptor desc) {
         if (this.getTypeNonRecursive(desc.getText()) != null) {
             return false;
         }
         this.table.put(desc.getText(), desc);
-        return true;
-    }
-
-    public final boolean setSubST(ST st) {
-        this.subST = st;
         return true;
     }
 

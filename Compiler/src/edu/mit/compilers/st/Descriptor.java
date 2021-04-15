@@ -14,26 +14,13 @@ public abstract class Descriptor {
     protected String text;
     protected Addr addr;
 
-    protected Descriptor() { 
-        // default descriptor
-    }
-
     protected Descriptor(String type, String text) {
         this.type = type;
         this.text = text;
     }
 
     public abstract String findVar(String text);
-
     public abstract String findMethod(String text);
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
 
     public void setAddr(Addr addr) {
         this.addr = addr;
