@@ -10,7 +10,6 @@ public class ControlFor implements Control {
     private Block initBlock;
     private Block conditionBlock;
     private Block executionBlock;
-    
 
     public ControlFor(
         List<IrOp> init, List<IrOp> condition, List<IrOp> execution, List<IrOp> increment)

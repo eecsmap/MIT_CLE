@@ -27,11 +27,12 @@ public class FlowOp extends Operator {
         }
     }
 
+    // TODO: wrong
     public FlowOp(Defs.FlowOp op, Addr returnVar) {
         if (op == Defs.FlowOp.RETURN) {
             Collections.addAll(codeList,
                 asm.bin("movl", returnVar, Reg.eax), 
-                asm.run("call")
+                asm.run("ret")
             );
         }
     }
