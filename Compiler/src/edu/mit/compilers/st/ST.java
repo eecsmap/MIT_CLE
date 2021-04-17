@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.tools.Er;
+
 // field symbol table -> field desc []
 // param symbol table -> param desc [], last local ST (if have) used in for loop 
 // local symbol table -> local desc [], param ST
@@ -16,14 +19,21 @@ public class ST {
     // text -> Descriptor
     private Map<String, Descriptor> table = new HashMap<>();
     private Stack<Integer> context = new Stack<>();
+    private Boolean isGlobal;
+    // only for non-global ST
+    private Integer varOffset = 4;
 
-    public ST() {}
+    public ST() {
+        this.isGlobal = true;
+    }
 
     public ST(ST subst) {
+        this.isGlobal = false;
         this.subST = subst;
     }
 
     public ST(ST subst, String type) {
+        this.isGlobal = false;
         this.subST = subst;
         this.returnType = type;
     }
@@ -67,6 +77,14 @@ public class ST {
     }
 
     public final boolean push(Descriptor desc) {
+        if (!Er.hasError()) {
+            if (this.isGlobal) {
+                desc.setAddr(new Addr(desc.getText()));
+            } else {
+                desc.setAddr(new Addr(this.varOffset));
+                this.varOffset += 4;
+            }
+        }
         if (this.getTypeNonRecursive(desc.getText()) != null) {
             return false;
         }

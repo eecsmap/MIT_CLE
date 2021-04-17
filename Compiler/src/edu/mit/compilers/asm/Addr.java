@@ -6,13 +6,13 @@ public class Addr extends Oprand {
     private Integer offset;
 
 
-    Addr(Boolean isGlobal, String name) {
-        this.isVarGlobal = isGlobal;
+    public Addr(String name) {
+        this.isVarGlobal = true;
         this.name = name;
     }
 
-    Addr(Boolean isGlobal, Integer offset) {
-        this.isVarGlobal = isGlobal;
+    public Addr(Integer offset) {
+        this.isVarGlobal = false;
         this.offset = offset;
     }
 

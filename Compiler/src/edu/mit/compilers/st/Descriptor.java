@@ -10,11 +10,11 @@ import edu.mit.compilers.asm.Addr;
 // LocalDesc -> "int" "name"
 // ThisDesc -> "this" "classdesc name", ""
 public abstract class Descriptor {
-    protected String type;
-    protected String text;
-    protected Addr addr;
+    private String type;
+    private String text;
+    private Addr addr;
 
-    protected Descriptor(String type, String text) {
+    Descriptor(String type, String text) {
         this.type = type;
         this.text = text;
     }
