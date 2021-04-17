@@ -22,4 +22,8 @@ public class ArrayDesc extends Descriptor {
     public final String findMethod(String text) {
         return null;
     }
+
+    public final Integer getCap() {
+        return this.cap;
+    }
 }

@@ -5,7 +5,7 @@ public class Addr extends Oprand {
     private String name;
     private Integer offset;
 
-
+    // for global variable
     public Addr(String name) {
         this.isVarGlobal = true;
         this.name = name;

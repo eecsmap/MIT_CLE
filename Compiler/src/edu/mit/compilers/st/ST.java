@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
 // field symbol table -> field desc []
@@ -77,12 +78,16 @@ public class ST {
     }
 
     public final boolean push(Descriptor desc) {
-        if (!Er.hasError()) {
+        if (!Er.hasError() && !Defs.isMethodType(desc.getType())) {
             if (this.isGlobal) {
                 desc.setAddr(new Addr(desc.getText()));
             } else {
                 desc.setAddr(new Addr(this.varOffset));
-                this.varOffset += 4;
+                if (Defs.isArrayType(desc.getType())) {
+                    this.varOffset += 4 * ((ArrayDesc)desc).getCap();
+                } else {
+                    this.varOffset += 4;
+                }
             }
         }
         if (this.getTypeNonRecursive(desc.getText()) != null) {

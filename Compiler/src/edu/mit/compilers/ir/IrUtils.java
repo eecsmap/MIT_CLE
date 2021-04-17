@@ -116,6 +116,7 @@ public class IrUtils {
                 Er.errMalformedMain(t, returnType, params.size());
             }
             methodMap.put(t.getText(), params);
+            // parse block
             parseBlock(c, localST);
         }
         return t;
