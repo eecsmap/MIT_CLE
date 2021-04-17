@@ -3,3 +3,6 @@ code gen
 2. each function returns a `Node` instance
 
 -1, why can access `protected` in Descriptor
+
+possible improvement:
+1. remove redundant labels when break/continue not called

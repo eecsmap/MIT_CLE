@@ -11,8 +11,14 @@ public class ControlFor implements Control {
     private Block conditionBlock;
     private Block executionBlock;
 
+    public ControlFor(Block initBlock, Block conditionBlock, Block executionBlock) {
+        this.initBlock = initBlock;
+        this.conditionBlock = conditionBlock;
+        this.executionBlock = executionBlock;
+    }
+
     public ControlFor(
-        List<IrOp> init, List<IrOp> condition, List<IrOp> execution, List<IrOp> increment)
+        List<IrOp> init, List<IrOp> condition, List<IrOp> increment, List<IrOp> execution)
     {
         initBlock = new Block(init);
         conditionBlock = new Block(condition);

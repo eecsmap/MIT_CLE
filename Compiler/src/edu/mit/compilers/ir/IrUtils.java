@@ -3,10 +3,13 @@ package edu.mit.compilers.ir;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
@@ -159,13 +162,13 @@ public class IrUtils {
     }
 
     // only =
-    private static void parseSimpleAssign(AST t, ST st) {
+    private static void parseSimpleAssign(AST t, ST st, List<String> codes) {
         String op = "=";
         parseBinaryAssign(t, st, true);
     }
 
     // +=, -=, =, ++, --
-    private static void parseMoreAssign(AST t, ST st) {
+    private static void parseMoreAssign(AST t, ST st, List<String> codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
             parseBinaryAssign(t, st, op.equals("="));
@@ -220,8 +223,7 @@ public class IrUtils {
             Er.errArrayArgsMismatch(t);
             return Defs.getMethodType(method.getType());
         }
-        int i = 0;
-        for (; c != null; c = c.getNextSibling(), i++) {
+        for (int i = 0; c != null; c = c.getNextSibling(), i++) {
             String cType = parseExpr(c, st);
             if (!Defs.equals(params.get(i), cType)) {
                 System.err.printf("10 ");
@@ -275,21 +277,55 @@ public class IrUtils {
     }
 
     // doesn't suppeort declaration in for loop
-    private static void parseFor(AST t, ST st) {
+    private static void parseFor(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         localST.pushContext(t.getType());
+        Label executionBeginLabel = new Label();
+        Label conditionBeginLabel = new Label();
+        Label loopEndLabel = new Label();
+        if (!Er.hasError()) {
+            localST.pushContinueLabel(conditionBeginLabel);
+            localST.pushBreakLabel(loopEndLabel);
+        }
         AST c = t.getFirstChild();
-        parseSimpleAssign(c, localST);
+        // simple assign
+        List<String> codesInit = new ArrayList<>();
+        parseSimpleAssign(c, localST, codesInit);
         c = c.getNextSibling();
-        String secondExprType = parseExpr(c, localST);
-        if (!Defs.equals(Defs.DESC_TYPE_BOOL, secondExprType)) {
-            Er.errType(c, Defs.DESC_TYPE_BOOL, secondExprType);
+        // condition expr
+        List<String> codesCondition = new ArrayList<>();
+        String conditionExprType = parseExpr(c, localST, codesCondition);
+        if (!Defs.equals(Defs.DESC_TYPE_BOOL, conditionExprType)) {
+            Er.errType(c, Defs.DESC_TYPE_BOOL, conditionExprType);
         }
         c = c.getNextSibling();
-        parseMoreAssign(c, localST);
+        // more assign
+        List<String> codesIncrement = new ArrayList<>();
+        parseMoreAssign(c, localST, codesIncrement);
         c = c.getNextSibling();
-        parseBlock(c, localST);
+        // block
+        List<String> codesExecution = new ArrayList<>();
+        parseBlock(c, localST, codesExecution);
+        if (!Er.hasError()) {
+            codesInit.add(
+                asm.jmp("jmp", conditionBeginLabel)
+            );
+            codesCondition.add(
+                asm.jmp("jle", executionBeginLabel)
+            );
+            codes.addAll(codesInit);
+            codes.add(asm.label(executionBeginLabel));
+            codes.addAll(codesExecution);
+            codes.addAll(codesIncrement);
+            codes.add(asm.label(conditionBeginLabel));
+            codes.addAll(codesCondition);
+            codes.add(asm.label(loopEndLabel));
+        }
         localST.popContext();
+        if (!Er.hasError()) {
+            localST.popContinueLabel();
+            localST.popBreakLabel();
+        }
     }
 
     private static void parseWhile(AST t, ST st) {
@@ -332,7 +368,7 @@ public class IrUtils {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    private static String parseExpr(AST t, ST st) {
+    private static String parseExpr(AST t, ST st, List<String> codes) {
         if (t == null) {
             return null;
         }
@@ -453,7 +489,7 @@ public class IrUtils {
     }
 
     // if null -> return; if TK_else -> return current AST
-    private static AST parseBlock(AST t, ST st) {
+    private static AST parseBlock(AST t, ST st, List<String> codes) {
         // parse fields
         t = fieldDecl(t, st);
         // parse statements

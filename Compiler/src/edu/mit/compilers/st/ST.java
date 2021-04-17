@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
@@ -19,7 +20,10 @@ public class ST {
     private String returnType = null;
     // text -> Descriptor
     private Map<String, Descriptor> table = new HashMap<>();
+    // for / while
     private Stack<Integer> context = new Stack<>();
+    private Stack<Label> continueLabelStack = new Stack<>();
+    private Stack<Label> breakLabelStack = new Stack<>();
     private Boolean isGlobal;
     // only for non-global ST
     private Integer varOffset = 4;
@@ -129,5 +133,45 @@ public class ST {
             return this.subST.getReturnType();
         }
         return this.returnType;
+    }
+
+    public final void pushContinueLabel(Label continueLabel) {
+        this.continueLabelStack.push(continueLabel);
+    }
+
+    public final void pushBreakLabel(Label breakLabel) {
+        this.breakLabelStack.push(breakLabel);
+    }
+
+    public final void popContinueLabel() {
+        this.continueLabelStack.pop();
+    }
+
+    public final void popBreakLabel() {
+        this.breakLabelStack.pop();
+    }
+
+    public final Label getContinueLabel() {
+        try {
+            return this.continueLabelStack.peek();
+        } catch (Exception e) {
+            if (this.subST == null) {
+                Er.setError();
+                return null;
+            }
+            return this.subST.getContinueLabel();
+        }
+    }
+
+    public final Label getBreakLabel() {
+        try {
+            return this.breakLabelStack.peek();
+        } catch (Exception e) {
+            if (this.subST == null) {
+                Er.setError();
+                return null;
+            }
+            return this.subST.getBreakLabel();
+        }
     }
 }
