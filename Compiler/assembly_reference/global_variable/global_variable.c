@@ -2,7 +2,11 @@ int g = 5;
 
 int add(int a) {
     g += a;
-    return a + g;
+    if (a == g) {
+        return a + g;
+    }
+    a += g;
+    return g + a;
 }
 
 int main() {

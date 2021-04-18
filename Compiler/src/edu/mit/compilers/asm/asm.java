@@ -52,4 +52,30 @@ public class asm {
         }
         return codes;
     }
+
+    // .LFB0:
+	// pushq	%rbp	#
+	// movq	%rsp, %rbp	#,
+	// movl	%edi, -4(%rbp)	# a, a
+    public static final List<String> methodDeclStart(String name) {
+        List<String> codes = new ArrayList<>();
+        Collections.addAll(codes,
+            String.format("%s:", name),
+            String.format("\tpushq\t%s", Reg.rbp),
+            String.format("\tmovq\t%s, %s", Reg.rsp, Reg.rbp)
+            // move arguments to memory
+        );
+        return codes;
+    }
+
+    // popq	%rbp	#
+	// ret	
+    public static final List<String> methodDeclEnd() {
+        List<String> codes = new ArrayList<>();
+        Collections.addAll(codes,
+            String.format("\tpopq\t%s", Reg.rbp),
+            "ret"
+        );
+        return codes;
+    }
 }

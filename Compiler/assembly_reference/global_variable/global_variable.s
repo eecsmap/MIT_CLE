@@ -2,7 +2,7 @@
 # GNU C17 (Ubuntu 8.4.0-1ubuntu1~18.04) version 8.4.0 (x86_64-linux-gnu)
 #	compiled by GNU C version 8.4.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.19-GMP
 
-# GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126103
+# GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126098
 # options passed:  -imultiarch x86_64-linux-gnu global_variable.c
 # -mtune=generic -march=x86-64 -fverbose-asm -fstack-protector-strong
 # -Wformat -Wformat-security
@@ -58,14 +58,29 @@ add:
 	movl	%edi, -4(%rbp)	# a, a
 # global_variable.c:4:     g += a;
 	movl	g(%rip), %edx	# g, g.0_1
-	movl	-4(%rbp), %eax	# a, tmp92
+	movl	-4(%rbp), %eax	# a, tmp95
 	addl	%edx, %eax	# g.0_1, _2
 	movl	%eax, g(%rip)	# _2, g
-# global_variable.c:5:     return a + g;
-	movl	g(%rip), %edx	# g, g.1_3
-	movl	-4(%rbp), %eax	# a, tmp93
-	addl	%edx, %eax	# g.1_3, _7
-# global_variable.c:6: }
+# global_variable.c:5:     if (a == g) {
+	movl	g(%rip), %eax	# g, g.1_3
+# global_variable.c:5:     if (a == g) {
+	cmpl	%eax, -4(%rbp)	# g.1_3, a
+	jne	.L2	#,
+# global_variable.c:6:         return a + g;
+	movl	g(%rip), %edx	# g, g.2_4
+	movl	-4(%rbp), %eax	# a, tmp96
+	addl	%edx, %eax	# g.2_4, _7
+	jmp	.L3	#
+.L2:
+# global_variable.c:8:     a += g;
+	movl	g(%rip), %eax	# g, g.3_5
+	addl	%eax, -4(%rbp)	# g.3_5, a
+# global_variable.c:9:     return g + a;
+	movl	g(%rip), %edx	# g, g.4_6
+	movl	-4(%rbp), %eax	# a, tmp97
+	addl	%edx, %eax	# g.4_6, _7
+.L3:
+# global_variable.c:10: }
 	popq	%rbp	#
 	.cfi_def_cfa 7, 8
 	ret	
@@ -83,16 +98,16 @@ main:
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
 	subq	$16, %rsp	#,
-# global_variable.c:10:     a = 0;
+# global_variable.c:14:     a = 0;
 	movl	$0, -8(%rbp)	#, a
-# global_variable.c:11:     b = add(a);
+# global_variable.c:15:     b = add(a);
 	movl	-8(%rbp), %eax	# a, tmp89
 	movl	%eax, %edi	# tmp89,
 	call	add	#
 	movl	%eax, -4(%rbp)	# tmp90, b
-# global_variable.c:12:     return 0;
+# global_variable.c:16:     return 0;
 	movl	$0, %eax	#, _5
-# global_variable.c:13: }
+# global_variable.c:17: }
 	leave	
 	.cfi_def_cfa 7, 8
 	ret	

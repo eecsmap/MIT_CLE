@@ -11,7 +11,7 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
-public class FieldDecl {
+class FieldDecl {
     static final AST parse(AST t, ST st, List<String> codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             String type = null;

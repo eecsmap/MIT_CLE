@@ -30,7 +30,7 @@ public class Program {
         }
         t = importDecl(t, importST);
         t = FieldDecl.parse(t, globalST, codes);
-        t = methodDecl(t, globalST, codes);
+        t = MethodDecl.parse(t, globalST, codes);
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
         }
@@ -49,39 +49,6 @@ public class Program {
             if (!importST.push(desc)) {
                 Er.errDuplicatedDeclaration(t, methodName);
             }
-        }
-        return t;
-    }
-
-    static AST methodDecl(AST t, ST globalST, List<String> codes) {
-        for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
-            // parse method type
-            AST c = t.getFirstChild();
-            String returnType = c.getText();
-            if (importST.getMethod(t.getText()) != null || !globalST.push(new MethodDesc(Defs.makeMethodType(returnType), t.getText()))) {
-                Er.errDuplicatedDeclaration(t, t.getText());
-            }
-            boolean isMain = t.getText().equals("main");
-            if (isMain) {
-                mainDeclared = true;
-            }
-            ST localST = new ST(globalST, returnType);
-            c = c.getNextSibling();
-            // parse parameters
-            ArrayList<String> params = new ArrayList<>();
-            for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
-                if (!localST.push(new VarDesc(c.getFirstChild().getText(), c.getText()))) {
-                    Er.errDuplicatedDeclaration(c, c.getText());
-                    continue;
-                }
-                params.add(c.getFirstChild().getText());
-            }
-            if (isMain && (params.size() > 0 || !returnType.equals(Defs.DESC_TYPE_VOID))) {
-                Er.errMalformedMain(t, returnType, params.size());
-            }
-            methodMap.put(t.getText(), params);
-            // parse block
-            parseBlock(c, localST);
         }
         return t;
     }
