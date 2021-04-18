@@ -1,11 +1,11 @@
 package edu.mit.compilers.st;
 
 public class ArrayDesc extends Descriptor {
-    private int cap;
+    private Integer cap;
 
-    public ArrayDesc(String type, String text, String cap) {
+    public ArrayDesc(String type, String text, Integer cap) {
         super(type, text);
-        this.cap = Integer.parseInt(cap);
+        this.cap = cap;
     }
 
     // find if index is overbound

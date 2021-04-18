@@ -65,6 +65,24 @@ ga:
 	.size	g, 4
 g:
 	.long	3
+	.globl	aaa
+	.bss
+	.align 32
+	.type	aaa, @object
+	.size	aaa, 800
+aaa:
+	.zero	800
+	.globl	bb
+	.type	bb, @object
+	.size	bb, 5
+bb:
+	.zero	5
+	.globl	bbb
+	.align 32
+	.type	bbb, @object
+	.size	bbb, 200
+bbb:
+	.zero	200
 	.text
 	.globl	main
 	.type	main, @function
@@ -76,9 +94,9 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
-# bool_variable.cpp:7:     return 0;
+# bool_variable.cpp:11:     return 0;
 	movl	$0, %eax	#, _1
-# bool_variable.cpp:8: }
+# bool_variable.cpp:12: }
 	popq	%rbp	#
 	.cfi_def_cfa 7, 8
 	ret	

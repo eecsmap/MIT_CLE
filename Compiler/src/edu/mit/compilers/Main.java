@@ -112,7 +112,7 @@ class Main {
         if (CLI.debug) {
             Er.setTrace();
         }
-        IrUtils.irParse(t, null);
+        Program.irParse(t, null);
         if(Er.hasError()) {
             System.exit(1);
         }
@@ -126,7 +126,7 @@ class Main {
             Er.setTrace();
         }
         List<String> codes = new ArrayList<>();
-        IrUtils.irParse(t, codes);
+        Program.irParse(t, codes);
         if(Er.hasError()) {
             System.exit(1);
         } else {

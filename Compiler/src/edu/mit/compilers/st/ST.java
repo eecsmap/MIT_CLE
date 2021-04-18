@@ -173,4 +173,8 @@ public class ST {
             return this.subST.getBreakLabel();
         }
     }
+
+    public final Boolean isGlobal() {
+        return this.isGlobal;
+    }
 }

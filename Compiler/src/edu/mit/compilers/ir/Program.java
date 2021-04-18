@@ -15,12 +15,12 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
-public class IrUtils {
-    private static final ST importST = new ST();
-    private static final ST globalST = new ST();
-    private static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
-    private static boolean mainDeclared = false;
-    private static boolean compile;
+public class Program {
+    static final ST importST = new ST();
+    static final ST globalST = new ST();
+    static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
+    static boolean mainDeclared = false;
+    static boolean compile;
 
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t, List<String> codes) {
@@ -29,7 +29,7 @@ public class IrUtils {
             compile = false;
         }
         t = importDecl(t, importST);
-        t = fieldDecl(t, globalST, codes);
+        t = FieldDecl.parse(t, globalST, codes);
         t = methodDecl(t, globalST, codes);
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
@@ -37,7 +37,7 @@ public class IrUtils {
     }
 
     // return the next AST to parse
-    private static AST importDecl(AST t, ST importST) {
+    static AST importDecl(AST t, ST importST) {
         for (; t != null && AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
             String methodName = t.getFirstChild().getText();
@@ -53,50 +53,7 @@ public class IrUtils {
         return t;
     }
 
-    private static AST fieldDecl(AST t, ST st) {
-        for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
-            String type = null;
-            switch (t.getType()) {
-                case DecafScannerTokenTypes.TK_bool:
-                    type = Defs.DESC_TYPE_BOOL;
-                    break;
-                case DecafScannerTokenTypes.TK_int:
-                    type = Defs.DESC_TYPE_INT;
-                    break;
-            }
-            AST c = t.getFirstChild();
-            for (; c != null; c = c.getNextSibling()) {
-                AST cc = c.getFirstChild();
-                if (cc != null) {
-                    // cc is not null -> is array
-                    String cap = cc.getText();
-                    if(Integer.parseInt(cap) <= 0) {
-                        Er.errBadArrayCap(cc);
-                        cap = "9999999";
-                    }
-                    if (st == globalST && importST.getMethod(c.getText()) != null) {
-                        Er.errDuplicatedDeclaration(c, c.getText());
-                        continue;
-                    }
-                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cap))) {
-                        Er.errDuplicatedDeclaration(c, c.getText());
-                    }
-                    continue;
-                }
-                if (importST.getMethod(c.getText()) != null) {
-                    Er.errDuplicatedDeclaration(c, c.getText());
-                    continue;
-                }
-                // cc is null -> it's single Variable
-                if (!st.push(new VarDesc(type, c.getText()))) {
-                    Er.errDuplicatedDeclaration(c, c.getText());
-                }
-            }
-        }
-        return t;
-    }
-
-    private static AST methodDecl(AST t, ST globalST) {
+    static AST methodDecl(AST t, ST globalST, List<String> codes) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
@@ -130,7 +87,7 @@ public class IrUtils {
     }
 
     // return lType
-    private static String parseAssign(AST t, ST st) {
+    static String parseAssign(AST t, ST st) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
@@ -145,7 +102,7 @@ public class IrUtils {
         return lType;
     }
 
-    private static void parseBinaryAssign(AST t, ST st, boolean simple) {
+    static void parseBinaryAssign(AST t, ST st, boolean simple) {
         String lType = parseAssign(t, st);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
@@ -156,7 +113,7 @@ public class IrUtils {
         }
     }
 
-    private static void parseUnaryAssign(AST t, ST st) {
+    static void parseUnaryAssign(AST t, ST st) {
         String lType = parseAssign(t, st);
         AST c = t.getFirstChild();
         if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
@@ -166,13 +123,13 @@ public class IrUtils {
     }
 
     // only =
-    private static void parseSimpleAssign(AST t, ST st, List<String> codes) {
+    static void parseSimpleAssign(AST t, ST st, List<String> codes) {
         String op = "=";
         parseBinaryAssign(t, st, true);
     }
 
     // +=, -=, =, ++, --
-    private static void parseMoreAssign(AST t, ST st, List<String> codes) {
+    static void parseMoreAssign(AST t, ST st, List<String> codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
             parseBinaryAssign(t, st, op.equals("="));
@@ -181,7 +138,7 @@ public class IrUtils {
         }
     }
 
-    private static String parseRelOps(AST t, ST st) {
+    static String parseRelOps(AST t, ST st) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
         String cond = parseExpr(cc, st);
@@ -199,7 +156,7 @@ public class IrUtils {
     }
 
     // return method type
-    private static String parseMethodCall(AST t, ST st) {
+    static String parseMethodCall(AST t, ST st) {
         String methodName = t.getText();
         String _type = st.getType(methodName);
         if (_type != null && !Defs.isMethodType(_type)) {
@@ -238,7 +195,7 @@ public class IrUtils {
         return Defs.getMethodType(method.getType());
     }
 
-    private static String parseArrayElement(AST t, ST st) {
+    static String parseArrayElement(AST t, ST st) {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
             System.err.printf("11 ");
@@ -264,7 +221,7 @@ public class IrUtils {
         return Defs.getArrayType(type);
     }
 
-    private static void parseIf(AST t, ST st, List<String> codes) {
+    static void parseIf(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         AST c = t.getFirstChild();
         Label ifExecutionEndLabel = new Label();
@@ -286,7 +243,7 @@ public class IrUtils {
             hasElse = true;
             parseBlock(c.getFirstChild(), localST, codesElseExecution);
         }
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             codesCondition.add(
                 asm.jmp("je", ifExecutionEndLabel)
             );
@@ -306,13 +263,13 @@ public class IrUtils {
     }
 
     // doesn't suppeort declaration in for loop
-    private static void parseFor(AST t, ST st, List<String> codes) {
+    static void parseFor(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
         Label loopEndLabel = new Label();
         localST.pushContext(t.getType());
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             localST.pushContinueLabel(conditionBeginLabel);
             localST.pushBreakLabel(loopEndLabel);
         }
@@ -335,7 +292,7 @@ public class IrUtils {
         // block
         List<String> codesExecution = new ArrayList<>();
         parseBlock(c, localST, codesExecution);
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             codesInit.add(
                 asm.jmp("jmp", conditionBeginLabel)
             );
@@ -351,19 +308,19 @@ public class IrUtils {
             codes.add(asm.label(loopEndLabel));
         }
         localST.popContext();
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             localST.popContinueLabel();
             localST.popBreakLabel();
         }
     }
 
-    private static void parseWhile(AST t, ST st, List<String> codes) {
+    static void parseWhile(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
         Label loopEndLabel = new Label();
         localST.pushContext(t.getType());
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             localST.pushContinueLabel(conditionBeginLabel);
             localST.pushBreakLabel(loopEndLabel);
         }
@@ -379,7 +336,7 @@ public class IrUtils {
         c = c.getNextSibling();
         List<String> codesExecution = new ArrayList<>();
         parseBlock(c, localST, codesCondition);
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             codesExecution.add(0,
                 asm.jmp("jmp", conditionBeginLabel)
             );
@@ -393,13 +350,13 @@ public class IrUtils {
             codes.add(asm.label(loopEndLabel));
         }
         localST.popContext();
-        if (!Er.hasError()) {
+        if (!Er.hasError() && compile) {
             localST.popContinueLabel();
             localST.popBreakLabel();
         }
     }
 
-    private static String parseIntLiteral(AST t, boolean isNegative) {
+    static String parseIntLiteral(AST t, boolean isNegative) {
         String number;
         if (isNegative) {
             number = "-" + t.getText();
@@ -425,7 +382,7 @@ public class IrUtils {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    private static String parseExpr(AST t, ST st, List<String> codes) {
+    static String parseExpr(AST t, ST st, List<String> codes) {
         if (t == null) {
             return null;
         }
@@ -546,7 +503,7 @@ public class IrUtils {
     }
 
     // if null -> return; if TK_else -> return current AST
-    private static AST parseBlock(AST t, ST st, List<String> codes) {
+    static AST parseBlock(AST t, ST st, List<String> codes) {
         // parse fields
         t = fieldDecl(t, st);
         // parse statements
@@ -559,7 +516,7 @@ public class IrUtils {
         return null;
     }
 
-    private static void parseStmt(AST t, ST st) {
+    static void parseStmt(AST t, ST st) {
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
                 parseMethodCall(t, st);
