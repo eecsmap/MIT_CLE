@@ -1,6 +1,5 @@
 package edu.mit.compilers.st;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;

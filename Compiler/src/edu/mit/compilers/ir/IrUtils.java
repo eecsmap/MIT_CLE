@@ -20,13 +20,17 @@ public class IrUtils {
     private static final ST globalST = new ST();
     private static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     private static boolean mainDeclared = false;
+    private static boolean compile;
 
     // parse an AST to IRTree with the help of Symbol Tree
-    public static void irParse(AST t) {
+    public static void irParse(AST t, List<String> codes) {
         // treat import Symbol Table as special one
+        if (codes == null) {
+            compile = false;
+        }
         t = importDecl(t, importST);
-        t = fieldDecl(t, globalST);
-        t = methodDecl(t, globalST);
+        t = fieldDecl(t, globalST, codes);
+        t = methodDecl(t, globalST, codes);
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
         }
