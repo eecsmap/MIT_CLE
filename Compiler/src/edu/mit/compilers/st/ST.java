@@ -17,6 +17,7 @@ import edu.mit.compilers.tools.Er;
 public class ST {
     private ST subST = null;
     private String returnType = null;
+    private Label returnLabel = null;
     // text -> Descriptor
     private Map<String, Descriptor> table = new HashMap<>();
     // for / while
@@ -40,6 +41,7 @@ public class ST {
         this.isGlobal = false;
         this.subST = subst;
         this.returnType = type;
+        this.returnLabel = new Label();
     }
 
     private final String getTypeNonRecursive(String text) {
@@ -176,5 +178,9 @@ public class ST {
 
     public final Boolean isGlobal() {
         return this.isGlobal;
+    }
+
+    public final Label getReturnLabel() {
+        return this.returnLabel;
     }
 }

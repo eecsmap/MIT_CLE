@@ -9,11 +9,11 @@ import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
-import edu.mit.compilers.grammar.*;
 
 class MethodDecl {
     static AST parse(AST t, ST globalST, List<String> codes) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
+            
             // parse method type
             AST c = t.getFirstChild();
             String returnType = c.getText();
@@ -40,12 +40,13 @@ class MethodDecl {
             }
             Program.methodMap.put(t.getText(), params);
             // parse block
-            Program.parseBlock(c, localST);
-        }
-        if (!Er.hasError() && Program.compile) {
-            codes.addAll(asm.methodDeclStart(name));
-
-            codes.addAll(asm.methodDeclEnd());
+            List<String> codesMethod = new ArrayList<>();
+            Program.parseBlock(c, localST, codesMethod);
+            if (!Er.hasError() && Program.compile) {
+                codes.addAll(asm.methodDeclStart(t.getText()));
+                codes.addAll(codesMethod);
+                codes.addAll(asm.methodDeclEnd());
+            }
         }
         return t;
     }
