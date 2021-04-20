@@ -1,4 +1,5 @@
 package edu.mit.compilers.asm;
+import edu.mit.compilers.st.Descriptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,7 +97,7 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> methodDeclStart(String name, String... arguments) {
+    public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc) {
         List<String> codes = new ArrayList<>();
         Collections.addAll(codes,
             label(name + ":"),
@@ -104,9 +105,9 @@ public class asm {
             bin("movq", Reg.rsp, Reg.rbp)
         );
         // move arguments to memory
-        for (int i = 0; i <= arguments.length; i++) {
+        for (int i = 0; i <= argsDesc.length; i++) {
             codes.add(
-                bin("movq", argRegMap.get(i), new Addr(-4 * i))
+                bin("movq", argRegMap.get(i), argsDesc.get(i).getAddr())
             );
         }
         return codes;

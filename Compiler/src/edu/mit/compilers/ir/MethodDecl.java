@@ -28,8 +28,11 @@ class MethodDecl {
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
+            ArrayList<Descriptor> paramsDesc = new ArrayList<>();
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
-                if (!localST.push(new VarDesc(c.getFirstChild().getText(), c.getText()))) {
+                Descriptor desc = new VarDesc(c.getFirstChild().getText(), c.getText());
+                paramsDesc.add(desc);
+                if (!localST.push(desc)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
@@ -43,7 +46,7 @@ class MethodDecl {
             List<String> codesMethod = new ArrayList<>();
             Program.parseBlock(c, localST, codesMethod);
             if (!Er.hasError() && Program.compile) {
-                codes.addAll(asm.methodDeclStart(t.getText()));
+                codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc));
                 codes.addAll(codesMethod);
                 codes.addAll(asm.methodDeclEnd());
             }

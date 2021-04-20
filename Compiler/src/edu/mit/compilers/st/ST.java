@@ -26,7 +26,7 @@ public class ST {
     private Stack<Label> breakLabelStack = new Stack<>();
     private Boolean isGlobal;
     // only for non-global ST
-    private Integer varOffset = 4;
+    private Integer varOffset = -4;
 
     public ST() {
         this.isGlobal = true;
@@ -88,10 +88,15 @@ public class ST {
                 desc.setAddr(new Addr(desc.getText()));
             } else {
                 desc.setAddr(new Addr(this.varOffset));
-                if (Defs.isArrayType(desc.getType())) {
-                    this.varOffset += 4 * ((ArrayDesc)desc).getCap();
+                if (this.varOffset > -24 && this.varOffset < 0) {
+                    // first six
+                    this.varOffset -= 4;
+                } else if (this.varOffset == -24) {
+                    // the seventh
+                    this.varOffset = 16;
                 } else {
-                    this.varOffset += 4;
+                    // and after
+                    this.varOffset += 8;
                 }
             }
         }
