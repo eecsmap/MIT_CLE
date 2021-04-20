@@ -45,7 +45,7 @@ class Method {
             // parse block
             List<String> codesMethod = new ArrayList<>();
             Structure.block(c, localST, codesMethod);
-            if (!Er.hasError() && Program.compile) {
+            if (Program.shouldCompile()) {
                 codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc));
                 codes.addAll(codesMethod);
                 codes.addAll(asm.methodDeclEnd());

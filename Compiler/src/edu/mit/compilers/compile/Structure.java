@@ -11,7 +11,15 @@ import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 public class Structure {
-        // <expr>  => location
+    private static Boolean isBinaryAnyOp(AST t) {
+        return 
+        AstUtils.isBinaryOp(t)
+        || AstUtils.isBinaryCompOp(t)
+        || AstUtils.isBinaryBoolOp(t)
+        || AstUtils.isBinaryIntCompOp(t);
+    }
+
+    // <expr>  => location
     // | method_call
     // | literal
     // | len ( id )
@@ -22,65 +30,47 @@ public class Structure {
         if (t == null) {
             return null;
         }
-        if (AstUtils.isBinaryOp(t) && t.getNumberOfChildren() == 2) {
+        if (isBinaryAnyOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
             List<String> leftCodes = new ArrayList<>();
             List<String> rightCodes = new ArrayList<>();
             String lType = expr(l, st, leftCodes);
             String rType = expr(r, st, rightCodes);
-            if (lType != null && !Defs.equals(lType, rType)) {
-                System.err.printf("16 ");
-                Er.errType(l, lType, rType);
+            if (AstUtils.isBinaryOp(t)) {
+                if (lType != null && !Defs.equals(lType, rType)) {
+                    System.err.printf("16 ");
+                    Er.errType(l, lType, rType);
+                }
+                return lType;
+            } else if (AstUtils.isBinaryCompOp(t)) {
+                if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
+                    System.err.printf("31 ");
+                    Er.errType(r, lType, rType);
+                }
+                return Defs.DESC_TYPE_BOOL;    
+            } else if (AstUtils.isBinaryBoolOp(t)) {
+                if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
+                    System.err.printf("17 ");
+                    Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
+                }
+                if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
+                    System.err.printf("18 ");
+                    Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
+                }
+                return Defs.DESC_TYPE_BOOL;
+            } else if (AstUtils.isBinaryIntCompOp(t)) {
+                if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
+                    System.err.printf("27 ");
+                    Er.errType(l, Defs.DESC_TYPE_INT, lType);
+                }
+                if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
+                    System.err.printf("28 ");
+                    Er.errType(r, Defs.DESC_TYPE_INT, rType);
+                }
+                return Defs.DESC_TYPE_BOOL;
             }
-            return lType;
-        }
-        if (AstUtils.isBinaryCompOp(t) && t.getNumberOfChildren() == 2) {
-            AST l = t.getFirstChild();
-            AST r = l.getNextSibling();
-            List<String> leftCodes = new ArrayList<>();
-            List<String> rightCodes = new ArrayList<>();
-            String lType = expr(l, st, leftCodes);
-            String rType = expr(r, st, rightCodes);
-            if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
-                System.err.printf("31 ");
-                Er.errType(r, lType, rType);
-            }
-            return Defs.DESC_TYPE_BOOL;
-        }
-        if (AstUtils.isBinaryBoolOp(t) && t.getNumberOfChildren() == 2) {
-            AST l = t.getFirstChild();
-            AST r = l.getNextSibling();
-            List<String> leftCodes = new ArrayList<>();
-            List<String> rightCodes = new ArrayList<>();
-            String lType = expr(l, st, leftCodes);
-            String rType = expr(r, st, rightCodes);
-            if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
-                System.err.printf("17 ");
-                Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
-            }
-            if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
-                System.err.printf("18 ");
-                Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
-            }
-            return Defs.DESC_TYPE_BOOL;
-        }
-        if (AstUtils.isBinaryIntCompOp(t) && t.getNumberOfChildren() == 2) {
-            AST l = t.getFirstChild();
-            AST r = l.getNextSibling();
-            List<String> leftCodes = new ArrayList<>();
-            List<String> rightCodes = new ArrayList<>();
-            String lType = expr(l, st, leftCodes);
-            String rType = expr(r, st, rightCodes);
-            if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-                System.err.printf("27 ");
-                Er.errType(l, Defs.DESC_TYPE_INT, lType);
-            }
-            if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
-                System.err.printf("28 ");
-                Er.errType(r, Defs.DESC_TYPE_INT, rType);
-            }
-            return Defs.DESC_TYPE_BOOL;
+
         }
         List<String> thisCodes = new ArrayList<>();
         switch(t.getType()) {

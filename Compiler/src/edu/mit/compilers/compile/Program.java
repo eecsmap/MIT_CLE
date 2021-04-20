@@ -18,6 +18,9 @@ public class Program {
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
+    static boolean shouldCompile() {
+        return !Er.hasError() && compile;
+    }
 
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t, List<String> codes) {

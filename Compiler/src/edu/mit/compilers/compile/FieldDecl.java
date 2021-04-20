@@ -42,7 +42,7 @@ class FieldDecl {
                     if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cap))) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
-                    if (!Er.hasError() && Program.compile && st.isGlobal()) {
+                    if (Program.shouldCompile() && st.isGlobal()) {
                         codes.addAll(
                             asm.globalDecl(c.getText(), size * cap)
                         );
@@ -57,7 +57,7 @@ class FieldDecl {
                 if (!st.push(new VarDesc(type, c.getText()))) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                 }
-                if (!Er.hasError() && Program.compile && st.isGlobal()) {
+                if (Program.shouldCompile() && st.isGlobal()) {
                     codes.addAll(
                         asm.globalDecl(c.getText(), size)
                     );
