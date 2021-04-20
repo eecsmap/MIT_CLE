@@ -161,58 +161,58 @@ public class Structure {
     // if null -> return; if TK_else -> return current AST
     static AST block(AST t, ST st, List<String> codes) {
         // parse fields
-        t = fieldDecl(t, st);
+        t = FieldDecl.parse(t, st, codes);
         // parse statements
         for (; t != null; t = t.getNextSibling()) {
             if (t.getType() == DecafScannerTokenTypes.TK_else) {
                 return t;
             }
-            parseStmt(t, st);
+            parseStmt(t, st, codes);
         }
         return null;
     }
 
-    static void parseStmt(AST t, ST st) {
+    static void parseStmt(AST t, ST st, List<String> codes) {
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                Method.call(t, st);
-                break;
+                Method.call(t, st, codes);
+                return;
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
             case DecafScannerTokenTypes.MINUSASSIGN:
             case DecafScannerTokenTypes.INCRE:
             case DecafScannerTokenTypes.DECRE:
-                Operation.moreAssign(t, st);
-                break;
+                Operation.moreAssign(t, st, codes);
+                return;
             case DecafScannerTokenTypes.TK_if:
-                ControlFlow.ifFlow(t, st);
-                break;
+                ControlFlow.ifFlow(t, st, codes);
+                return;
             case DecafScannerTokenTypes.TK_for:
-                ControlFlow.forFlow(t, st);
-                break;
+                ControlFlow.forFlow(t, st, codes);
+                return;
             case DecafScannerTokenTypes.TK_while:
-                ControlFlow.whileFlow(t, st);
-                break;
+                ControlFlow.whileFlow(t, st, codes);
+                return;
             case DecafScannerTokenTypes.TK_break:
                 if (!AstUtils.isLoop(st.getContext())) {
                     System.err.printf("23 ");
                     Er.errBreak(t);
                 }
-                break;
+                return;
             case DecafScannerTokenTypes.TK_continue:
                 if (!AstUtils.isLoop(st.getContext())) {
                     System.err.printf("24 ");
                     Er.errContinue(t);
                 }
-                break;
+                return;
             case DecafScannerTokenTypes.TK_return:
                 String expectedReturnType = st.getReturnType();
                 if (expectedReturnType == null) {
                     System.err.printf("25 ");
                     Er.report(t, "null return");
-                    break;
+                    return;
                 }
-                String actualReturnType = expr(t.getFirstChild(), st);
+                String actualReturnType = expr(t.getFirstChild(), st, codes);
                 if (actualReturnType == null) {
                     actualReturnType = Defs.DESC_TYPE_VOID;
                 }
@@ -220,7 +220,10 @@ public class Structure {
                     System.err.printf("26 ");
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
-                break;
+                if (Program.shouldCompile()) {
+                    // TODO
+                }
+                return;
         }
     }
 }
