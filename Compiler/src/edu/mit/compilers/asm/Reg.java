@@ -20,6 +20,9 @@ public class Reg extends Oprand {
     public static Reg edi = new Reg("edi");
     public static Reg al = new Reg("al");
 
+    public static Reg r8d = new Reg("r8d");
+    public static Reg r9d = new Reg("r9d");
+
     private String name;
 
     public Reg(String name) {
