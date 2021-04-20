@@ -37,18 +37,19 @@ public class Structure {
             List<String> rightCodes = new ArrayList<>();
             String lType = expr(l, st, leftCodes);
             String rType = expr(r, st, rightCodes);
+            String returnType = null;
             if (AstUtils.isBinaryOp(t)) {
                 if (lType != null && !Defs.equals(lType, rType)) {
                     System.err.printf("16 ");
                     Er.errType(l, lType, rType);
                 }
-                return lType;
+                returnType = lType;
             } else if (AstUtils.isBinaryCompOp(t)) {
                 if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
                     System.err.printf("31 ");
                     Er.errType(r, lType, rType);
                 }
-                return Defs.DESC_TYPE_BOOL;    
+                returnType = Defs.DESC_TYPE_BOOL;    
             } else if (AstUtils.isBinaryBoolOp(t)) {
                 if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
                     System.err.printf("17 ");
@@ -58,7 +59,7 @@ public class Structure {
                     System.err.printf("18 ");
                     Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
                 }
-                return Defs.DESC_TYPE_BOOL;
+                returnType = Defs.DESC_TYPE_BOOL;
             } else if (AstUtils.isBinaryIntCompOp(t)) {
                 if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
                     System.err.printf("27 ");
@@ -68,9 +69,12 @@ public class Structure {
                     System.err.printf("28 ");
                     Er.errType(r, Defs.DESC_TYPE_INT, rType);
                 }
-                return Defs.DESC_TYPE_BOOL;
+                returnType = Defs.DESC_TYPE_BOOL;
             }
-
+            if (Program.shouldCompile()) {
+                // TODO
+            }
+            return returnType;
         }
         List<String> thisCodes = new ArrayList<>();
         switch(t.getType()) {
@@ -96,6 +100,7 @@ public class Structure {
                     return Method.call(t, st, codes);
                 }
                 // var
+                // TODO
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
                 return Element.intLiteral(t, false, codes);
@@ -112,12 +117,18 @@ public class Structure {
                     System.err.printf("20 ");
                     Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
+                if (Program.shouldCompile()) {
+                    // TODO
+                }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
                 String subType0 = expr(t.getFirstChild(), st, thisCodes);
                 if (subType0 != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType0)) {
                     System.err.printf("21 ");
                     Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
+                }
+                if (Program.shouldCompile()) {
+                    // TODO
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_len:
@@ -127,10 +138,19 @@ public class Structure {
                     System.err.printf("22 ");
                     Er.errNotDefined(c, c.getText());
                 }
+                if (Program.shouldCompile()) {
+                    // TODO
+                }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
+                if (Program.shouldCompile()) {
+                    // TODO
+                }
                 return Defs.TYPE_STRING_LITERAL;
-            case DecafScannerTokenTypes.CHARLITERAL: 
+            case DecafScannerTokenTypes.CHARLITERAL:
+                if (Program.shouldCompile()) {
+                    // TODO
+                }
                 return Defs.TYPE_CHAR_LITERAL;
             case DecafScannerTokenTypes.COLON:
                 return Operation.relOps(t, st, thisCodes);
