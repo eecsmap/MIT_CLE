@@ -11,7 +11,7 @@ import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
 
 public class ControlFlow {
-    static void parseIf(AST t, ST st, List<String> codes) {
+    static void ifFlow(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         AST c = t.getFirstChild();
         Label ifExecutionEndLabel = new Label();
@@ -53,7 +53,7 @@ public class ControlFlow {
     }
 
     // doesn't suppeort declaration in for loop
-    static void parseFor(AST t, ST st, List<String> codes) {
+    static void forFlow(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
@@ -104,7 +104,7 @@ public class ControlFlow {
         }
     }
 
-    static void parseWhile(AST t, ST st, List<String> codes) {
+    static void whileFlow(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();

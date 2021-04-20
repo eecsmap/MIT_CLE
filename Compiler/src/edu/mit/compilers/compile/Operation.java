@@ -10,7 +10,7 @@ import edu.mit.compilers.tools.Er;
 
 public class Operation {
     // return lType
-    static String parseAssign(AST t, ST st) {
+    static String assign(AST t, ST st, List<String> codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         String lType = st.getType(lID);
@@ -18,26 +18,26 @@ public class Operation {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
         } else if (Defs.isArrayType(lType)) {
-            lType = parseArrayElement(c, st);
+            lType = Element.arrayElement(c, st);
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
         }
         return lType;
     }
 
-    static void parseBinaryAssign(AST t, ST st, boolean simple) {
-        String lType = parseAssign(t, st);
+    static void binaryAssign(AST t, ST st, boolean simple, List<String> codes) {
+        String lType = assign(t, st);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
-        String rType = parseExpr(c, st);
+        String rType = Structure.expr(c, st);
         if (lType != null && (!Defs.equals(lType, rType) || (!simple && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
         }
     }
 
-    static void parseUnaryAssign(AST t, ST st) {
-        String lType = parseAssign(t, st);
+    static void unaryAssign(AST t, ST st, List<String> codes) {
+        String lType = assign(t, st);
         AST c = t.getFirstChild();
         if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
             System.err.printf("31 ");
@@ -45,33 +45,33 @@ public class Operation {
         }
     }
 
-    // only =
-    static void parseSimpleAssign(AST t, ST st, List<String> codes) {
+    // only =, forwarder
+    static void simpleAssign(AST t, ST st, List<String> codes) {
         String op = "=";
-        parseBinaryAssign(t, st, true);
+        binaryAssign(t, st, true, codes);
     }
 
-    // +=, -=, =, ++, --
-    static void parseMoreAssign(AST t, ST st, List<String> codes) {
+    // +=, -=, =, ++, --, forwarder
+    static void moreAssign(AST t, ST st, List<String> codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
-            parseBinaryAssign(t, st, op.equals("="));
+            binaryAssign(t, st, op.equals("="), codes);
         } else {
-            parseUnaryAssign(t, st);
+            unaryAssign(t, st, codes);
         }
     }
 
-    static String parseRelOps(AST t, ST st) {
+    static String relOps(AST t, ST st, List<String> codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
-        String cond = parseExpr(cc, st);
+        String cond = Structure.expr(cc, st);
         if (!Defs.equals(Defs.DESC_TYPE_BOOL, cond)) {
             Er.errType(t, Defs.DESC_TYPE_BOOL, cond);
         }
         cc = cc.getNextSibling();
-        String trueType = parseExpr(cc, st);
+        String trueType = Structure.expr(cc, st);
         c = c.getNextSibling();
-        String falseType = parseExpr(c, st);
+        String falseType = Structure.expr(c, st);
         if (!Defs.equals(trueType, falseType)) {
             Er.errType(t, trueType, falseType);
         }

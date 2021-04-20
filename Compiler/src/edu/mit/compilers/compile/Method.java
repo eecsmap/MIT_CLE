@@ -44,7 +44,7 @@ class Method {
             Program.methodMap.put(t.getText(), params);
             // parse block
             List<String> codesMethod = new ArrayList<>();
-            Structure.parseBlock(c, localST, codesMethod);
+            Structure.block(c, localST, codesMethod);
             if (!Er.hasError() && Program.compile) {
                 codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc));
                 codes.addAll(codesMethod);
@@ -55,7 +55,7 @@ class Method {
     }
 
     // return method type
-    static String call(AST t, ST st) {
+    static String call(AST t, ST st, List<String> codes) {
         String methodName = t.getText();
         String _type = st.getType(methodName);
         if (_type != null && !Defs.isMethodType(_type)) {
@@ -84,7 +84,7 @@ class Method {
             return Defs.getMethodType(method.getType());
         }
         for (int i = 0; c != null; c = c.getNextSibling(), i++) {
-            String cType = parseExpr(c, st);
+            String cType = Structure.expr(c, st);
             if (!Defs.equals(params.get(i), cType)) {
                 System.err.printf("10 ");
                 Er.errType(c, params.get(i), cType);

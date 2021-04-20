@@ -1,5 +1,6 @@
 package edu.mit.compilers.compile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
@@ -17,16 +18,17 @@ public class Structure {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    
-    static String parseExpr(AST t, ST st, List<String> codes) {
+    static String expr(AST t, ST st, List<String> codes) {
         if (t == null) {
             return null;
         }
         if (AstUtils.isBinaryOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
-            String lType = parseExpr(l, st);
-            String rType = parseExpr(r, st);
+            List<String> leftCodes = new ArrayList<>();
+            List<String> rightCodes = new ArrayList<>();
+            String lType = expr(l, st, leftCodes);
+            String rType = expr(r, st, rightCodes);
             if (lType != null && !Defs.equals(lType, rType)) {
                 System.err.printf("16 ");
                 Er.errType(l, lType, rType);
@@ -36,8 +38,10 @@ public class Structure {
         if (AstUtils.isBinaryCompOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
-            String lType = parseExpr(l, st);
-            String rType = parseExpr(r, st);
+            List<String> leftCodes = new ArrayList<>();
+            List<String> rightCodes = new ArrayList<>();
+            String lType = expr(l, st, leftCodes);
+            String rType = expr(r, st, rightCodes);
             if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
                 System.err.printf("31 ");
                 Er.errType(r, lType, rType);
@@ -47,8 +51,10 @@ public class Structure {
         if (AstUtils.isBinaryBoolOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
-            String lType = parseExpr(l, st);
-            String rType = parseExpr(r, st);
+            List<String> leftCodes = new ArrayList<>();
+            List<String> rightCodes = new ArrayList<>();
+            String lType = expr(l, st, leftCodes);
+            String rType = expr(r, st, rightCodes);
             if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
                 System.err.printf("17 ");
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
@@ -62,8 +68,10 @@ public class Structure {
         if (AstUtils.isBinaryIntCompOp(t) && t.getNumberOfChildren() == 2) {
             AST l = t.getFirstChild();
             AST r = l.getNextSibling();
-            String lType = parseExpr(l, st);
-            String rType = parseExpr(r, st);
+            List<String> leftCodes = new ArrayList<>();
+            List<String> rightCodes = new ArrayList<>();
+            String lType = expr(l, st, leftCodes);
+            String rType = expr(r, st, rightCodes);
             if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
                 System.err.printf("27 ");
                 Er.errType(l, Defs.DESC_TYPE_INT, lType);
@@ -74,6 +82,7 @@ public class Structure {
             }
             return Defs.DESC_TYPE_BOOL;
         }
+        List<String> thisCodes = new ArrayList<>();
         switch(t.getType()) {
             case DecafScannerTokenTypes.ID:
                 String type = st.getType(t.getText());
@@ -90,31 +99,32 @@ public class Structure {
                     if (t.getNumberOfChildren() == 0) {
                         return type;
                     }
-                    return parseArrayElement(t, st);
+                    return Element.arrayElement(t, st, codes);
                 }
                 // method
                 if (Defs.isMethodType(type)) {
-                    return parseMethodCall(t, st);
+                    return Method.call(t, st, codes);
                 }
                 // var
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
-                return parseIntLiteral(t, false);
+                return Element.intLiteral(t, false, codes);
             case DecafScannerTokenTypes.TK_true:
             case DecafScannerTokenTypes.TK_false:
+                // TODO
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
-                    return parseIntLiteral(t.getFirstChild(), true);
+                    return Element.intLiteral(t.getFirstChild(), true, codes);
                 }
-                String subType = parseExpr(t.getFirstChild(), st);
+                String subType = expr(t.getFirstChild(), st, thisCodes);
                 if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
                     System.err.printf("20 ");
                     Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
-                String subType0 = parseExpr(t.getFirstChild(), st);
+                String subType0 = expr(t.getFirstChild(), st, thisCodes);
                 if (subType0 != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType0)) {
                     System.err.printf("21 ");
                     Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
@@ -133,13 +143,13 @@ public class Structure {
             case DecafScannerTokenTypes.CHARLITERAL: 
                 return Defs.TYPE_CHAR_LITERAL;
             case DecafScannerTokenTypes.COLON:
-                return parseRelOps(t, st);
+                return Operation.relOps(t, st, thisCodes);
         }
         return null;
     }
 
     // if null -> return; if TK_else -> return current AST
-    static AST parseBlock(AST t, ST st, List<String> codes) {
+    static AST block(AST t, ST st, List<String> codes) {
         // parse fields
         t = fieldDecl(t, st);
         // parse statements
@@ -155,23 +165,23 @@ public class Structure {
     static void parseStmt(AST t, ST st) {
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                parseMethodCall(t, st);
+                Method.call(t, st);
                 break;
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
             case DecafScannerTokenTypes.MINUSASSIGN:
             case DecafScannerTokenTypes.INCRE:
             case DecafScannerTokenTypes.DECRE:
-                parseMoreAssign(t, st);
+                Operation.moreAssign(t, st);
                 break;
             case DecafScannerTokenTypes.TK_if:
-                parseIf(t, st);
+                ControlFlow.ifFlow(t, st);
                 break;
             case DecafScannerTokenTypes.TK_for:
-                parseFor(t, st);
+                ControlFlow.forFlow(t, st);
                 break;
             case DecafScannerTokenTypes.TK_while:
-                parseWhile(t, st);
+                ControlFlow.whileFlow(t, st);
                 break;
             case DecafScannerTokenTypes.TK_break:
                 if (!AstUtils.isLoop(st.getContext())) {
@@ -192,7 +202,7 @@ public class Structure {
                     Er.report(t, "null return");
                     break;
                 }
-                String actualReturnType = parseExpr(t.getFirstChild(), st);
+                String actualReturnType = expr(t.getFirstChild(), st);
                 if (actualReturnType == null) {
                     actualReturnType = Defs.DESC_TYPE_VOID;
                 }

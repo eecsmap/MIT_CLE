@@ -1,5 +1,7 @@
 package edu.mit.compilers.compile;
 
+import java.util.List;
+
 import antlr.collections.AST;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
@@ -8,7 +10,7 @@ import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 public class Element {
-    static String parseArrayElement(AST t, ST st) {
+    static String arrayElement(AST t, ST st, List<String> codes) {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
             System.err.printf("11 ");
@@ -17,7 +19,7 @@ public class Element {
         }
         String type = desc.getType();
         AST c = t.getFirstChild();
-        String subType = parseExpr(c, st);
+        String subType = Structure.expr(c, st);
         if (subType == null) {
             Er.errType(t, Defs.getArrayType(type), type);
             return Defs.getArrayType(type);
@@ -34,7 +36,7 @@ public class Element {
         return Defs.getArrayType(type);
     }
 
-    static String parseIntLiteral(AST t, boolean isNegative) {
+    static String intLiteral(AST t, boolean isNegative, List<String> codes) {
         String number;
         if (isNegative) {
             number = "-" + t.getText();
