@@ -10,8 +10,8 @@ import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
-class MethodDecl {
-    static AST parse(AST t, ST globalST, List<String> codes) {
+class Method {
+    static AST declare(AST t, ST globalST, List<String> codes) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             
             // parse method type
@@ -44,7 +44,7 @@ class MethodDecl {
             Program.methodMap.put(t.getText(), params);
             // parse block
             List<String> codesMethod = new ArrayList<>();
-            Program.parseBlock(c, localST, codesMethod);
+            Structure.parseBlock(c, localST, codesMethod);
             if (!Er.hasError() && Program.compile) {
                 codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc));
                 codes.addAll(codesMethod);
@@ -52,5 +52,45 @@ class MethodDecl {
             }
         }
         return t;
+    }
+
+    // return method type
+    static String call(AST t, ST st) {
+        String methodName = t.getText();
+        String _type = st.getType(methodName);
+        if (_type != null && !Defs.isMethodType(_type)) {
+            Er.errDuplicatedDeclaration(t, methodName);
+        }
+        Descriptor method = st.getMethod(methodName);
+        if (method == null) {
+            method = Program.importST.getMethod(methodName);
+            if (method == null) {
+                System.err.printf("8 ");
+                Er.errNotDefined(t, methodName);
+                return null;
+            }
+            return Defs.DESC_TYPE_WILDCARD;
+        }
+        
+        AST c = t.getFirstChild();
+        ArrayList<String> params = Program.methodMap.get(method.getText());
+        if (params == null) {
+            System.err.printf("9 ");
+            Er.errNotDefined(c, method.getText());
+            return Defs.DESC_TYPE_WILDCARD;
+        }
+        if (params.size() != t.getNumberOfChildren()) {
+            Er.errArrayArgsMismatch(t);
+            return Defs.getMethodType(method.getType());
+        }
+        for (int i = 0; c != null; c = c.getNextSibling(), i++) {
+            String cType = parseExpr(c, st);
+            if (!Defs.equals(params.get(i), cType)) {
+                System.err.printf("10 ");
+                Er.errType(c, params.get(i), cType);
+            }
+        }
+
+        return Defs.getMethodType(method.getType());
     }
 }

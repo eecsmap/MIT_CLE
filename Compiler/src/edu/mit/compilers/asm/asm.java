@@ -43,7 +43,7 @@ public class asm {
         return String.format("\t%s", directive);
     }
 
-    public static final String binDir(String directive, String fst, Oprand scd) {
+    public static final String binDir(String directive, String fst, String scd) {
         return String.format("\t%s\t%s, %s", directive, fst, scd);
     }
 
@@ -98,6 +98,7 @@ public class asm {
     }
 
     public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc) {
+        // call stack initialization
         List<String> codes = new ArrayList<>();
         Collections.addAll(codes,
             label(name + ":"),
@@ -105,7 +106,7 @@ public class asm {
             bin("movq", Reg.rsp, Reg.rbp)
         );
         // move arguments to memory
-        for (int i = 0; i <= argsDesc.length; i++) {
+        for (int i = 0; i <= argsDesc.size(); i++) {
             codes.add(
                 bin("movq", argRegMap.get(i), argsDesc.get(i).getAddr())
             );
