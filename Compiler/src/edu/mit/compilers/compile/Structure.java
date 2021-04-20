@@ -1,4 +1,4 @@
-package edu.mit.compilers.ir;
+package edu.mit.compilers.compile;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.grammar.*;
 
 public class Structure {
         // <expr>  => location
@@ -77,7 +78,7 @@ public class Structure {
             case DecafScannerTokenTypes.ID:
                 String type = st.getType(t.getText());
                 if (type == null) {
-                    type = importST.getType(t.getText());
+                    type = Program.importST.getType(t.getText());
                     if (type == null) {
                         System.out.printf("19 ");
                         Er.errNotDefined(t, t.getText());

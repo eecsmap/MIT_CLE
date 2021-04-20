@@ -1,4 +1,4 @@
-package edu.mit.compilers.ir;
+package edu.mit.compilers.compile;
 
 import antlr.collections.AST;
 import edu.mit.compilers.defs.Defs;

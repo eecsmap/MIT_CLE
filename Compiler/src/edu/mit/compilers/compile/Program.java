@@ -1,4 +1,4 @@
-package edu.mit.compilers.ir;
+package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
 import java.util.HashMap;
