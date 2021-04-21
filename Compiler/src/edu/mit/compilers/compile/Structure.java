@@ -1,9 +1,13 @@
 package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import antlr.collections.AST;
+import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.asmUtils;
+import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ST;
@@ -28,6 +32,7 @@ public class Structure {
     // | ! expr
     static String expr(AST t, ST st, List<String> codes) {
         if (t == null) {
+            Program.result.add(null);
             return null;
         }
         if (isBinaryAnyOp(t) && t.getNumberOfChildren() == 2) {
@@ -73,6 +78,22 @@ public class Structure {
             }
             if (Program.shouldCompile()) {
                 // TODO
+                Addr rAddr = Program.result.pop();
+                Addr lAddr = Program.result.pop();
+                Addr resAddr = st.resultAddr(lAddr, rAddr);
+                List<String> glueCodes = new ArrayList<>();
+                if (AstUtils.isBinaryBoolOp(t)) {
+                    // TODO
+                } else {
+                    Collections.addAll(glueCodes,
+                        asm.bin("movq", lAddr, resAddr),
+                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rAddr, resAddr)
+                    );
+                }
+                codes.addAll(leftCodes);
+                codes.addAll(rightCodes);
+                codes.addAll(glueCodes);
+                Program.result.push(resAddr);
             }
             return returnType;
         }

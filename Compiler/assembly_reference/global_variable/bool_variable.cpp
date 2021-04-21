@@ -11,9 +11,10 @@ int cal(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
     return a + b + c + d + e + f + g + h + i + j;
 }
 
-int cal(bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h, bool i, bool j) {
+bool cal(bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h, bool i, bool j) {
     bool k[5] = {true, true, false, false, true};
-    return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
+    bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+    return res;
 }
 
 int main() {

@@ -148,82 +148,97 @@ _Z3calbbbbbbbbbb:
 	pushq	%rbx	#
 	subq	$72, %rsp	#,
 	.cfi_offset 3, -24
-	movl	%ecx, %eax	# d, tmp114
-	movl	%r8d, %ebx	# e, tmp116
-	movl	%r9d, %r11d	# f, tmp118
-	movl	16(%rbp), %r10d	# g, tmp120
-	movl	24(%rbp), %r9d	# h, tmp122
-	movl	32(%rbp), %r8d	# i, tmp124
-	movl	40(%rbp), %ecx	# j, tmp126
-	movb	%dil, -36(%rbp)	# tmp109, a
-	movb	%sil, -40(%rbp)	# tmp111, b
-	movb	%dl, -44(%rbp)	# tmp113, c
-	movb	%al, -48(%rbp)	# tmp115, d
-	movl	%ebx, %eax	# tmp116, tmp117
-	movb	%al, -52(%rbp)	# tmp117, e
-	movl	%r11d, %eax	# tmp118, tmp119
-	movb	%al, -56(%rbp)	# tmp119, f
-	movl	%r10d, %eax	# tmp120, tmp121
-	movb	%al, -60(%rbp)	# tmp121, g
-	movl	%r9d, %eax	# tmp122, tmp123
-	movb	%al, -64(%rbp)	# tmp123, h
-	movl	%r8d, %eax	# tmp124, tmp125
-	movb	%al, -68(%rbp)	# tmp125, i
-	movl	%ecx, %eax	# tmp126, tmp127
-	movb	%al, -72(%rbp)	# tmp127, j
-# bool_variable.cpp:14: int cal(bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h, bool i, bool j) {
-	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp129
-	movq	%rax, -24(%rbp)	# tmp129, D.2347
-	xorl	%eax, %eax	# tmp129
+	movl	%ecx, %eax	# d, tmp93
+	movl	%r8d, %ebx	# e, tmp95
+	movl	%r9d, %r11d	# f, tmp97
+	movl	16(%rbp), %r10d	# g, tmp99
+	movl	24(%rbp), %r9d	# h, tmp101
+	movl	32(%rbp), %r8d	# i, tmp103
+	movl	40(%rbp), %ecx	# j, tmp105
+	movb	%dil, -36(%rbp)	# tmp88, a
+	movb	%sil, -40(%rbp)	# tmp90, b
+	movb	%dl, -44(%rbp)	# tmp92, c
+	movb	%al, -48(%rbp)	# tmp94, d
+	movl	%ebx, %eax	# tmp95, tmp96
+	movb	%al, -52(%rbp)	# tmp96, e
+	movl	%r11d, %eax	# tmp97, tmp98
+	movb	%al, -56(%rbp)	# tmp98, f
+	movl	%r10d, %eax	# tmp99, tmp100
+	movb	%al, -60(%rbp)	# tmp100, g
+	movl	%r9d, %eax	# tmp101, tmp102
+	movb	%al, -64(%rbp)	# tmp102, h
+	movl	%r8d, %eax	# tmp103, tmp104
+	movb	%al, -68(%rbp)	# tmp104, i
+	movl	%ecx, %eax	# tmp105, tmp106
+	movb	%al, -72(%rbp)	# tmp106, j
+# bool_variable.cpp:14: bool cal(bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h, bool i, bool j) {
+	movq	%fs:40, %rax	# MEM[(<address-space-1> long unsigned int *)40B], tmp108
+	movq	%rax, -24(%rbp)	# tmp108, D.2363
+	xorl	%eax, %eax	# tmp108
 # bool_variable.cpp:15:     bool k[5] = {true, true, false, false, true};
 	movb	$1, -29(%rbp)	#, k
 	movb	$1, -28(%rbp)	#, k
 	movb	$0, -27(%rbp)	#, k
 	movb	$0, -26(%rbp)	#, k
 	movb	$1, -25(%rbp)	#, k
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-36(%rbp), %edx	# a, _1
-	movzbl	-40(%rbp), %eax	# b, _2
-	addl	%eax, %edx	# _2, _3
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-44(%rbp), %eax	# c, _4
-	addl	%eax, %edx	# _4, _5
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-48(%rbp), %eax	# d, _6
-	addl	%eax, %edx	# _6, _7
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-52(%rbp), %eax	# e, _8
-	addl	%eax, %edx	# _8, _9
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-56(%rbp), %eax	# f, _10
-	addl	%eax, %edx	# _10, _11
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-60(%rbp), %eax	# g, _12
-	addl	%eax, %edx	# _12, _13
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-64(%rbp), %eax	# h, _14
-	addl	%eax, %edx	# _14, _15
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-68(%rbp), %eax	# i, _16
-	addl	%eax, %edx	# _16, _17
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-72(%rbp), %eax	# j, _18
-	addl	%eax, %edx	# _18, _19
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-28(%rbp), %eax	# k, _20
-	movzbl	%al, %eax	# _20, _21
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	addl	%eax, %edx	# _21, _22
-# bool_variable.cpp:16:     return a + b + c + d + e + f + g + h + i + j + k[1] + k[2];
-	movzbl	-27(%rbp), %eax	# k, _23
-	movzbl	%al, %eax	# _23, _24
-	addl	%edx, %eax	# _22, _41
-# bool_variable.cpp:17: }
-	movq	-24(%rbp), %rbx	# D.2347, tmp130
-	xorq	%fs:40, %rbx	# MEM[(<address-space-1> long unsigned int *)40B], tmp130
-	je	.L5	#,
-	call	__stack_chk_fail@PLT	#
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -36(%rbp)	#, a
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -40(%rbp)	#, b
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -44(%rbp)	#, c
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -48(%rbp)	#, d
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -52(%rbp)	#, e
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -56(%rbp)	#, f
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -60(%rbp)	#, g
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -64(%rbp)	#, h
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -68(%rbp)	#, i
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	cmpb	$0, -72(%rbp)	#, j
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	movzbl	-28(%rbp), %eax	# k, _1
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	testb	%al, %al	# _1
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	movzbl	-27(%rbp), %eax	# k, _2
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	testb	%al, %al	# _2
+	je	.L4	#,
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	movl	$1, %eax	#, iftmp.0_3
+	jmp	.L5	#
+.L4:
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	movl	$0, %eax	#, iftmp.0_3
 .L5:
+# bool_variable.cpp:16:     bool res = a && b && c && d && e && f && g && h && i && j && k[1] && k[2];
+	movb	%al, -30(%rbp)	# iftmp.0_3, res
+# bool_variable.cpp:17:     return res;
+	movzbl	-30(%rbp), %eax	# res, _23
+# bool_variable.cpp:18: }
+	movq	-24(%rbp), %rbx	# D.2363, tmp109
+	xorq	%fs:40, %rbx	# MEM[(<address-space-1> long unsigned int *)40B], tmp109
+	je	.L7	#,
+# bool_variable.cpp:18: }
+	call	__stack_chk_fail@PLT	#
+.L7:
 	addq	$72, %rsp	#,
 	popq	%rbx	#
 	popq	%rbp	#
@@ -243,7 +258,7 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
-# bool_variable.cpp:20:     cal(1,2,3,4,5,6,7,8,9,10);
+# bool_variable.cpp:21:     cal(1,2,3,4,5,6,7,8,9,10);
 	pushq	$10	#
 	pushq	$9	#
 	pushq	$8	#
@@ -256,7 +271,7 @@ main:
 	movl	$1, %edi	#,
 	call	_Z3caliiiiiiiiii	#
 	addq	$32, %rsp	#,
-# bool_variable.cpp:21:     cal(false,false,false,false,false,false,false,false,false,false);
+# bool_variable.cpp:22:     cal(false,false,false,false,false,false,false,false,false,false);
 	pushq	$0	#
 	pushq	$0	#
 	pushq	$0	#
@@ -269,9 +284,9 @@ main:
 	movl	$0, %edi	#,
 	call	_Z3calbbbbbbbbbb	#
 	addq	$32, %rsp	#,
-# bool_variable.cpp:22:     return 0;
+# bool_variable.cpp:23:     return 0;
 	movl	$0, %eax	#, _4
-# bool_variable.cpp:23: }
+# bool_variable.cpp:24: }
 	leave	
 	.cfi_def_cfa 7, 8
 	ret	
