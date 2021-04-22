@@ -188,4 +188,9 @@ public class ST {
     public final Label getReturnLabel() {
         return this.returnLabel;
     }
+
+    public final Addr resultAddr(Addr lAddr, Addr rAddr) {
+        // TODO
+        return null;
+    }
 }

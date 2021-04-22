@@ -6,6 +6,7 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.asmUtils;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
@@ -83,7 +84,15 @@ public class Structure {
                 Addr resAddr = st.resultAddr(lAddr, rAddr);
                 List<String> glueCodes = new ArrayList<>();
                 if (AstUtils.isBinaryBoolOp(t)) {
-                    // TODO
+                    Label boolRes = new Label();
+                    rightCodes.add(
+                        asm.label(boolRes)
+                    );
+                    String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
+                    leftCodes.add(
+                        asm.jmp(jmpOp, boolRes)
+                    );
+
                 } else {
                     Collections.addAll(glueCodes,
                         asm.bin("movq", lAddr, resAddr),
