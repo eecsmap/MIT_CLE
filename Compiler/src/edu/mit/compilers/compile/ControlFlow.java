@@ -18,7 +18,7 @@ public class ControlFlow {
         Label ifElseEndLabel = new Label();
         // condition
         List<String> codesCondition = new ArrayList<>();
-        String type = parseExpr(c, localST, codesCondition);
+        String type = Structure.expr(c, localST, codesCondition);
         Boolean hasElse = false;
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("14 ");
@@ -26,12 +26,12 @@ public class ControlFlow {
         }
         // if block
         List<String> codesIfExecution = new ArrayList<>();
-        c = parseBlock(c.getNextSibling(), localST, codesIfExecution);
+        c = Structure.block(c.getNextSibling(), localST, codesIfExecution);
         // else block
         List<String> codesElseExecution = new ArrayList<>();
         if (c != null) {
             hasElse = true;
-            parseBlock(c.getFirstChild(), localST, codesElseExecution);
+            Structure.block(c.getFirstChild(), localST, codesElseExecution);
         }
         if (!Er.hasError() && Program.compile) {
             codesCondition.add(
@@ -66,22 +66,22 @@ public class ControlFlow {
         AST c = t.getFirstChild();
         // simple assign
         List<String> codesInit = new ArrayList<>();
-        parseSimpleAssign(c, localST, codesInit);
+        Operation.simpleAssign(c, localST, codesInit);
         c = c.getNextSibling();
         // condition expr
         List<String> codesCondition = new ArrayList<>();
-        String conditionExprType = parseExpr(c, localST, codesCondition);
+        String conditionExprType = Structure.expr(c, localST, codesCondition);
         if (!Defs.equals(Defs.DESC_TYPE_BOOL, conditionExprType)) {
             Er.errType(c, Defs.DESC_TYPE_BOOL, conditionExprType);
         }
         c = c.getNextSibling();
         // more assign
         List<String> codesIncrement = new ArrayList<>();
-        parseMoreAssign(c, localST, codesIncrement);
+        Operation.moreAssign(c, localST, codesIncrement);
         c = c.getNextSibling();
         // block
         List<String> codesExecution = new ArrayList<>();
-        parseBlock(c, localST, codesExecution);
+        Structure.block(c, localST, codesExecution);
         if (!Er.hasError() && Program.compile) {
             codesInit.add(
                 asm.jmp("jmp", conditionBeginLabel)
@@ -117,7 +117,7 @@ public class ControlFlow {
         // condition
         AST c = t.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
-        String type = parseExpr(c, localST, codesCondition);
+        String type = Structure.expr(c, localST, codesCondition);
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("15 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
@@ -125,7 +125,7 @@ public class ControlFlow {
         // execution block
         c = c.getNextSibling();
         List<String> codesExecution = new ArrayList<>();
-        parseBlock(c, localST, codesCondition);
+        Structure.block(c, localST, codesCondition);
         if (!Er.hasError() && Program.compile) {
             codesExecution.add(0,
                 asm.jmp("jmp", conditionBeginLabel)

@@ -57,26 +57,26 @@ public class BinaryOp extends Operator {
             String opcode = this.op.equals("+") ? "addl" : "subl";
             Collections.addAll(codes,
                 asm.bin("movl", this.l.getAddr(), Reg.eax),
-                asm.bin(opcode, new Num(1), Reg.eax),
+                asm.bin(opcode, new Num(1L), Reg.eax),
                 asm.bin("movl", Reg.eax, this.d.getAddr())
             );
         } else if (this.op.equals("!")) {
             Collections.addAll(codes,
-                asm.bin("cmpl", new Num(0), this.l.getAddr()),
+                asm.bin("cmpl", new Num(0L), this.l.getAddr()),
                 asm.uni("sete", Reg.al),
                 asm.bin("movzbl", Reg.al, Reg.eax),
                 asm.bin("movl", Reg.eax, this.d.getAddr())
             );
         } else if (this.op.equals("&&") || this.op.equals("||")) {
             String jeWhenAnd = this.op.equals("&&") ? "je" : "jne";
-            Num oneWhenAnd = this.op.equals("&&") ? new Num(1) : new Num(0);
-            Num zeroWhenAnd = this.op.equals("&&") ? new Num(0) : new Num(1);
+            Num oneWhenAnd = this.op.equals("&&") ? new Num(1L) : new Num(0L);
+            Num zeroWhenAnd = this.op.equals("&&") ? new Num(0L) : new Num(1L);
             Label l1 = new Label();
             Label l2 = new Label();
             Collections.addAll(codes,
-                asm.bin("cmpl", new Num(0), this.l.getAddr()),
+                asm.bin("cmpl", new Num(0L), this.l.getAddr()),
                 asm.jmp(jeWhenAnd, l1),
-                asm.bin("cmpl", new Num(0), this.r.getAddr()),
+                asm.bin("cmpl", new Num(0L), this.r.getAddr()),
                 asm.jmp(jeWhenAnd, l1),
                 asm.bin("movl", oneWhenAnd, Reg.eax),
                 asm.jmp("jmp", l2),

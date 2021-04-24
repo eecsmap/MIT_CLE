@@ -12,11 +12,10 @@ import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
-import jdk.nashorn.internal.codegen.Label;
 
 public class Operation {
     // return lType
-    private static String assign(AST t, ST st) {
+    private static String leftValue(AST t, ST st, List<String> codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         Descriptor lDesc = st.getDesc(lID);
@@ -25,7 +24,7 @@ public class Operation {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
         } else if (Defs.isArrayType(lType)) {
-            lType = Element.arrayElement(c, st);
+            lType = Element.arrayElement(c, st, codes);
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
         } else {
@@ -36,7 +35,7 @@ public class Operation {
 
     // =
     private static void binaryAssign(AST t, ST st, boolean simple, List<String> codes) {
-        String lType = assign(t, st);
+        String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
         String rType = Structure.expr(c, st, codes);
@@ -55,7 +54,7 @@ public class Operation {
 
     // ++, --
     private static void unaryAssign(AST t, ST st, List<String> codes) {
-        String lType = assign(t, st);
+        String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
             System.err.printf("31 ");
@@ -65,7 +64,7 @@ public class Operation {
             Oprand lAddr = Program.result.pop();
             String op = t.getType() == DecafParserTokenTypes.INCRE ? "add" : "sub";
             codes.add(
-                asm.bin(op, new Num(1), lAddr)  
+                asm.bin(op, new Num(1L), lAddr)  
             );
         }
     }

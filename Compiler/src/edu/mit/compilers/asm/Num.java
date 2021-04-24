@@ -2,9 +2,9 @@ package edu.mit.compilers.asm;
 
 // Number
 public class Num extends Oprand {
-    Integer num;
+    Long num;
 
-    public Num(Integer num) {
+    public Num(Long num) {
         this.num = num;
     }
 

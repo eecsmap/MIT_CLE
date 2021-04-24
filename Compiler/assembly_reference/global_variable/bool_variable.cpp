@@ -8,6 +8,8 @@ bool bb[5];
 bool bbb[200];
 
 int cal(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+    int k[5];
+    k[1] = k[a] + k[b];
     return a + b + c + d + e + f + g + h + i + j;
 }
 

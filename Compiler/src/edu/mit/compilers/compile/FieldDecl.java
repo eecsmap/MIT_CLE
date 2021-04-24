@@ -38,7 +38,7 @@ class FieldDecl {
                         Er.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
-                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), cap))) {
+                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), Long.valueOf(cap)))) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     if (Program.shouldCompile() && st.isGlobal()) {

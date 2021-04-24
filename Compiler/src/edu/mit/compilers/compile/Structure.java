@@ -135,7 +135,7 @@ public class Structure {
                     if (t.getNumberOfChildren() == 0) {
                         return type;
                     }
-                    return Element.arrayElement(t, st);
+                    return Element.arrayElement(t, st, codes);
                 }
                 // method
                 if (Defs.isMethodType(type)) {
@@ -147,7 +147,7 @@ public class Structure {
                 }
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
-                return Element.intLiteral(t, false, codes);
+                return Element.intLiteral(t, false);
             case DecafScannerTokenTypes.TK_true:
                 if (Program.shouldCompile()) {
                     Program.result.push(new Bool(true));
@@ -160,7 +160,7 @@ public class Structure {
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
-                    return Element.intLiteral(t.getFirstChild(), true, codes);
+                    return Element.intLiteral(t.getFirstChild(), true);
                 }
                 String subType = expr(t.getFirstChild(), st, thisCodes);
                 if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
