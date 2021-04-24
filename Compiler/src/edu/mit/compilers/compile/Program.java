@@ -24,6 +24,15 @@ public class Program {
     static boolean shouldCompile() {
         return !Er.hasError() && compile;
     }
+    private static List<Addr> stringLiteralAddrList = new ArrayList<>();
+    private static List<String> stringLiteralList = new ArrayList<>();
+
+    static Addr addStringLiteral(String string) {
+        Addr stringAddr = new Addr(new Label(isConst=true));
+        stringLiteralAddrList.add(stringAddr);
+        stringLiteralList.add(string);
+        return stringAddr;
+    }
 
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t, List<String> codes) {
@@ -36,6 +45,11 @@ public class Program {
         t = Method.declare(t, globalST, codes);
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
+        }
+        if (shouldCompile() && stringLiteralList.size() > 0) {
+            List<String> rodata = new ArrayList<>();
+            // TODO: add stringliterals into rodata
+            codes.addAll(0, rodata);
         }
     }
 

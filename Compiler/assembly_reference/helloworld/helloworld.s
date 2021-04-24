@@ -2,7 +2,7 @@
 # GNU C17 (Ubuntu 8.4.0-1ubuntu1~18.04) version 8.4.0 (x86_64-linux-gnu)
 #	compiled by GNU C version 8.4.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.19-GMP
 
-# GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126103
+# GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126098
 # options passed:  -imultiarch x86_64-linux-gnu helloworld.c -mtune=generic
 # -march=x86-64 -fverbose-asm -fstack-protector-strong -Wformat
 # -Wformat-security
@@ -39,6 +39,8 @@
 	.text
 	.section	.rodata
 .LC0:
+	.string	"hello world2"
+.LC1:
 	.string	"Hello World"
 	.text
 	.globl	main
@@ -51,13 +53,17 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp	#,
 	.cfi_def_cfa_register 6
-# helloworld.c:5:     printf("Hello World");
+# helloworld.c:5:     printf("hello world2");
 	leaq	.LC0(%rip), %rdi	#,
 	movl	$0, %eax	#,
 	call	printf@PLT	#
-# helloworld.c:6:     return 0;
-	movl	$0, %eax	#, _3
-# helloworld.c:7: }
+# helloworld.c:6:     printf("Hello World");
+	leaq	.LC1(%rip), %rdi	#,
+	movl	$0, %eax	#,
+	call	printf@PLT	#
+# helloworld.c:7:     return 0;
+	movl	$0, %eax	#, _4
+# helloworld.c:8: }
 	popq	%rbp	#
 	.cfi_def_cfa 7, 8
 	ret	

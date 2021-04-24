@@ -198,23 +198,25 @@ public class Structure {
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
-                String subType1 = st.getType(c.getText());
+                Descriptor desc = st.getDesc(c.getText());
+                String subType1 = desc.getType();
                 if (subType1 == null || !Defs.isArrayType(subType1)) {
                     System.err.printf("22 ");
                     Er.errNotDefined(c, c.getText());
                 }
                 if (Program.shouldCompile()) {
-                    // TODO
+                    Program.result.push(new Num((ArrayDesc)desc.getCap()));
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
-                    // TODO
+                    Addr stringAddr = Program.addStringLiteral(t.getText());
+                    Program.result.push(stringAddr);
                 }
                 return Defs.TYPE_STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
                 if (Program.shouldCompile()) {
-                    // TODO
+                    // ? WHERE IS IT
                 }
                 return Defs.TYPE_CHAR_LITERAL;
             case DecafScannerTokenTypes.COLON:
