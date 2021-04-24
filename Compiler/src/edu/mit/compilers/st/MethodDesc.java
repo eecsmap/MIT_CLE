@@ -1,8 +1,10 @@
 package edu.mit.compilers.st;
 
+import edu.mit.compilers.defs.Defs;
+
 public class MethodDesc extends Descriptor{
     public MethodDesc(String type, String text) {
-        super(type, text);
+        super(Defs.makeMethodType(type), text);
     }
 
     @Override

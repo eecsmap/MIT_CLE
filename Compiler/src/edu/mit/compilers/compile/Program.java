@@ -43,7 +43,7 @@ public class Program {
             compile = false;
         }
         t = importDecl(t, importST);
-        t = FieldDecl.parse(t, globalST, codes);
+        t = Field.declare(t, globalST, codes);
         t = Method.declare(t, globalST, codes);
         if (!mainDeclared) {
             Er.errMainNotDefined(t);

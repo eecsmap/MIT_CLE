@@ -66,7 +66,7 @@ public class ControlFlow {
         AST c = t.getFirstChild();
         // simple assign
         List<String> codesInit = new ArrayList<>();
-        Operation.simpleAssign(c, localST, codesInit);
+        BasicOpration.simpleAssign(c, localST, codesInit);
         c = c.getNextSibling();
         // condition expr
         List<String> codesCondition = new ArrayList<>();
@@ -77,7 +77,7 @@ public class ControlFlow {
         c = c.getNextSibling();
         // more assign
         List<String> codesIncrement = new ArrayList<>();
-        Operation.moreAssign(c, localST, codesIncrement);
+        BasicOpration.moreAssign(c, localST, codesIncrement);
         c = c.getNextSibling();
         // block
         List<String> codesExecution = new ArrayList<>();

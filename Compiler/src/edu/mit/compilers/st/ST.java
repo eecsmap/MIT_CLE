@@ -49,23 +49,8 @@ public class ST {
         return (desc != null) ? desc.getType() : null;
     }
 
-    public final String getType(String text) {
-        String type = getTypeNonRecursive(text);
-        if (type != null) {
-            return type;
-        }
-        if (this.subST != null) {
-            return this.subST.getType(text);
-        }
-        return null;
-    }
-
-    private final Descriptor getDescNonRecursive(String text) {
-        return this.table.get(text);
-    }
-
     public final Descriptor getDesc(String text) {
-        Descriptor desc = getDescNonRecursive(text);
+        Descriptor desc = this.table.get(text);
         if (desc != null) {
             return desc;
         }

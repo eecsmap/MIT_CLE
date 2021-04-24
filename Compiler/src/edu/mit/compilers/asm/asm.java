@@ -122,4 +122,19 @@ public class asm {
         );
         return codes;
     }
+
+    public static final List<String> methodCall(String name, List<Oprand> argsList) {
+        List<String> codes = new ArrayList<>();
+        Integer argsCount = argsList.size();
+        for (int i = 1; i < argsCount; i++) {
+            String instruction;
+            if (argsCount - i - 1 < 6) {
+                instruction = bin("movq", argsList.get(i), argRegMap.get(i));
+            } else {
+                instruction = uni("pushq", argsList.get(i));
+            }
+            codes.add(instruction);
+        }
+        return codes;
+    }
 }

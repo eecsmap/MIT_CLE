@@ -223,7 +223,7 @@ public class Structure {
                 }
                 return Defs.TYPE_CHAR_LITERAL;
             case DecafScannerTokenTypes.COLON:
-                return Operation.relOps(t, st, thisCodes);
+                return BasicOpration.relOps(t, st, thisCodes);
         }
         return null;
     }
@@ -231,7 +231,7 @@ public class Structure {
     // if null -> return; if TK_else -> return current AST
     static AST block(AST t, ST st, List<String> codes) {
         // parse fields
-        t = FieldDecl.parse(t, st, codes);
+        t = Field.declare(t, st, codes);
         // parse statements
         for (; t != null; t = t.getNextSibling()) {
             if (t.getType() == DecafScannerTokenTypes.TK_else) {
@@ -252,7 +252,7 @@ public class Structure {
             case DecafScannerTokenTypes.MINUSASSIGN:
             case DecafScannerTokenTypes.INCRE:
             case DecafScannerTokenTypes.DECRE:
-                Operation.moreAssign(t, st, codes);
+                BasicOpration.moreAssign(t, st, codes);
                 return;
             case DecafScannerTokenTypes.TK_if:
                 ControlFlow.ifFlow(t, st, codes);

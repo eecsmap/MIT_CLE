@@ -13,7 +13,7 @@ import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
 
-public class Operation {
+public class BasicOpration {
     // return lType
     private static String leftValue(AST t, ST st, List<String> codes) {
         AST c = t.getFirstChild();

@@ -10,8 +10,8 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
-class FieldDecl {
-    static final AST parse(AST t, ST st, List<String> codes) {
+class Field {
+    static final AST declare(AST t, ST st, List<String> codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             String type = null;
             Integer size = 0;
@@ -38,7 +38,7 @@ class FieldDecl {
                         Er.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
-                    if (!st.push(new ArrayDesc(Defs.makeArrayType(type), c.getText(), Long.valueOf(cap)))) {
+                    if (!st.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)))) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     if (Program.shouldCompile() && st.isGlobal()) {
