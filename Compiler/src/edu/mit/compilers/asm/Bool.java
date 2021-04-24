@@ -8,7 +8,7 @@ public class Bool extends Oprand {
         this.b = b;
     }
 
-    public Boolean Exclam() {
+    public Bool exclam() {
         return new Bool(!this.b);
     }
 

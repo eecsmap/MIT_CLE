@@ -9,11 +9,14 @@ import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Bool;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.Operand;
+import edu.mit.compilers.asm.Oprand;
+import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asmUtils;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
+import edu.mit.compilers.st.ArrayDesc;
+import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
@@ -81,8 +84,8 @@ public class Structure {
                 returnType = Defs.DESC_TYPE_BOOL;
             }
             if (Program.shouldCompile()) {
-                Operand rOp = Program.result.pop();
-                Operand lOp = Program.result.pop();
+                Oprand rOp = Program.result.pop();
+                Oprand lOp = Program.result.pop();
                 Addr resAddr = st.newTmpAddr();
                 List<String> glueCodes = new ArrayList<>();
                 if (AstUtils.isBinaryBoolOp(t)) {
@@ -93,7 +96,7 @@ public class Structure {
                     );
                     Collections.addAll(glueCodes,
                         asm.label(endLabel),
-                        asm.bin("sete", resAddr)
+                        asm.uni("sete", resAddr)
                     );
                 } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                     Collections.addAll(glueCodes,
@@ -140,7 +143,7 @@ public class Structure {
                 }
                 // var
                 if (Program.shouldCompile()) {
-                    st.result.push(desc.getAddr());
+                    Program.result.push(desc.getAddr());
                 }
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
@@ -165,9 +168,9 @@ public class Structure {
                     Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
                 if (Program.shouldCompile()) {
-                    Operand op = Program.result.pop();
+                    Oprand op = Program.result.pop();
                     if (op instanceof Num) {
-                        Program.result.push((Num)op.neg());
+                        Program.result.push(((Num)op).neg());
                     } else {
                         codes.add(
                             asm.uni("neg", op)
@@ -183,13 +186,13 @@ public class Structure {
                     Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
                 }
                 if (Program.shouldCompile()) {
-                    Operand op = Program.result.pop();
+                    Oprand op = Program.result.pop();
                     if (op instanceof Bool) {
-                        Program.result.push((Bool)op.exclam());
+                        Program.result.push(((Bool)op).exclam());
                     } else {
                         Collections.addAll(codes,
                             asm.bin("cmp", new Bool(false), op),
-                            asm.bin("sete", Reg.al),
+                            asm.uni("sete", Reg.al),
                             asm.bin("movzbl", Reg.al, op)
                         );
                         Program.result.push(op);
@@ -198,14 +201,14 @@ public class Structure {
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
-                Descriptor desc = st.getDesc(c.getText());
-                String subType1 = desc.getType();
+                Descriptor desc0 = st.getDesc(c.getText());
+                String subType1 = desc0.getType();
                 if (subType1 == null || !Defs.isArrayType(subType1)) {
                     System.err.printf("22 ");
                     Er.errNotDefined(c, c.getText());
                 }
                 if (Program.shouldCompile()) {
-                    Program.result.push(new Num((ArrayDesc)desc.getCap()));
+                    Program.result.push(new Num(((ArrayDesc)desc0).getCap()));
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
@@ -288,7 +291,7 @@ public class Structure {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 if (Program.shouldCompile()) {
-                    Addr returnVar = Program.result.pop();
+                    Oprand returnVar = Program.result.pop();
                     Collections.addAll(codes, 
                         asm.bin("movl", returnVar, Reg.eax),
                         asm.non("ret")

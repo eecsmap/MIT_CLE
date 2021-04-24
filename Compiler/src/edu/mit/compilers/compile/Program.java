@@ -9,6 +9,8 @@ import java.util.Stack;
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
@@ -20,7 +22,7 @@ public class Program {
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
-    static Stack<Operand> result = new Stack<>();
+    static Stack<Oprand> result = new Stack<>();
     static boolean shouldCompile() {
         return !Er.hasError() && compile;
     }
@@ -28,7 +30,7 @@ public class Program {
     private static List<String> stringLiteralList = new ArrayList<>();
 
     static Addr addStringLiteral(String string) {
-        Addr stringAddr = new Addr(new Label(isConst=true));
+        Addr stringAddr = new Addr(new Label(true).toString());
         stringLiteralAddrList.add(stringAddr);
         stringLiteralList.add(string);
         return stringAddr;

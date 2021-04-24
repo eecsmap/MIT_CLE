@@ -12,7 +12,8 @@ public class Label {
 
     public Label(Boolean isConst) {
         if (!isConst) {
-            this.Label();
+            Integer number = globalNumber++;
+            this.name = String.format(".L%d", number);
             return;
         }
         Integer number = globalConstNumber++;

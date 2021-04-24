@@ -208,8 +208,8 @@ public class ST {
         if (this.varOffset > 0) {
             this.varOffset = -28;
         }
-        return new Addr(this.varOffset);
         this.varOffset -= 4;
+        return new Addr(this.varOffset);
     }
 
     public final Integer allocate() {
