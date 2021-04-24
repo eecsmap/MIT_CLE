@@ -3,7 +3,7 @@ int main() {
     if (a) {
         b += 1;
     }
-    if (a) {
+    if (a > b) {
         b += 1;
     } else {
         b -= 1;

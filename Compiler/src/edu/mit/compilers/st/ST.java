@@ -189,8 +189,20 @@ public class ST {
         return this.returnLabel;
     }
 
-    public final Addr resultAddr(Addr lAddr, Addr rAddr) {
-        // TODO
-        return null;
+    public final Addr newTmpAddr() {
+        if (this.varOffset > 0) {
+            this.varOffset = -28;
+        }
+        return new Addr(this.varOffset);
+        this.varOffset -= 4;
     }
+
+    public final Integer allocate() {
+        return (this.varOffset > 0) ? -24 : this.varOffset;
+    }
+
+    // public final Addr resultAddr(Addr lAddr, Addr rAddr) {
+    //     // TODO
+    //     return null;
+    // }
 }

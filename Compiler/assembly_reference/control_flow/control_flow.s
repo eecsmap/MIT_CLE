@@ -2,7 +2,7 @@
 # GNU C17 (Ubuntu 8.4.0-1ubuntu1~18.04) version 8.4.0 (x86_64-linux-gnu)
 #	compiled by GNU C version 8.4.0, GMP version 6.1.2, MPFR version 4.0.1, MPC version 1.1.0, isl version isl-0.19-GMP
 
-# GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126103
+# GGC heuristics: --param ggc-min-expand=97 --param ggc-min-heapsize=126098
 # options passed:  -imultiarch x86_64-linux-gnu control_flow.c
 # -mtune=generic -march=x86-64 -fverbose-asm -fstack-protector-strong
 # -Wformat -Wformat-security
@@ -57,9 +57,10 @@ main:
 # control_flow.c:4:         b += 1;
 	addl	$1, -16(%rbp)	#, b
 .L2:
-# control_flow.c:6:     if (a) {
-	cmpl	$0, -4(%rbp)	#, a
-	je	.L3	#,
+# control_flow.c:6:     if (a > b) {
+	movl	-4(%rbp), %eax	# a, tmp89
+	cmpl	-16(%rbp), %eax	# b, tmp89
+	jle	.L3	#,
 # control_flow.c:7:         b += 1;
 	addl	$1, -16(%rbp)	#, b
 	jmp	.L5	#

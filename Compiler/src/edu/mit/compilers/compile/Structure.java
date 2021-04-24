@@ -7,6 +7,7 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.asmUtils;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
@@ -78,24 +79,29 @@ public class Structure {
                 returnType = Defs.DESC_TYPE_BOOL;
             }
             if (Program.shouldCompile()) {
-                // TODO
                 Addr rAddr = Program.result.pop();
                 Addr lAddr = Program.result.pop();
-                Addr resAddr = st.resultAddr(lAddr, rAddr);
+                Addr resAddr = st.newTmpAddr();
                 List<String> glueCodes = new ArrayList<>();
                 if (AstUtils.isBinaryBoolOp(t)) {
-                    Label boolRes = new Label();
-                    rightCodes.add(
-                        asm.label(boolRes)
-                    );
                     String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
+                    Label endLabel = new Label();
                     leftCodes.add(
-                        asm.jmp(jmpOp, boolRes)
+                        asm.jmp(jmpOp, endLabel)
                     );
-
+                    Collections.addAll(glueCodes,
+                        asm.label(endLabel),
+                        asm.bin("sete", resAddr)
+                    );
+                } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
+                    Collections.addAll(glueCodes,
+                        asm.bin("movl", lAddr, resAddr),
+                        asm.bin("cmp", lAddr, rAddr),
+                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rAddr, resAddr)
+                    );
                 } else {
                     Collections.addAll(glueCodes,
-                        asm.bin("movq", lAddr, resAddr),
+                        asm.bin("movl", lAddr, resAddr),
                         asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rAddr, resAddr)
                     );
                 }
