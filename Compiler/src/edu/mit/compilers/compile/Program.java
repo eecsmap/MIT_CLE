@@ -1,6 +1,7 @@
 package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Oprand;
+import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
@@ -26,14 +28,14 @@ public class Program {
     static boolean shouldCompile() {
         return !Er.hasError() && compile;
     }
-    private static List<Addr> stringLiteralAddrList = new ArrayList<>();
+    private static List<Label> stringLiteralLabelList = new ArrayList<>();
     private static List<String> stringLiteralList = new ArrayList<>();
 
     static Addr addStringLiteral(String string) {
-        Addr stringAddr = new Addr(new Label(true).toString());
-        stringLiteralAddrList.add(stringAddr);
+        Label stringLabel = new Label(true);
+        stringLiteralLabelList.add(stringLabel);
         stringLiteralList.add(string);
-        return stringAddr;
+        return new Addr(stringLabel.toString());
     }
 
     // parse an AST to IRTree with the help of Symbol Tree
@@ -48,11 +50,7 @@ public class Program {
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
         }
-        if (shouldCompile() && stringLiteralList.size() > 0) {
-            List<String> rodata = new ArrayList<>();
-            // TODO: add stringliterals into rodata
-            codes.addAll(0, rodata);
-        }
+        addROData(codes);
     }
 
     // return the next AST to parse
@@ -70,5 +68,22 @@ public class Program {
             }
         }
         return t;
+    }
+
+    static void addROData(List<String> codes) {
+        if (shouldCompile() && stringLiteralList.size() > 0) {
+            List<String> rodata = new ArrayList<>();
+            Collections.addAll(rodata,
+                asm.nonDir(".text"),
+                asm.uniDir(".section", ".rodata")
+            );
+            for (int i = 0; i < stringLiteralList.size(); i++) {
+                Collections.addAll(rodata,
+                    asm.label(stringLiteralLabelList.get(i)),
+                    "\t" + stringLiteralList.get(i)
+                );
+            }
+            codes.addAll(0, rodata);
+        }
     }
 }

@@ -1,7 +1,6 @@
 package edu.mit.compilers;
 
 import java.io.*;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -18,7 +17,6 @@ import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.tools.CLI;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.tools.CLI.Action;
-import edu.mit.compilers.ir.*;
 
 class Main {
     public static void main(String[] args) {

@@ -200,9 +200,4 @@ public class ST {
     public final Integer allocate() {
         return (this.varOffset > 0) ? -24 : this.varOffset;
     }
-
-    // public final Addr resultAddr(Addr lAddr, Addr rAddr) {
-    //     // TODO
-    //     return null;
-    // }
 }

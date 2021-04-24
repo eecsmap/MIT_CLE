@@ -1,7 +1,6 @@
 package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import antlr.collections.AST;

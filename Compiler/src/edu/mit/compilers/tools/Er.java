@@ -1,7 +1,5 @@
 package edu.mit.compilers.tools;
 
-import java.util.Formatter;
-
 import antlr.collections.AST;
 
 // Error Reporter
