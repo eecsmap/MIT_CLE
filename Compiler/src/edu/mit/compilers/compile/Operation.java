@@ -1,19 +1,26 @@
 package edu.mit.compilers.compile;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import antlr.collections.AST;
+import edu.mit.compilers.asm.*;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
+import edu.mit.compilers.grammar.DecafParserTokenTypes;
+import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
+import jdk.nashorn.internal.codegen.Label;
 
 public class Operation {
     // return lType
-    static String assign(AST t, ST st, List<String> codes) {
+    private static String assign(AST t, ST st) {
         AST c = t.getFirstChild();
         String lID = c.getText();
-        String lType = st.getType(lID);
+        Descriptor lDesc = st.getDesc(lID);
+        String lType = lDesc.getType();
         if (lType == null) {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
@@ -21,33 +28,50 @@ public class Operation {
             lType = Element.arrayElement(c, st);
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
+        } else {
+            Program.result.push(lDesc.getAddr());
         }
         return lType;
     }
 
-    static void binaryAssign(AST t, ST st, boolean simple, List<String> codes) {
+    // =
+    private static void binaryAssign(AST t, ST st, boolean simple, List<String> codes) {
         String lType = assign(t, st);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
-        String rType = Structure.expr(c, st);
+        String rType = Structure.expr(c, st, codes);
         if (lType != null && (!Defs.equals(lType, rType) || (!simple && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
         }
+        if (Program.shouldCompile()) {
+            Oprand rAddr = Program.result.pop();
+            Oprand lAddr = Program.result.pop();
+            codes.add(
+                asm.bin("movl", rAddr, lAddr)  
+            );
+        }
     }
 
-    static void unaryAssign(AST t, ST st, List<String> codes) {
+    // ++, --
+    private static void unaryAssign(AST t, ST st, List<String> codes) {
         String lType = assign(t, st);
         AST c = t.getFirstChild();
         if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
             System.err.printf("31 ");
             Er.errType(c, Defs.DESC_TYPE_INT, lType);
         }
+        if (Program.shouldCompile()) {
+            Oprand lAddr = Program.result.pop();
+            String op = t.getType() == DecafParserTokenTypes.INCRE ? "add" : "sub";
+            codes.add(
+                asm.bin(op, new Num(1), lAddr)  
+            );
+        }
     }
 
     // only =, forwarder
     static void simpleAssign(AST t, ST st, List<String> codes) {
-        String op = "=";
         binaryAssign(t, st, true, codes);
     }
 
@@ -64,17 +88,43 @@ public class Operation {
     static String relOps(AST t, ST st, List<String> codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
-        String cond = Structure.expr(cc, st);
+        List<String> codesCondition = new ArrayList<>();
+        List<String> codesIfExecution = new ArrayList<>();
+        List<String> codesElseExecution = new ArrayList<>();
+        Label ifExecutionEndLabel = new Label();
+        Label ifElseEndLabel = new Label();
+        String cond = Structure.expr(cc, st, codesCondition);
         if (!Defs.equals(Defs.DESC_TYPE_BOOL, cond)) {
             Er.errType(t, Defs.DESC_TYPE_BOOL, cond);
         }
         cc = cc.getNextSibling();
-        String trueType = Structure.expr(cc, st);
+        String ifType = Structure.expr(cc, st, codesIfExecution);
         c = c.getNextSibling();
-        String falseType = Structure.expr(c, st);
-        if (!Defs.equals(trueType, falseType)) {
-            Er.errType(t, trueType, falseType);
+        String elseType = Structure.expr(c, st, codesElseExecution);
+        if (!Defs.equals(ifType, elseType)) {
+            Er.errType(t, ifType, elseType);
         }
-        return trueType;
+        if (Program.shouldCompile()) {
+            Oprand elseOp = Program.result.pop();
+            Oprand ifOp = Program.result.pop();
+            Addr resultAddr = st.newTmpAddr();
+            codesCondition.add(
+                asm.jmp("je", ifExecutionEndLabel)
+            );
+            Collections.addAll(codesIfExecution,
+                asm.bin("movl", ifOp, resultAddr),
+                asm.jmp("jmp", ifElseEndLabel)
+            );
+            codesElseExecution.add(
+                asm.bin("movl", elseOp, resultAddr)
+            );
+            codes.addAll(codesCondition);
+            codes.addAll(codesIfExecution);
+            codes.add(asm.label(ifExecutionEndLabel));
+            codes.addAll(codesElseExecution);
+            codes.add(asm.label(ifElseEndLabel));
+            Program.result.push(resultAddr);
+        }
+        return ifType;
     }
 }

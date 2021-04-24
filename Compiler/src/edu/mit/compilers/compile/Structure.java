@@ -135,7 +135,7 @@ public class Structure {
                     if (t.getNumberOfChildren() == 0) {
                         return type;
                     }
-                    return Element.arrayElement(t, st, codes);
+                    return Element.arrayElement(t, st);
                 }
                 // method
                 if (Defs.isMethodType(type)) {

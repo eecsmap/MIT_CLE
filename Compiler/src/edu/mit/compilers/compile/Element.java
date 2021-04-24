@@ -10,7 +10,7 @@ import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 public class Element {
-    static String arrayElement(AST t, ST st, List<String> codes) {
+    static String arrayElement(AST t, ST st) {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
             System.err.printf("11 ");
