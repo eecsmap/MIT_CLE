@@ -4,8 +4,12 @@ package edu.mit.compilers.asm;
 public class Num extends Oprand {
     Integer num;
 
-    public Num(int num) {
+    public Num(Integer num) {
         this.num = num;
+    }
+
+    public Num neg() {
+        return new Num(-this.num);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class Program {
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
-    static Stack<Addr> result = new Stack<>();
+    static Stack<Operand> result = new Stack<>();
     static boolean shouldCompile() {
         return !Er.hasError() && compile;
     }

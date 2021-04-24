@@ -6,8 +6,10 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Bool;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
+import edu.mit.compilers.asm.Operand;
 import edu.mit.compilers.asm.asmUtils;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
@@ -79,8 +81,8 @@ public class Structure {
                 returnType = Defs.DESC_TYPE_BOOL;
             }
             if (Program.shouldCompile()) {
-                Addr rAddr = Program.result.pop();
-                Addr lAddr = Program.result.pop();
+                Operand rOp = Program.result.pop();
+                Operand lOp = Program.result.pop();
                 Addr resAddr = st.newTmpAddr();
                 List<String> glueCodes = new ArrayList<>();
                 if (AstUtils.isBinaryBoolOp(t)) {
@@ -95,14 +97,14 @@ public class Structure {
                     );
                 } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                     Collections.addAll(glueCodes,
-                        asm.bin("movl", lAddr, resAddr),
-                        asm.bin("cmp", lAddr, rAddr),
-                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rAddr, resAddr)
+                        asm.bin("movl", lOp, resAddr),
+                        asm.bin("cmp", rOp, lOp),
+                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
                     );
                 } else {
                     Collections.addAll(glueCodes,
-                        asm.bin("movl", lAddr, resAddr),
-                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rAddr, resAddr)
+                        asm.bin("movl", lOp, resAddr),
+                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
                     );
                 }
                 codes.addAll(leftCodes);
@@ -115,15 +117,16 @@ public class Structure {
         List<String> thisCodes = new ArrayList<>();
         switch(t.getType()) {
             case DecafScannerTokenTypes.ID:
-                String type = st.getType(t.getText());
-                if (type == null) {
-                    type = Program.importST.getType(t.getText());
-                    if (type == null) {
+                Descriptor desc = st.getDesc(t.getText());
+                if (desc == null) {
+                    desc = Program.importST.getDesc(t.getText());
+                    if (desc == null) {
                         System.out.printf("19 ");
                         Er.errNotDefined(t, t.getText());
                         return Defs.DESC_TYPE_WILDCARD;
                     }
                 }
+                String type = desc.getType();
                 // array
                 if (Defs.isArrayType(type)) {
                     if (t.getNumberOfChildren() == 0) {
@@ -136,13 +139,21 @@ public class Structure {
                     return Method.call(t, st, codes);
                 }
                 // var
-                // TODO
+                if (Program.shouldCompile()) {
+                    st.result.push(desc.getAddr());
+                }
                 return type;
             case DecafScannerTokenTypes.INTLITERAL:
                 return Element.intLiteral(t, false, codes);
             case DecafScannerTokenTypes.TK_true:
+                if (Program.shouldCompile()) {
+                    Program.result.push(new Bool(true));
+                }
+                return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_false:
-                // TODO
+                if (Program.shouldCompile()) {
+                    Program.result.push(new Bool(false));
+                }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
@@ -154,7 +165,15 @@ public class Structure {
                     Er.errType(t, Defs.DESC_TYPE_INT, subType);
                 }
                 if (Program.shouldCompile()) {
-                    // TODO
+                    Operand op = Program.result.pop();
+                    if (op instanceof Num) {
+                        Program.result.push((Num)op.neg());
+                    } else {
+                        codes.add(
+                            asm.uni("neg", op)
+                        );
+                        Program.result.push(op);
+                    }
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.EXCLAM:
@@ -164,7 +183,17 @@ public class Structure {
                     Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
                 }
                 if (Program.shouldCompile()) {
-                    // TODO
+                    Operand op = Program.result.pop();
+                    if (op instanceof Bool) {
+                        Program.result.push((Bool)op.exclam());
+                    } else {
+                        Collections.addAll(codes,
+                            asm.bin("cmp", new Bool(false), op),
+                            asm.bin("sete", Reg.al),
+                            asm.bin("movzbl", Reg.al, op)
+                        );
+                        Program.result.push(op);
+                    }
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_len:
@@ -257,7 +286,11 @@ public class Structure {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 if (Program.shouldCompile()) {
-                    // TODO
+                    Addr returnVar = Program.result.pop();
+                    Collections.addAll(codes, 
+                        asm.bin("movl", returnVar, Reg.eax),
+                        asm.non("ret")
+                    );
                 }
                 return;
         }

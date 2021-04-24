@@ -60,6 +60,21 @@ public class ST {
         return null;
     }
 
+    private final Descriptor getDescNonRecursive(String text) {
+        return this.table.get(text);
+    }
+
+    public final Descriptor getDesc(String text) {
+        Descriptor desc = getDescNonRecursive(text);
+        if (desc != null) {
+            return desc;
+        }
+        if (this.subST != null) {
+            return this.subST.getDesc(text);
+        }
+        return null;
+    }
+
     public final Descriptor getMethod(String text) {
         Descriptor desc = this.table.get(text);
         if(desc != null && desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
