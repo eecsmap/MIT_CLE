@@ -1,5 +1,0 @@
-# compile c to asm
-gcc -S -fverbose-asm <foo.c>
-
-# compile asm and link to executable
-gcc <foo.s> -o foo
