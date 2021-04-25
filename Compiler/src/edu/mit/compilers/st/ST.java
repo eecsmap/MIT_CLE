@@ -97,10 +97,10 @@ public class ST {
             if (this.isGlobal) {
                 desc.setAddr(new Addr(desc.getText(), false));
             } else {
-                if (this.varOffset > -20 && this.varOffset <= 0) {
+                if (this.varOffset > -40 && this.varOffset <= 0) {
                     // first six
-                    this.varOffset -= 4;
-                } else if (this.varOffset == -20) {
+                    this.varOffset -= 8;
+                } else if (this.varOffset == -40) {
                     // the seventh
                     this.varOffset = 8;
                 } else {
@@ -213,13 +213,13 @@ public class ST {
         if (this.varOffset > 0) {
             this.varOffset = -24;
         }
-        this.varOffset -= 4;
+        this.varOffset -= 8;
         String name = String.format("tmp%d", this.tmpCounter++);
         return new Addr(this.varOffset, name);
     }
 
     public final Integer bytesToAllocate() {
-        Integer bytes = (this.varOffset > 0) ? 24 : -this.varOffset;
+        Integer bytes = (this.varOffset > 0) ? 48 : -this.varOffset;
         return (bytes + 15) / 16 * 16;
     }
 

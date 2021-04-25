@@ -47,7 +47,7 @@ public class BasicOpration {
             Oprand rAddr = st.tmpPop();
             Oprand lAddr = st.tmpPop();
             codes.add(
-                asm.bin("movl", rAddr, lAddr)  
+                asm.bin("movq", rAddr, lAddr)  
             );
         }
     }
@@ -111,11 +111,11 @@ public class BasicOpration {
                 asm.jmp("je", ifExecutionEndLabel)
             );
             Collections.addAll(codesIfExecution,
-                asm.bin("movl", ifOp, resultReg),
+                asm.bin("movq", ifOp, resultReg),
                 asm.jmp("jmp", ifElseEndLabel)
             );
             codesElseExecution.add(
-                asm.bin("movl", elseOp, resultReg)
+                asm.bin("movq", elseOp, resultReg)
             );
             codes.addAll(codesCondition);
             codes.addAll(codesIfExecution);

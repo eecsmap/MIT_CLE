@@ -46,8 +46,8 @@ public class Element {
             Reg resReg = st.newTmpReg();
             Integer offset = desc.getAddr().getOffset();
             Collections.addAll(codes,
-                asm.bin("movl", index, indexReg),
-                asm.bin("movl", new Addr(offset, indexReg, varName), resReg)
+                asm.bin("movq", index, indexReg),
+                asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
             );
             st.tmpPush(resReg);
         }

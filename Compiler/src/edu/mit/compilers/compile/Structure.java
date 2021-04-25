@@ -89,13 +89,13 @@ public class Structure {
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Collections.addAll(glueCodes,
-                    asm.bin("movl", lOp, regReg),
+                    asm.bin("movq", lOp, regReg),
                     asm.bin("cmp", rOp, lOp),
                     asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, regReg)
                 );
             } else {
                 Collections.addAll(glueCodes,
-                    asm.bin("movl", lOp, regReg),
+                    asm.bin("movq", lOp, regReg),
                     asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, regReg)
                 );
             }
@@ -310,7 +310,7 @@ public class Structure {
                 if (Program.shouldCompile()) {
                     Oprand returnVar = st.tmpPop();
                     Collections.addAll(codes, 
-                        asm.bin("movl", returnVar, Reg.eax),
+                        asm.bin("movq", returnVar, Reg.eax),
                         asm.non("ret")
                     );
                 }

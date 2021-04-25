@@ -7,11 +7,11 @@ import edu.mit.compilers.grammar.*;
 public class AsmUtils {
     // TODO
     public static Map<Integer, String> binaryOpToken2Inst = new HashMap<>(){{
-        put(DecafParserTokenTypes.MINUS, "subl");
-        put(DecafParserTokenTypes.PLUS, "addl");
-        put(DecafParserTokenTypes.TIMES, "imul");
-        put(DecafParserTokenTypes.SLASH, "idiv");
-        put(DecafParserTokenTypes.PERCENT, "div");
+        put(DecafParserTokenTypes.MINUS, "subq");
+        put(DecafParserTokenTypes.PLUS, "addq");
+        put(DecafParserTokenTypes.TIMES, "imulq");
+        put(DecafParserTokenTypes.SLASH, "idivq");
+        put(DecafParserTokenTypes.PERCENT, "divq");
         put(DecafParserTokenTypes.GREATER, "setg");
         put(DecafParserTokenTypes.LESS, "setl");
         put(DecafParserTokenTypes.GE, "setge");
