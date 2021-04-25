@@ -32,11 +32,11 @@ public class asm {
     }
 
     public static final String bin(String instruction, Oprand src, Oprand dst) {
-        return String.format("\t%s\t%s, %s", instruction, src.toString(), dst.toString());
+        return String.format("\t%s\t%s, %s", instruction, src, dst);
     }
 
     public static final String uni(String instruction, Oprand dst) {
-        return String.format("\t%s\t%s", instruction, dst.toString());
+        return String.format("\t%s\t%s", instruction, dst);
     }
 
     public static final String nonDir(String directive) {
@@ -52,7 +52,7 @@ public class asm {
     }
 
     public static final String label(Label lable) {
-        return lable.toString();
+        return lable.toString() + ":";
     }
 
     public static final String label(String lableStr) {
@@ -60,7 +60,7 @@ public class asm {
     }
     
     public static final String jmp(String instruction, Label dst) {
-        return String.format("\t%s\t%s", instruction, dst.toString());
+        return String.format("\t%s\t%s", instruction, dst);
     }
 
     public static final String run(String instruction) {
@@ -101,6 +101,8 @@ public class asm {
         // call stack initialization
         List<String> codes = new ArrayList<>();
         Collections.addAll(codes,
+            uniDir(".globl", name),
+            binDir(".type", name, "@function"),
             label(name + ":"),
             uni("pushq", Reg.rbp),
             bin("movq", Reg.rsp, Reg.rbp)
@@ -135,6 +137,9 @@ public class asm {
             }
             codes.add(instruction);
         }
+        codes.add(
+            asm.uniDir("call", name)
+        );
         return codes;
     }
 }

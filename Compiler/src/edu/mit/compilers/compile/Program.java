@@ -79,7 +79,7 @@ public class Program {
             for (int i = 0; i < stringLiteralList.size(); i++) {
                 Collections.addAll(rodata,
                     asm.label(stringLiteralLabelList.get(i)),
-                    "\t" + stringLiteralList.get(i)
+                    asm.uniDir(".string", stringLiteralList.get(i))
                 );
             }
             codes.addAll(0, rodata);
