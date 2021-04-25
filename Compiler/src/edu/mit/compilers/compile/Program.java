@@ -36,7 +36,7 @@ public class Program {
         Label stringLabel = new Label(true);
         stringLiteralLabelList.add(stringLabel);
         stringLiteralList.add(string);
-        return new Addr(stringLabel.toString());
+        return new Addr(stringLabel.toString(), true);
     }
 
     // parse an AST to IRTree with the help of Symbol Tree

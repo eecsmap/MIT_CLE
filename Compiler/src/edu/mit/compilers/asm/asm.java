@@ -11,10 +11,10 @@ import java.util.Map;
 public class asm {
     private static boolean isFirstGlobalVariable = true;
     private static final Map<Integer, Reg> argRegMap = new HashMap<>(){{
-        put(0, Reg.edi);
-        put(1, Reg.esi);
-        put(2, Reg.edx);
-        put(3, Reg.ecx);
+        put(0, Reg.rdi);
+        put(1, Reg.rsi);
+        put(2, Reg.rdx);
+        put(3, Reg.rcx);
         put(4, Reg.r8d);
         put(5, Reg.r9d);
     }};
@@ -128,12 +128,19 @@ public class asm {
     public static final List<String> methodCall(String name, List<Oprand> argsList) {
         List<String> codes = new ArrayList<>();
         Integer argsCount = argsList.size();
-        for (int i = 1; i < argsCount; i++) {
+        for (int i = 0; i < argsCount; i++) {
             String instruction;
+            Oprand oprand = argsList.get(i);
             if (argsCount - i - 1 < 6) {
-                instruction = bin("movq", argsList.get(i), argRegMap.get(i));
+                String op;
+                if (oprand instanceof Addr) {
+                    op = ((Addr)oprand).isStringLiteral() ? "leaq" : "movq";
+                } else {
+                    op = "movq";
+                }
+                instruction = bin(op, oprand, argRegMap.get(i));
             } else {
-                instruction = uni("pushq", argsList.get(i));
+                instruction = uni("pushq", oprand);
             }
             codes.add(instruction);
         }

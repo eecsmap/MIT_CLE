@@ -85,7 +85,7 @@ public class ST {
     public final boolean push(Descriptor desc) {
         if (!Er.hasError() && !Defs.isMethodType(desc.getType())) {
             if (this.isGlobal) {
-                desc.setAddr(new Addr(desc.getText()));
+                desc.setAddr(new Addr(desc.getText(), false));
             } else {
                 desc.setAddr(new Addr(this.varOffset));
                 if (this.varOffset > -24 && this.varOffset < 0) {

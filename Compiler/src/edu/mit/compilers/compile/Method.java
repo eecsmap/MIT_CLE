@@ -73,9 +73,8 @@ class Method {
                 Er.errNotDefined(t, methodName);
                 return null;
             }
-            AST c = t.getFirstChild();
             methodType = Defs.DESC_TYPE_WILDCARD;
-            for (; c != null; c = c.getNextSibling()) {
+            for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 Structure.expr(c, st, codes);
                 if (Program.shouldCompile()) {
                     argsList.add(Program.result.pop());

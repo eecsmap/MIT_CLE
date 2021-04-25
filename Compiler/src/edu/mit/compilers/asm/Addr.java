@@ -5,11 +5,13 @@ public class Addr extends Oprand {
     private String str;
     private Integer offset;
     private Reg index;
+    private Boolean isStringLiteral = false;
 
     // for global variable
-    public Addr(String str) {
+    public Addr(String str, Boolean isStringLiteral) {
         this.isVarGlobal = true;
         this.str = String.format("%s(%%rip)", str);
+        this.isStringLiteral = isStringLiteral;
     }
 
     public Addr(Integer offset) {
@@ -31,6 +33,10 @@ public class Addr extends Oprand {
 
     public Boolean isGlobal() {
         return this.isVarGlobal;
+    }
+
+    public Boolean isStringLiteral() {
+        return this.isStringLiteral;
     }
 
     @Override
