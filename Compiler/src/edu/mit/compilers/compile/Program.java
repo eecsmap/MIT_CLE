@@ -59,7 +59,7 @@ public class Program {
                 continue;
             }
             MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, methodName);
-            if (!importST.push(desc)) {
+            if (!importST.push(desc, false)) {
                 Er.errDuplicatedDeclaration(t, methodName);
             }
         }

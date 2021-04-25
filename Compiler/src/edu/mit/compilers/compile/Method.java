@@ -19,7 +19,7 @@ class Method {
             // parse method type
             AST c = t.getFirstChild();
             String returnType = c.getText();
-            if (Program.importST.getMethod(t.getText()) != null || !globalST.push(new MethodDesc(returnType, t.getText()))) {
+            if (Program.importST.getMethod(t.getText()) != null || !globalST.push(new MethodDesc(returnType, t.getText()), false)) {
                 Er.errDuplicatedDeclaration(t, t.getText());
             }
             boolean isMain = t.getText().equals("main");
@@ -34,7 +34,7 @@ class Method {
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
                 Descriptor desc = new VarDesc(c.getFirstChild().getText(), c.getText());
                 paramsDesc.add(desc);
-                if (!localST.push(desc)) {
+                if (!localST.push(desc, true)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }

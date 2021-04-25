@@ -38,7 +38,7 @@ class Field {
                         Er.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
-                    if (!st.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)))) {
+                    if (!st.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     if (Program.shouldCompile() && st.isGlobal()) {
@@ -53,7 +53,7 @@ class Field {
                     continue;
                 }
                 // cc is null -> it's single Variable
-                if (!st.push(new VarDesc(type, c.getText()))) {
+                if (!st.push(new VarDesc(type, c.getText()), false)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                 }
                 if (Program.shouldCompile() && st.isGlobal()) {

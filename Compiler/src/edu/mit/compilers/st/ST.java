@@ -59,6 +59,26 @@ public class ST {
         return (desc != null) ? desc.getType() : null;
     }
 
+    private void argumentOffsetIncrement() {
+        if (this.varOffset > -40 && this.varOffset <= 0) {
+            // first six
+            this.varOffset -= 8;
+        } else if (this.varOffset == -40) {
+            // the seventh
+            this.varOffset = 8;
+        } else {
+            // and after
+            this.varOffset += 8;
+        }
+    }
+
+    private void localOffsetIncrement() {
+        if (this.varOffset > 0) {
+            this.varOffset = -24;
+        }
+        this.varOffset -= 8;
+    }
+
     public final Descriptor getDesc(String text) {
         Descriptor desc = this.table.get(text);
         if (desc != null) {
@@ -92,20 +112,15 @@ public class ST {
         return null;
     }
 
-    public final boolean push(Descriptor desc) {
+    public final boolean push(Descriptor desc, boolean isArgument) {
         if (!Er.hasError() && !Defs.isMethodType(desc.getType())) {
             if (this.isGlobal) {
                 desc.setAddr(new Addr(desc.getText(), false));
             } else {
-                if (this.varOffset > -40 && this.varOffset <= 0) {
-                    // first six
-                    this.varOffset -= 8;
-                } else if (this.varOffset == -40) {
-                    // the seventh
-                    this.varOffset = 8;
+                if (isArgument) {
+                    this.argumentOffsetIncrement();
                 } else {
-                    // and after
-                    this.varOffset += 8;
+                    this.localOffsetIncrement();
                 }
                 desc.setAddr(new Addr(this.varOffset, desc.getText()));
             }
@@ -210,10 +225,7 @@ public class ST {
     }
 
     public final Addr newTmpAddr() {
-        if (this.varOffset > 0) {
-            this.varOffset = -24;
-        }
-        this.varOffset -= 8;
+        this.localOffsetIncrement();
         String name = String.format("tmp%d", this.tmpCounter++);
         return new Addr(this.varOffset, name);
     }
