@@ -7,3 +7,4 @@ Compiler/dist
 Compiler/classes
 Compiler/src/edu/mit/compilers/grammar/*.java
 Compiler/assembly_reference/*/*.s
+Compiler/tmp*
