@@ -73,9 +73,9 @@ public class Structure {
             returnType = Defs.DESC_TYPE_BOOL;
         }
         if (Program.shouldCompile()) {
+            Reg resReg = st.newTmpReg();
             Oprand rOp = st.tmpPop();
             Oprand lOp = st.tmpPop();
-            Reg resReg = st.newTmpReg();
             List<String> glueCodes = new ArrayList<>();
             if (AstUtils.isBinaryBoolOp(t)) {
                 String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
