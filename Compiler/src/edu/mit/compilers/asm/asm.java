@@ -3,43 +3,11 @@ import edu.mit.compilers.st.Descriptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 // Instructions
 public class asm {
     private static boolean isFirstGlobalVariable = true;
-    private static final Map<Integer, Reg> argRegMap = new HashMap<>(){{
-        put(0, Reg.rdi);
-        put(1, Reg.rsi);
-        put(2, Reg.rdx);
-        put(3, Reg.rcx);
-        put(4, Reg.r8);
-        put(5, Reg.r9);
-    }};
-    private static final Set<Reg> callerSavedReg = new HashSet<>(){{
-        add(Reg.rax);
-        add(Reg.rcx);
-        add(Reg.rdx);
-        add(Reg.r8);
-        add(Reg.r9);
-        add(Reg.r10);
-        add(Reg.r11);
-    }};
-    private static final Set<Reg> calleeSavedReg = new HashSet<>(){{
-        add(Reg.rbx);
-        add(Reg.rbp);
-        add(Reg.rdi);
-        add(Reg.rsi);
-        add(Reg.rsp);
-        add(Reg.r12);
-        add(Reg.r13);
-        add(Reg.r14);
-        add(Reg.r15);
-    }};
 
     private static final Integer calculateAlign(Integer size) {
         int align = 4;
@@ -139,7 +107,7 @@ public class asm {
         // move arguments to memory
         for (int i = 0; i < argsDesc.size(); i++) {
             codes.add(
-                bin("movq", argRegMap.get(i), argsDesc.get(i).getAddr())
+                bin("movq", Constants.argRegMap.get(i), argsDesc.get(i).getAddr())
             );
         }
         return codes;
@@ -167,7 +135,7 @@ public class asm {
                 } else {
                     op = "movq";
                 }
-                instruction = bin(op, oprand, argRegMap.get(i));
+                instruction = bin(op, oprand, Constants.argRegMap.get(i));
             } else {
                 instruction = uni("pushq", oprand);
             }
