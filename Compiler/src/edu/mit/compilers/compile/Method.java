@@ -57,7 +57,7 @@ class Method {
     }
 
     // return method type
-    static String call(AST t, ST st, List<String> codes) {
+    static String call(AST t, ST st, List<String> codes, boolean needReturnValue) {
         String methodName = t.getText();
         Descriptor desc = st.getDesc(methodName);
         if (desc != null && !Defs.isMethodType(desc.getType())) {
@@ -104,7 +104,7 @@ class Method {
             }
             methodType = Defs.getMethodType(method.getType());
         }
-        if (Program.shouldCompile()) {
+        if (Program.shouldCompile() && needReturnValue) {
             Reg res = st.newTmpReg();
             List<Addr> addrs = new ArrayList<>();
             codes.addAll(asm.saveRegs(st, addrs));
@@ -114,6 +114,11 @@ class Method {
             );
             codes.addAll(asm.recoverRegs(st, addrs));
             st.tmpPush(res);
+        } else {
+            List<Addr> addrs = new ArrayList<>();
+            codes.addAll(asm.saveRegs(st, addrs));
+            codes.addAll(asm.methodCall(methodName, argsList));
+            codes.addAll(asm.recoverRegs(st, addrs));
         }
         return methodType;
     }

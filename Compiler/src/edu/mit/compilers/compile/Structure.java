@@ -145,7 +145,7 @@ public class Structure {
         }
         // method
         if (Defs.isMethodType(type)) {
-            return Method.call(t, st, codes);
+            return Method.call(t, st, codes, true);
         }
         // var
         if (Program.shouldCompile()) {
@@ -280,7 +280,7 @@ public class Structure {
     static void parseStmt(AST t, ST st, List<String> codes) {
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                Method.call(t, st, codes);
+                Method.call(t, st, codes, false);
                 return;
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
