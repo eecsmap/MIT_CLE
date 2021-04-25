@@ -1,0 +1,1 @@
+bash build.sh && bash run.sh -t assembly $1 -o tmp.s && gcc -no-pie -o tmp -L tests/codegen/lib tmp.s -l6035 && ./tmp

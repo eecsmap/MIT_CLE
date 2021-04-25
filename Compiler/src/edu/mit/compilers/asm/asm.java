@@ -146,9 +146,9 @@ public class asm {
             asm.uniDir("call", name)
         );
         return codes;
-    }
+}
 
-    public static final List<String> saveRegs(ST st) {
+    public static final List<String> saveRegs(ST st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
         List<Reg> regsToSave = st.getUsedCalleeSavedRegs();
         for (Reg reg: regsToSave) {
@@ -156,18 +156,20 @@ public class asm {
             codes.add(
                 asm.bin("movq", reg, addr)
             );
+            addrs.add(addr);
         }
         return codes;
     }
 
-    public static final List<String> recoverRegs(ST st) {
+    public static final List<String> recoverRegs(ST st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
         List<Reg> regsToRecover = st.getUsedCalleeSavedRegs();
+        int i = 0;
         for (Reg reg: regsToRecover) {
-            Addr addr = st.newTmpAddr();
             codes.add(
-                asm.bin("movq", addr, reg)
+                asm.bin("movq", addrs.get(i), reg)
             );
+            i++;
         }
         return codes;
     }

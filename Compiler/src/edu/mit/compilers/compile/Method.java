@@ -8,6 +8,7 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
@@ -105,12 +106,13 @@ class Method {
         }
         if (Program.shouldCompile()) {
             Reg res = st.newTmpReg();
-            codes.addAll(asm.saveRegs(st));
+            List<Addr> addrs = new ArrayList<>();
+            codes.addAll(asm.saveRegs(st, addrs));
             codes.addAll(asm.methodCall(methodName, argsList));
             codes.add(
                 asm.bin("movq", Reg.rax, res)
             );
-            codes.addAll(asm.recoverRegs(st));
+            codes.addAll(asm.recoverRegs(st, addrs));
             st.tmpPush(res);
         }
         return methodType;
