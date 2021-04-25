@@ -8,6 +8,7 @@ package edu.mit.compilers.defs;
 // LocalDesc -> "int" "name"
 // ThisDesc -> "this" "classdesc name", ""
 public class Defs {
+    private Defs() {}
     private static final String METHOD_PREFIX = "method_";
     private static final String ARRAY_PREFIX = "array_";
     public static final String DESC_METHOD_WILDCARD = "method_*";
@@ -58,7 +59,7 @@ public class Defs {
         return lType.equals(rType) || rType.equals(Defs.DESC_TYPE_WILDCARD);
     }
 
-    public static enum Type {
+    public enum Type {
         IMPORT,
         FIELD,
         FUNCTION_DECLARE,
@@ -68,12 +69,12 @@ public class Defs {
         FOR,
     }
 
-    public static enum Action {
+    public enum Action {
         LOAD,
         STORE,
     }
 
-    public static enum FlowOp {
+    public enum FlowOp {
         CONTINUE,
         BREAK,
         RETURN,

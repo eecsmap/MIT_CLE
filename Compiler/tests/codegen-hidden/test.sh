@@ -1,7 +1,7 @@
 #!/bin/bash
 
 runcompiler() {
-    $(git rev-parse --show-toplevel)/run.sh  --target=assembly -o $2 $1
+  bash $(git rev-parse --show-toplevel)/Compiler/run.sh --target=assembly -o $2 $1
 }
 
 exit=0;

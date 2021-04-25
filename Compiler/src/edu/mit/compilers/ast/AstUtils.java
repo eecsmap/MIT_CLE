@@ -98,6 +98,8 @@ public class AstUtils {
         s0.add(DecafParserTokenTypes.MINUS);
         s0.add(DecafParserTokenTypes.PLUS);
         s0.add(DecafParserTokenTypes.TIMES);
+        s0.add(DecafParserTokenTypes.SLASH);
+        s0.add(DecafParserTokenTypes.PERCENT);
         s1.add(DecafParserTokenTypes.GREATER);
         s1.add(DecafParserTokenTypes.LESS);
         s1.add(DecafParserTokenTypes.GE);

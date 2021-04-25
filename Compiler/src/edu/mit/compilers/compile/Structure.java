@@ -11,7 +11,7 @@ import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
-import edu.mit.compilers.asm.asmUtils;
+import edu.mit.compilers.asm.AsmUtils;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
@@ -22,12 +22,163 @@ import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 public class Structure {
-    private static Boolean isBinaryAnyOp(AST t) {
+    private Structure() {}
+    private static boolean isBinaryAnyOp(AST t) {
         return 
         AstUtils.isBinaryOp(t)
         || AstUtils.isBinaryCompOp(t)
         || AstUtils.isBinaryBoolOp(t)
         || AstUtils.isBinaryIntCompOp(t);
+    }
+
+    private static binaryExpr(AST t, ST st, List<String> codes) {
+        AST l = t.getFirstChild();
+        AST r = l.getNextSibling();
+        List<String> leftCodes = new ArrayList<>();
+        List<String> rightCodes = new ArrayList<>();
+        String lType = expr(l, st, leftCodes);
+        String rType = expr(r, st, rightCodes);
+        String returnType = null;
+        if (AstUtils.isBinaryOp(t)) {
+            if (lType != null && !Defs.equals(lType, rType)) {
+                System.err.printf("16 ");
+                Er.errType(l, lType, rType);
+            }
+            returnType = lType;
+        } else if (AstUtils.isBinaryCompOp(t)) {
+            if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
+                System.err.printf("31 ");
+                Er.errType(r, lType, rType);
+            }
+            returnType = Defs.DESC_TYPE_BOOL;    
+        } else if (AstUtils.isBinaryBoolOp(t)) {
+            if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
+                System.err.printf("17 ");
+                Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
+            }
+            if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
+                System.err.printf("18 ");
+                Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
+            }
+            returnType = Defs.DESC_TYPE_BOOL;
+        } else if (AstUtils.isBinaryIntCompOp(t)) {
+            if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
+                System.err.printf("27 ");
+                Er.errType(l, Defs.DESC_TYPE_INT, lType);
+            }
+            if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
+                System.err.printf("28 ");
+                Er.errType(r, Defs.DESC_TYPE_INT, rType);
+            }
+            returnType = Defs.DESC_TYPE_BOOL;
+        }
+        if (Program.shouldCompile()) {
+            Oprand rOp = Program.result.pop();
+            Oprand lOp = Program.result.pop();
+            Addr resAddr = st.newTmpAddr();
+            List<String> glueCodes = new ArrayList<>();
+            if (AstUtils.isBinaryBoolOp(t)) {
+                String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
+                Label endLabel = new Label();
+                leftCodes.add(
+                    asm.jmp(jmpOp, endLabel)
+                );
+                Collections.addAll(glueCodes,
+                    asm.label(endLabel),
+                    asm.uni("sete", resAddr)
+                );
+            } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
+                Collections.addAll(glueCodes,
+                    asm.bin("movl", lOp, resAddr),
+                    asm.bin("cmp", rOp, lOp),
+                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
+                );
+            } else {
+                Collections.addAll(glueCodes,
+                    asm.bin("movl", lOp, resAddr),
+                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
+                );
+            }
+            codes.addAll(leftCodes);
+            codes.addAll(rightCodes);
+            codes.addAll(glueCodes);
+            Program.result.push(resAddr);
+        }
+        return returnType;
+    }
+
+    private static String idExpr(AST t, ST st, List<String> codes) {
+        Descriptor desc = st.getDesc(t.getText());
+        if (desc == null) {
+            desc = Program.importST.getDesc(t.getText());
+            if (desc == null) {
+                System.out.printf("19 ");
+                Er.errNotDefined(t, t.getText());
+                return Defs.DESC_TYPE_WILDCARD;
+            }
+        }
+        String type = desc.getType();
+        // array
+        if (Defs.isArrayType(type)) {
+            if (t.getNumberOfChildren() == 0) {
+                return type;
+            }
+            return Element.arrayElement(t, st, codes);
+        }
+        // method
+        if (Defs.isMethodType(type)) {
+            return Method.call(t, st, codes);
+        }
+        // var
+        if (Program.shouldCompile()) {
+            Program.result.push(desc.getAddr());
+        }
+        return type;
+    }
+
+    private static String minusExpr(AST t, ST st, List<String> codes) {
+        if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
+            return Element.intLiteral(t.getFirstChild(), true);
+        }
+        String subType = expr(t.getFirstChild(), st, thisCodes);
+        if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
+            System.err.printf("20 ");
+            Er.errType(t, Defs.DESC_TYPE_INT, subType);
+        }
+        if (Program.shouldCompile()) {
+            Oprand op = Program.result.pop();
+            if (op instanceof Num) {
+                Program.result.push(((Num)op).neg());
+            } else {
+                codes.add(
+                    asm.uni("neg", op)
+                );
+                Program.result.push(op);
+            }
+        }
+        return Defs.DESC_TYPE_INT;
+    }
+
+    private static String exclamExpr(AST t, ST st, List<String> codes) {
+        String subType = expr(t.getFirstChild(), st, thisCodes);
+        if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
+            System.err.printf("21 ");
+            Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
+        }
+        if (Program.shouldCompile()) {
+            Oprand op = Program.result.pop();
+            if (op instanceof Bool) {
+                Program.result.push(((Bool)op).exclam());
+            } else {
+                Collections.addAll(codes,
+                    asm.bin("cmp", new Bool(false), op),
+                    asm.uni("sete", Reg.al),
+                    asm.bin("movzbl", Reg.al, op)
+                );
+                Program.result.push(op);
+            }
+        }
+        return Defs.DESC_TYPE_BOOL;
     }
 
     // <expr>  => location
@@ -43,109 +194,11 @@ public class Structure {
             return null;
         }
         if (isBinaryAnyOp(t) && t.getNumberOfChildren() == 2) {
-            AST l = t.getFirstChild();
-            AST r = l.getNextSibling();
-            List<String> leftCodes = new ArrayList<>();
-            List<String> rightCodes = new ArrayList<>();
-            String lType = expr(l, st, leftCodes);
-            String rType = expr(r, st, rightCodes);
-            String returnType = null;
-            if (AstUtils.isBinaryOp(t)) {
-                if (lType != null && !Defs.equals(lType, rType)) {
-                    System.err.printf("16 ");
-                    Er.errType(l, lType, rType);
-                }
-                returnType = lType;
-            } else if (AstUtils.isBinaryCompOp(t)) {
-                if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
-                    System.err.printf("31 ");
-                    Er.errType(r, lType, rType);
-                }
-                returnType = Defs.DESC_TYPE_BOOL;    
-            } else if (AstUtils.isBinaryBoolOp(t)) {
-                if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
-                    System.err.printf("17 ");
-                    Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
-                }
-                if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
-                    System.err.printf("18 ");
-                    Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
-                }
-                returnType = Defs.DESC_TYPE_BOOL;
-            } else if (AstUtils.isBinaryIntCompOp(t)) {
-                if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-                    System.err.printf("27 ");
-                    Er.errType(l, Defs.DESC_TYPE_INT, lType);
-                }
-                if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
-                    System.err.printf("28 ");
-                    Er.errType(r, Defs.DESC_TYPE_INT, rType);
-                }
-                returnType = Defs.DESC_TYPE_BOOL;
-            }
-            if (Program.shouldCompile()) {
-                Oprand rOp = Program.result.pop();
-                Oprand lOp = Program.result.pop();
-                Addr resAddr = st.newTmpAddr();
-                List<String> glueCodes = new ArrayList<>();
-                if (AstUtils.isBinaryBoolOp(t)) {
-                    String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
-                    Label endLabel = new Label();
-                    leftCodes.add(
-                        asm.jmp(jmpOp, endLabel)
-                    );
-                    Collections.addAll(glueCodes,
-                        asm.label(endLabel),
-                        asm.uni("sete", resAddr)
-                    );
-                } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
-                    Collections.addAll(glueCodes,
-                        asm.bin("movl", lOp, resAddr),
-                        asm.bin("cmp", rOp, lOp),
-                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
-                    );
-                } else {
-                    Collections.addAll(glueCodes,
-                        asm.bin("movl", lOp, resAddr),
-                        asm.bin(asmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
-                    );
-                }
-                codes.addAll(leftCodes);
-                codes.addAll(rightCodes);
-                codes.addAll(glueCodes);
-                Program.result.push(resAddr);
-            }
-            return returnType;
+            return binaryExpr(t, st, codes);
         }
-        List<String> thisCodes = new ArrayList<>();
-        switch(t.getType()) {
+        switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                Descriptor desc = st.getDesc(t.getText());
-                if (desc == null) {
-                    desc = Program.importST.getDesc(t.getText());
-                    if (desc == null) {
-                        System.out.printf("19 ");
-                        Er.errNotDefined(t, t.getText());
-                        return Defs.DESC_TYPE_WILDCARD;
-                    }
-                }
-                String type = desc.getType();
-                // array
-                if (Defs.isArrayType(type)) {
-                    if (t.getNumberOfChildren() == 0) {
-                        return type;
-                    }
-                    return Element.arrayElement(t, st, codes);
-                }
-                // method
-                if (Defs.isMethodType(type)) {
-                    return Method.call(t, st, codes);
-                }
-                // var
-                if (Program.shouldCompile()) {
-                    Program.result.push(desc.getAddr());
-                }
-                return type;
+                return idExpr(t, st, codes);
             case DecafScannerTokenTypes.INTLITERAL:
                 return Element.intLiteral(t, false);
             case DecafScannerTokenTypes.TK_true:
@@ -159,56 +212,19 @@ public class Structure {
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
-                if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
-                    return Element.intLiteral(t.getFirstChild(), true);
-                }
-                String subType = expr(t.getFirstChild(), st, thisCodes);
-                if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
-                    System.err.printf("20 ");
-                    Er.errType(t, Defs.DESC_TYPE_INT, subType);
-                }
-                if (Program.shouldCompile()) {
-                    Oprand op = Program.result.pop();
-                    if (op instanceof Num) {
-                        Program.result.push(((Num)op).neg());
-                    } else {
-                        codes.add(
-                            asm.uni("neg", op)
-                        );
-                        Program.result.push(op);
-                    }
-                }
-                return Defs.DESC_TYPE_INT;
+                return minusExpr(t, st, codes);
             case DecafScannerTokenTypes.EXCLAM:
-                String subType0 = expr(t.getFirstChild(), st, thisCodes);
-                if (subType0 != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType0)) {
-                    System.err.printf("21 ");
-                    Er.errType(t, Defs.DESC_TYPE_BOOL, subType0); 
-                }
-                if (Program.shouldCompile()) {
-                    Oprand op = Program.result.pop();
-                    if (op instanceof Bool) {
-                        Program.result.push(((Bool)op).exclam());
-                    } else {
-                        Collections.addAll(codes,
-                            asm.bin("cmp", new Bool(false), op),
-                            asm.uni("sete", Reg.al),
-                            asm.bin("movzbl", Reg.al, op)
-                        );
-                        Program.result.push(op);
-                    }
-                }
-                return Defs.DESC_TYPE_BOOL;
+                return exclamExpr(t, st, codes);
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
-                Descriptor desc0 = st.getDesc(c.getText());
-                String subType1 = desc0.getType();
-                if (subType1 == null || !Defs.isArrayType(subType1)) {
+                Descriptor desc = st.getDesc(c.getText());
+                String subType = desc.getType();
+                if (subType == null || !Defs.isArrayType(subType)) {
                     System.err.printf("22 ");
                     Er.errNotDefined(c, c.getText());
                 }
                 if (Program.shouldCompile()) {
-                    Program.result.push(new Num(((ArrayDesc)desc0).getCap()));
+                    Program.result.push(new Num(((ArrayDesc)desc).getCap()));
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
@@ -223,9 +239,10 @@ public class Structure {
                 }
                 return Defs.TYPE_CHAR_LITERAL;
             case DecafScannerTokenTypes.COLON:
-                return BasicOpration.relOps(t, st, thisCodes);
+                return BasicOpration.relOps(t, st, codes);
+            default:
+                return null;
         }
-        return null;
     }
 
     // if null -> return; if TK_else -> return current AST
@@ -297,6 +314,8 @@ public class Structure {
                         asm.non("ret")
                     );
                 }
+                return;
+            default:
                 return;
         }
     }
