@@ -27,6 +27,7 @@ public class ST {
     private Boolean isGlobal;
     // only for non-global ST
     private Integer varOffset = 0;
+    private Integer tmpCounter = 0;
 
     public ST() {
         this.isGlobal = true;
@@ -97,7 +98,7 @@ public class ST {
                     // and after
                     this.varOffset += 8;
                 }
-                desc.setAddr(new Addr(this.varOffset));
+                desc.setAddr(new Addr(this.varOffset, desc.getText()));
             }
         }
         if (this.getTypeNonRecursive(desc.getText()) != null) {
@@ -194,7 +195,8 @@ public class ST {
             this.varOffset = -24;
         }
         this.varOffset -= 4;
-        return new Addr(this.varOffset);
+        String name = String.format("tmp%d", this.tmpCounter++);
+        return new Addr(this.varOffset, name);
     }
 
     public final Integer bytesToAllocate() {

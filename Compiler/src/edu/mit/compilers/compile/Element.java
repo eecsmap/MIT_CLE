@@ -40,12 +40,13 @@ public class Element {
             Er.errArrayOutbound(t, desc.getText(), c.getText());
         }
         if (Program.shouldCompile()) {
+            String varName = String.format("%s[]", desc.getText());
             Oprand index = Program.result.pop();
             Addr resAddr = st.newTmpAddr();
             Integer offset = desc.getAddr().getOffset();
             Collections.addAll(codes,
                 asm.bin("movl", index, Reg.eax),
-                asm.bin("movl", new Addr(offset, Reg.eax), resAddr)
+                asm.bin("movl", new Addr(offset, Reg.eax, varName), resAddr)
             );
             Program.result.push(resAddr);
         }
