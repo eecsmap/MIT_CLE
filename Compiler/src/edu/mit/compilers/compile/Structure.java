@@ -94,17 +94,21 @@ public class Structure {
                     asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resReg)
                 );
             } else if (t.getType() == DecafParserTokenTypes.SLASH) {
+                Addr divisor = st.newTmpAddr();
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, Reg.rax),
+                    asm.bin("movq", rOp, divisor),
                     asm.non("cqto"),
-                    asm.uni("idivq", rOp),
+                    asm.uni("idivq", divisor),
                     asm.bin("movq", Reg.rax, resReg)
                 );
             } else if (t.getType() == DecafParserTokenTypes.PERCENT) {
+                Addr divisor = st.newTmpAddr();
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, Reg.rax),
+                    asm.bin("movq", rOp, divisor),
                     asm.non("cqto"),
-                    asm.uni("idivq", rOp),
+                    asm.uni("idivq", divisor),
                     asm.bin("movq", Reg.rdx, resReg)
                 );               
             } else {
