@@ -19,6 +19,7 @@ import edu.mit.compilers.tools.Er;
 
 
 public class Program {
+    private Program() {}
     static final ST importST = new ST();
     static final ST globalST = new ST();
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
@@ -41,9 +42,7 @@ public class Program {
     // parse an AST to IRTree with the help of Symbol Tree
     public static void irParse(AST t, List<String> codes) {
         // treat import Symbol Table as special one
-        if (codes == null) {
-            compile = false;
-        }
+        compile = (codes != null);
         t = importDecl(t, importST);
         t = Field.declare(t, globalST, codes);
         t = Method.declare(t, globalST, codes);
@@ -71,7 +70,7 @@ public class Program {
     }
 
     static void addROData(List<String> codes) {
-        if (shouldCompile() && stringLiteralList.size() > 0) {
+        if (shouldCompile() && !stringLiteralList.isEmpty()) {
             List<String> rodata = new ArrayList<>();
             Collections.addAll(rodata,
                 asm.nonDir(".text"),

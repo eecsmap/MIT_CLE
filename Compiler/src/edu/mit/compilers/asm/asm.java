@@ -106,7 +106,7 @@ public class asm {
             bin("movq", Reg.rsp, Reg.rbp)
         );
         // move arguments to memory
-        for (int i = 0; i <= argsDesc.size(); i++) {
+        for (int i = 0; i < argsDesc.size(); i++) {
             codes.add(
                 bin("movq", argRegMap.get(i), argsDesc.get(i).getAddr())
             );

@@ -23,8 +23,8 @@ class Main {
         try {
             CLI.parse(args, new String[0]);
             InputStream inputStream = args.length == 0 ? System.in : new java.io.FileInputStream(CLI.infile);
-            PrintStream outputStream = CLI.outfile == 
-                null
+            PrintStream outputStream = 
+                (CLI.outfile == null)
                 ? System.out
                 : new java.io.PrintStream(new java.io.FileOutputStream(CLI.outfile));
             if (CLI.target == Action.SCAN) {
@@ -129,9 +129,7 @@ class Main {
         if(Er.hasError()) {
             System.exit(1);
         } else {
-            codes.forEach(
-                e -> outputStream.println(e)
-            );
+            codes.forEach(outputStream::println);
         }
     }
 }

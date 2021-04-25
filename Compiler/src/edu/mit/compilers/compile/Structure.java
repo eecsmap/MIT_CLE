@@ -31,7 +31,7 @@ public class Structure {
         || AstUtils.isBinaryIntCompOp(t);
     }
 
-    private static binaryExpr(AST t, ST st, List<String> codes) {
+    private static String binaryExpr(AST t, ST st, List<String> codes) {
         AST l = t.getFirstChild();
         AST r = l.getNextSibling();
         List<String> leftCodes = new ArrayList<>();
@@ -140,7 +140,7 @@ public class Structure {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
             return Element.intLiteral(t.getFirstChild(), true);
         }
-        String subType = expr(t.getFirstChild(), st, thisCodes);
+        String subType = expr(t.getFirstChild(), st, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
             System.err.printf("20 ");
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
@@ -160,7 +160,7 @@ public class Structure {
     }
 
     private static String exclamExpr(AST t, ST st, List<String> codes) {
-        String subType = expr(t.getFirstChild(), st, thisCodes);
+        String subType = expr(t.getFirstChild(), st, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
             System.err.printf("21 ");
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
