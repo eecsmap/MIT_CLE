@@ -105,10 +105,12 @@ class Method {
         }
         if (Program.shouldCompile()) {
             Reg res = st.newTmpReg();
+            codes.addAll(asm.saveRegs(st));
             codes.addAll(asm.methodCall(methodName, argsList));
             codes.add(
                 asm.bin("movq", Reg.rax, res)
             );
+            codes.addAll(asm.recoverRegs(st));
             st.tmpPush(res);
         }
         return methodType;

@@ -1,5 +1,6 @@
 package edu.mit.compilers.asm;
 import edu.mit.compilers.st.Descriptor;
+import edu.mit.compilers.st.ST;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,6 +145,30 @@ public class asm {
         codes.add(
             asm.uniDir("call", name)
         );
+        return codes;
+    }
+
+    public static final List<String> saveRegs(ST st) {
+        List<String> codes = new ArrayList<>();
+        List<Reg> regsToSave = st.getUsedCalleeSavedRegs();
+        for (Reg reg: regsToSave) {
+            Addr addr = st.newTmpAddr();
+            codes.add(
+                asm.bin("movq", reg, addr)
+            );
+        }
+        return codes;
+    }
+
+    public static final List<String> recoverRegs(ST st) {
+        List<String> codes = new ArrayList<>();
+        List<Reg> regsToRecover = st.getUsedCalleeSavedRegs();
+        for (Reg reg: regsToRecover) {
+            Addr addr = st.newTmpAddr();
+            codes.add(
+                asm.bin("movq", addr, reg)
+            );
+        }
         return codes;
     }
 }
