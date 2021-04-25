@@ -97,14 +97,14 @@ public class Structure {
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, Reg.rax),
                     asm.non("cqto"),
-                    asm.bin("idivq", rOp),
+                    asm.uni("idivq", rOp),
                     asm.bin("movq", Reg.rax, resReg)
                 );
             } else if (t.getType() == DecafParserTokenTypes.PERCENT) {
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, Reg.rax),
                     asm.non("cqto"),
-                    asm.bin("idivq", rOp),
+                    asm.uni("idivq", rOp),
                     asm.bin("movq", Reg.rdx, resReg)
                 );               
             } else {
