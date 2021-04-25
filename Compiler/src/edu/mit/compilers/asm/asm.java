@@ -32,11 +32,22 @@ public class asm {
     }
 
     public static final String bin(String instruction, Oprand src, Oprand dst) {
-        return String.format("\t%s\t%s, %s %s", instruction, src, dst, cmt(src.getName(), dst.getName()));
+        String srcName = src.getName();
+        String dstName = dst.getName();
+        if (!srcName.isEmpty() || !dstName.isEmpty()) {
+            return String.format("\t%s\t%s, %s %s", instruction, src, dst, cmt(srcName, dstName));
+        } else {
+            return String.format("\t%s\t%s, %s", instruction, src, dst);
+        }   
     }
 
     public static final String uni(String instruction, Oprand dst) {
-        return String.format("\t%s\t%s %s", instruction, dst, cmt(dst.getName()));
+        String dstName = dst.getName();
+        if (!dstName.isEmpty()) {
+            return String.format("\t%s\t%s %s", instruction, dst, cmt(dst.getName()));
+        } else {
+            return String.format("\t%s\t%s", instruction, dst);
+        }
     }
 
     public static final String nonDir(String directive) {
@@ -68,12 +79,7 @@ public class asm {
     }
 
     public static final String cmt(String... comments) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("\t#");
-        for (String comment: comments) {
-            sb.append(" " + comment);
-        }
-        return sb.toString();
+        return "\t# " + String.join(", ", comments);
     }
 
     public static final List<String> globalDecl(String func, Integer size) {
