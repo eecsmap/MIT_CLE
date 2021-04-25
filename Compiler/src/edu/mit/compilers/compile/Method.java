@@ -107,9 +107,9 @@ class Method {
         if (Program.shouldCompile()) {
             Addr res = st.newTmpAddr();
             codes.addAll(asm.methodCall(methodName, argsList));
-            // codes.add(
-            //     asm.bin("movq", Reg.rax, res)
-            // );
+            codes.add(
+                asm.bin("movq", Reg.rax, res)
+            );
             Program.result.push(res);
         }
         return methodType;
