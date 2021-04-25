@@ -20,22 +20,44 @@ public class Reg extends Oprand {
     public static Reg edi = new Reg("edi");
     public static Reg al = new Reg("al");
 
+    public static Reg r8 = new Reg("r8");
+    public static Reg r9 = new Reg("r9");
+    public static Reg r10 = new Reg("r10");
+    public static Reg r11 = new Reg("r11");
+    public static Reg r12 = new Reg("r12");
+    public static Reg r13 = new Reg("r13");
+    public static Reg r14 = new Reg("r14");
+    public static Reg r15 = new Reg("r15");
+
     public static Reg r8d = new Reg("r8d");
     public static Reg r9d = new Reg("r9d");
+    public static Reg r10d = new Reg("r10d");
+    public static Reg r11d = new Reg("r11d");
+    public static Reg r12d = new Reg("r12d");
+    public static Reg r13d = new Reg("r13d");
+    public static Reg r14d = new Reg("r14d");
+    public static Reg r15d = new Reg("r15d");
 
-    private String name;
+    private String regName;
+    // use as tmp
+    private String tmpName = "";
 
-    public Reg(String name) {
-        this.name = name;
+    public Reg(String regName) {
+        this.regName = regName;
+    }
+
+    public Reg(Reg parent, String tmpName) {
+        this.regName = parent.regName;
+        this.tmpName = tmpName;
     }
 
     @Override
     public String toString() {
-        return String.format("%%%s", this.name);
+        return String.format("%%%s", this.regName);
     }
 
     @Override
     public String getName() {
-        return "";
+        return tmpName;
     }
 }
