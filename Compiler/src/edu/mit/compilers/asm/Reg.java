@@ -47,8 +47,12 @@ public class Reg extends Oprand {
     }
 
     public Reg(Reg parent, String tmpName) {
-        this.regName = parent.regName;
+        this.regName = parent.getRegName();
         this.tmpName = tmpName;
+    }
+
+    public String getRegName() {
+        return this.regName;
     }
 
     @Override

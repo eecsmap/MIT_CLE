@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Constants {
     private Constants() {};
-    static final Map<Integer, Reg> argRegMap = new HashMap<>(){{
+    public static final Map<Integer, Reg> argRegMap = new HashMap<>(){{
         put(0, Reg.rdi);
         put(1, Reg.rsi);
         put(2, Reg.rdx);
@@ -15,7 +15,7 @@ public class Constants {
         put(4, Reg.r8);
         put(5, Reg.r9);
     }};
-    static final Set<Reg> callerSavedReg = new HashSet<>(){{
+    public static final Set<Reg> callerSavedReg = new HashSet<>(){{
         add(Reg.rax);
         add(Reg.rcx);
         add(Reg.rdx);
@@ -24,7 +24,7 @@ public class Constants {
         add(Reg.r10);
         add(Reg.r11);
     }};
-    static final Set<Reg> calleeSavedReg = new HashSet<>(){{
+    public static final Set<Reg> calleeSavedReg = new HashSet<>(){{
         add(Reg.rbx);
         add(Reg.rbp);
         add(Reg.rdi);

@@ -5,7 +5,6 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
-import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
@@ -77,7 +76,7 @@ class Method {
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 Structure.expr(c, st, codes);
                 if (Program.shouldCompile()) {
-                    argsList.add(Program.result.pop());
+                    argsList.add(st.tmpPop());
                 }
             }
         } else {
@@ -99,18 +98,18 @@ class Method {
                     Er.errType(c, params.get(i), cType);
                 }
                 if (Program.shouldCompile()) {
-                    argsList.add(Program.result.pop());
+                    argsList.add(st.tmpPop());
                 }
             }
             methodType = Defs.getMethodType(method.getType());
         }
         if (Program.shouldCompile()) {
-            Addr res = st.newTmpAddr();
+            Reg res = st.newTmpReg();
             codes.addAll(asm.methodCall(methodName, argsList));
             codes.add(
                 asm.bin("movq", Reg.rax, res)
             );
-            Program.result.push(res);
+            st.tmpPush(res);
         }
         return methodType;
     }

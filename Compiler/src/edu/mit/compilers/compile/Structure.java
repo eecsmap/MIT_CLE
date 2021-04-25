@@ -73,9 +73,9 @@ public class Structure {
             returnType = Defs.DESC_TYPE_BOOL;
         }
         if (Program.shouldCompile()) {
-            Oprand rOp = Program.result.pop();
-            Oprand lOp = Program.result.pop();
-            Addr resAddr = st.newTmpAddr();
+            Oprand rOp = st.tmpPop();
+            Oprand lOp = st.tmpPop();
+            Reg regReg = st.newTmpReg();
             List<String> glueCodes = new ArrayList<>();
             if (AstUtils.isBinaryBoolOp(t)) {
                 String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
@@ -85,24 +85,24 @@ public class Structure {
                 );
                 Collections.addAll(glueCodes,
                     asm.label(endLabel),
-                    asm.uni("sete", resAddr)
+                    asm.uni("sete", regReg)
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Collections.addAll(glueCodes,
-                    asm.bin("movl", lOp, resAddr),
+                    asm.bin("movl", lOp, regReg),
                     asm.bin("cmp", rOp, lOp),
-                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
+                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, regReg)
                 );
             } else {
                 Collections.addAll(glueCodes,
-                    asm.bin("movl", lOp, resAddr),
-                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resAddr)
+                    asm.bin("movl", lOp, regReg),
+                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, regReg)
                 );
             }
             codes.addAll(leftCodes);
             codes.addAll(rightCodes);
             codes.addAll(glueCodes);
-            Program.result.push(resAddr);
+            st.tmpPush(regReg);
         }
         return returnType;
     }
@@ -131,14 +131,14 @@ public class Structure {
         }
         // var
         if (Program.shouldCompile()) {
-            Program.result.push(desc.getAddr());
+            st.tmpPush(desc.getAddr());
         }
         return type;
     }
 
     private static String minusExpr(AST t, ST st, List<String> codes) {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
-            return Element.intLiteral(t.getFirstChild(), true);
+            return Element.intLiteral(t.getFirstChild(), st, true);
         }
         String subType = expr(t.getFirstChild(), st, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
@@ -146,14 +146,14 @@ public class Structure {
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
         }
         if (Program.shouldCompile()) {
-            Oprand op = Program.result.pop();
+            Oprand op = st.tmpPop();
             if (op instanceof Num) {
-                Program.result.push(((Num)op).neg());
+                st.tmpPush(((Num)op).neg());
             } else {
                 codes.add(
                     asm.uni("neg", op)
                 );
-                Program.result.push(op);
+                st.tmpPush(op);
             }
         }
         return Defs.DESC_TYPE_INT;
@@ -166,16 +166,16 @@ public class Structure {
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
         }
         if (Program.shouldCompile()) {
-            Oprand op = Program.result.pop();
+            Oprand op = st.tmpPop();
             if (op instanceof Bool) {
-                Program.result.push(((Bool)op).exclam());
+                st.tmpPush(((Bool)op).exclam());
             } else {
                 Collections.addAll(codes,
                     asm.bin("cmp", new Bool(false), op),
                     asm.uni("sete", Reg.al),
                     asm.bin("movzbl", Reg.al, op)
                 );
-                Program.result.push(op);
+                st.tmpPush(op);
             }
         }
         return Defs.DESC_TYPE_BOOL;
@@ -190,7 +190,7 @@ public class Structure {
     // | ! expr
     static String expr(AST t, ST st, List<String> codes) {
         if (t == null) {
-            Program.result.add(null);
+            st.tmpPush(null);
             return null;
         }
         if (isBinaryAnyOp(t) && t.getNumberOfChildren() == 2) {
@@ -200,15 +200,15 @@ public class Structure {
             case DecafScannerTokenTypes.ID:
                 return idExpr(t, st, codes);
             case DecafScannerTokenTypes.INTLITERAL:
-                return Element.intLiteral(t, false);
+                return Element.intLiteral(t, st, false);
             case DecafScannerTokenTypes.TK_true:
                 if (Program.shouldCompile()) {
-                    Program.result.push(new Bool(true));
+                    st.tmpPush(new Bool(true));
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_false:
                 if (Program.shouldCompile()) {
-                    Program.result.push(new Bool(false));
+                    st.tmpPush(new Bool(false));
                 }
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
@@ -224,13 +224,13 @@ public class Structure {
                     Er.errNotDefined(c, c.getText());
                 }
                 if (Program.shouldCompile()) {
-                    Program.result.push(new Num(((ArrayDesc)desc).getCap()));
+                    st.tmpPush(new Num(((ArrayDesc)desc).getCap()));
                 }
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
                     Addr stringAddr = Program.addStringLiteral(t.getText());
-                    Program.result.push(stringAddr);
+                    st.tmpPush(stringAddr);
                 }
                 return Defs.TYPE_STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
@@ -308,7 +308,7 @@ public class Structure {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 if (Program.shouldCompile()) {
-                    Oprand returnVar = Program.result.pop();
+                    Oprand returnVar = st.tmpPop();
                     Collections.addAll(codes, 
                         asm.bin("movl", returnVar, Reg.eax),
                         asm.non("ret")

@@ -28,7 +28,7 @@ public class BasicOpration {
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
         } else {
-            Program.result.push(lDesc.getAddr());
+            st.tmpPush(lDesc.getAddr());
         }
         return lType;
     }
@@ -44,8 +44,8 @@ public class BasicOpration {
             Er.errType(c, lType, rType);
         }
         if (Program.shouldCompile()) {
-            Oprand rAddr = Program.result.pop();
-            Oprand lAddr = Program.result.pop();
+            Oprand rAddr = st.tmpPop();
+            Oprand lAddr = st.tmpPop();
             codes.add(
                 asm.bin("movl", rAddr, lAddr)  
             );
@@ -61,7 +61,7 @@ public class BasicOpration {
             Er.errType(c, Defs.DESC_TYPE_INT, lType);
         }
         if (Program.shouldCompile()) {
-            Oprand lAddr = Program.result.pop();
+            Oprand lAddr = st.tmpPop();
             String op = t.getType() == DecafParserTokenTypes.INCRE ? "add" : "sub";
             codes.add(
                 asm.bin(op, new Num(1L), lAddr)  
@@ -104,25 +104,25 @@ public class BasicOpration {
             Er.errType(t, ifType, elseType);
         }
         if (Program.shouldCompile()) {
-            Oprand elseOp = Program.result.pop();
-            Oprand ifOp = Program.result.pop();
-            Addr resultAddr = st.newTmpAddr();
+            Oprand elseOp = st.tmpPop();
+            Oprand ifOp = st.tmpPop();
+            Reg resultReg = st.newTmpReg();
             codesCondition.add(
                 asm.jmp("je", ifExecutionEndLabel)
             );
             Collections.addAll(codesIfExecution,
-                asm.bin("movl", ifOp, resultAddr),
+                asm.bin("movl", ifOp, resultReg),
                 asm.jmp("jmp", ifElseEndLabel)
             );
             codesElseExecution.add(
-                asm.bin("movl", elseOp, resultAddr)
+                asm.bin("movl", elseOp, resultReg)
             );
             codes.addAll(codesCondition);
             codes.addAll(codesIfExecution);
             codes.add(asm.label(ifExecutionEndLabel));
             codes.addAll(codesElseExecution);
             codes.add(asm.label(ifElseEndLabel));
-            Program.result.push(resultAddr);
+            st.tmpPush(resultReg);
         }
         return ifType;
     }

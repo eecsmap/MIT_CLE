@@ -41,19 +41,20 @@ public class Element {
         }
         if (Program.shouldCompile()) {
             String varName = String.format("%s[]", desc.getText());
-            Oprand index = Program.result.pop();
-            Addr resAddr = st.newTmpAddr();
+            Oprand index = st.tmpPop();
+            Reg indexReg = st.newTmpReg();
+            Reg resReg = st.newTmpReg();
             Integer offset = desc.getAddr().getOffset();
             Collections.addAll(codes,
-                asm.bin("movl", index, Reg.eax),
-                asm.bin("movl", new Addr(offset, Reg.eax, varName), resAddr)
+                asm.bin("movl", index, indexReg),
+                asm.bin("movl", new Addr(offset, indexReg, varName), resReg)
             );
-            Program.result.push(resAddr);
+            st.tmpPush(resReg);
         }
         return Defs.getArrayType(type);
     }
 
-    static String intLiteral(AST t, boolean isNegative) {
+    static String intLiteral(AST t, ST st, boolean isNegative) {
         String number;
         Long result = null;
         if (isNegative) {
@@ -71,7 +72,7 @@ public class Element {
             }
         }
         if (Program.shouldCompile()) {
-            Program.result.push(new Num(result));
+            st.tmpPush(new Num(result));
         }
         return Defs.DESC_TYPE_INT;
     }

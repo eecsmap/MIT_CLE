@@ -1,11 +1,17 @@
 package edu.mit.compilers.st;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Constants;
 import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.Oprand;
+import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
@@ -28,6 +34,9 @@ public class ST {
     // only for non-global ST
     private Integer varOffset = 0;
     private Integer tmpCounter = 0;
+
+    private Stack<Oprand> tmpStack = new Stack<>();
+    private Map<String, Reg> calleeSavedRegsUsage = new TreeMap<>();
 
     public ST() {
         this.isGlobal = true;
@@ -190,6 +199,16 @@ public class ST {
         return this.returnLabel;
     }
 
+    public final Reg newTmpReg() {
+        for(Reg reg: Constants.callerSavedReg) {
+            if (!this.calleeSavedRegsUsage.containsKey(reg.getRegName())) {
+                String name = String.format("tmp%d", this.tmpCounter++);
+                return new Reg(reg, name);
+            }
+        }
+        return null;
+    }
+
     public final Addr newTmpAddr() {
         if (this.varOffset > 0) {
             this.varOffset = -24;
@@ -202,5 +221,26 @@ public class ST {
     public final Integer bytesToAllocate() {
         Integer bytes = (this.varOffset > 0) ? 24 : -this.varOffset;
         return (bytes + 15) / 16 * 16;
+    }
+
+    public final void tmpPush(Oprand tmp) {
+        if (tmp instanceof Reg) {
+            this.calleeSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
+        }
+        this.tmpStack.push(tmp);
+    }
+
+    public final Oprand tmpPop() {
+        Oprand returnOp = this.tmpStack.pop();
+        if (returnOp instanceof Reg) {
+            this.calleeSavedRegsUsage.remove(((Reg)returnOp).getRegName());
+        }
+        return returnOp;
+    }
+
+    public final List<Reg> getUsedCalleeSavedRegs() {
+        List<Reg> res = new ArrayList<>();
+        this.calleeSavedRegsUsage.forEach((k, v) -> res.add(v));
+        return res;
     }
 }
