@@ -32,11 +32,11 @@ public class asm {
     }
 
     public static final String bin(String instruction, Oprand src, Oprand dst) {
-        return String.format("\t%s\t%s, %s\t%s", instruction, src, dst, cmt(src.getName(), dst.getName()));
+        return String.format("\t%s\t%s, %s %s", instruction, src, dst, cmt(src.getName(), dst.getName()));
     }
 
     public static final String uni(String instruction, Oprand dst) {
-        return String.format("\t%s\t%s\t%s", instruction, dst, cmt(dst.getName()));
+        return String.format("\t%s\t%s %s", instruction, dst, cmt(dst.getName()));
     }
 
     public static final String nonDir(String directive) {
