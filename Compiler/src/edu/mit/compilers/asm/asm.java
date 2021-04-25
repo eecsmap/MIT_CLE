@@ -9,7 +9,7 @@ import java.util.Map;
 
 // Instructions
 public class asm {
-    private static Boolean isFirstGlobalVariable = true;
+    private static boolean isFirstGlobalVariable = true;
     private static final Map<Integer, Reg> argRegMap = new HashMap<>(){{
         put(0, Reg.edi);
         put(1, Reg.esi);
@@ -32,11 +32,11 @@ public class asm {
     }
 
     public static final String bin(String instruction, Oprand src, Oprand dst) {
-        return String.format("\t%s\t%s, %s", instruction, src, dst);
+        return String.format("\t%s\t%s, %s", instruction, src.toString(), dst.toString());
     }
 
     public static final String uni(String instruction, Oprand dst) {
-        return String.format("\t%s\t%s", instruction, dst);
+        return String.format("\t%s\t%s", instruction, dst.toString());
     }
 
     public static final String nonDir(String directive) {
@@ -60,7 +60,7 @@ public class asm {
     }
     
     public static final String jmp(String instruction, Label dst) {
-        return String.format("\t%s\t%s", instruction, dst);
+        return String.format("\t%s\t%s", instruction, dst.toString());
     }
 
     public static final String run(String instruction) {
