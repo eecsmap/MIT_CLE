@@ -43,4 +43,9 @@ public class Addr extends Oprand {
     public String toString() {
         return this.str;
     }
+    
+    @Override
+    public String getName() {
+        return "";
+    }
 }

@@ -16,4 +16,9 @@ public class Num extends Oprand {
     public String toString() {
         return String.format("$%d", this.num);
     }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }

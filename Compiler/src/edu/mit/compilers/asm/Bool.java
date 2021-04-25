@@ -16,4 +16,9 @@ public class Bool extends Oprand {
     public String toString() {
         return this.b ? "$1" : "$0";
     }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }

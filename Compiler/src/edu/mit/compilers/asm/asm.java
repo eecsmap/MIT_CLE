@@ -32,11 +32,11 @@ public class asm {
     }
 
     public static final String bin(String instruction, Oprand src, Oprand dst) {
-        return String.format("\t%s\t%s, %s", instruction, src, dst);
+        return String.format("\t%s\t%s, %s\t%s", instruction, src, dst, cmt(src.getName(), dst.getName()));
     }
 
     public static final String uni(String instruction, Oprand dst) {
-        return String.format("\t%s\t%s", instruction, dst);
+        return String.format("\t%s\t%s\t%s", instruction, dst, cmt(dst.getName()));
     }
 
     public static final String nonDir(String directive) {
@@ -71,7 +71,7 @@ public class asm {
         StringBuilder sb = new StringBuilder();
         sb.append("\t#");
         for (String comment: comments) {
-            sb.append("\t" + comment);
+            sb.append(" " + comment);
         }
         return sb.toString();
     }

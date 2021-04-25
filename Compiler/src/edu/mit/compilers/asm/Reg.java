@@ -33,4 +33,9 @@ public class Reg extends Oprand {
     public String toString() {
         return String.format("%%%s", this.name);
     }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }
