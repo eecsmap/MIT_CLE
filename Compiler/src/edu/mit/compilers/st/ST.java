@@ -26,7 +26,7 @@ public class ST {
     private Stack<Label> breakLabelStack = new Stack<>();
     private Boolean isGlobal;
     // only for non-global ST
-    private Integer varOffset = -4;
+    private Integer varOffset = 0;
 
     public ST() {
         this.isGlobal = true;
@@ -87,17 +87,17 @@ public class ST {
             if (this.isGlobal) {
                 desc.setAddr(new Addr(desc.getText(), false));
             } else {
-                desc.setAddr(new Addr(this.varOffset));
-                if (this.varOffset > -24 && this.varOffset < 0) {
+                if (this.varOffset > -20 && this.varOffset <= 0) {
                     // first six
                     this.varOffset -= 4;
-                } else if (this.varOffset == -24) {
+                } else if (this.varOffset == -20) {
                     // the seventh
-                    this.varOffset = 16;
+                    this.varOffset = 8;
                 } else {
                     // and after
                     this.varOffset += 8;
                 }
+                desc.setAddr(new Addr(this.varOffset));
             }
         }
         if (this.getTypeNonRecursive(desc.getText()) != null) {
@@ -191,13 +191,14 @@ public class ST {
 
     public final Addr newTmpAddr() {
         if (this.varOffset > 0) {
-            this.varOffset = -28;
+            this.varOffset = -24;
         }
         this.varOffset -= 4;
         return new Addr(this.varOffset);
     }
 
-    public final Integer allocate() {
-        return (this.varOffset > 0) ? -24 : this.varOffset;
+    public final Integer bytesToAllocate() {
+        Integer bytes = (this.varOffset > 0) ? 24 : -this.varOffset;
+        return (bytes + 15) / 16 * 16;
     }
 }

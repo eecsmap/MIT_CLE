@@ -97,7 +97,7 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc) {
+    public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
         // call stack initialization
         List<String> codes = new ArrayList<>();
         Collections.addAll(codes,
@@ -105,7 +105,8 @@ public class asm {
             binDir(".type", name, "@function"),
             label(name + ":"),
             uni("pushq", Reg.rbp),
-            bin("movq", Reg.rsp, Reg.rbp)
+            bin("movq", Reg.rsp, Reg.rbp),
+            bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
         );
         // move arguments to memory
         for (int i = 0; i < argsDesc.size(); i++) {
@@ -119,7 +120,7 @@ public class asm {
     public static final List<String> methodDeclEnd() {
         List<String> codes = new ArrayList<>();
         Collections.addAll(codes,
-            uni("popq", Reg.rbp),
+            non("leave"),
             non("ret")
         );
         return codes;

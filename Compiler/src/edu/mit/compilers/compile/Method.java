@@ -48,7 +48,7 @@ class Method {
             List<String> codesMethod = new ArrayList<>();
             Structure.block(c, localST, codesMethod);
             if (Program.shouldCompile()) {
-                codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc));
+                codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc, localST.bytesToAllocate()));
                 codes.addAll(codesMethod);
                 codes.addAll(asm.methodDeclEnd());
             }
@@ -107,9 +107,9 @@ class Method {
         if (Program.shouldCompile()) {
             Addr res = st.newTmpAddr();
             codes.addAll(asm.methodCall(methodName, argsList));
-            codes.add(
-                asm.bin("movq", Reg.rax, res)
-            );
+            // codes.add(
+            //     asm.bin("movq", Reg.rax, res)
+            // );
             Program.result.push(res);
         }
         return methodType;
