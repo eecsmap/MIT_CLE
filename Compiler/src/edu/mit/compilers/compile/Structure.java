@@ -75,7 +75,7 @@ public class Structure {
         if (Program.shouldCompile()) {
             Oprand rOp = st.tmpPop();
             Oprand lOp = st.tmpPop();
-            Reg regReg = st.newTmpReg();
+            Reg resReg = st.newTmpReg();
             List<String> glueCodes = new ArrayList<>();
             if (AstUtils.isBinaryBoolOp(t)) {
                 String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
@@ -85,24 +85,38 @@ public class Structure {
                 );
                 Collections.addAll(glueCodes,
                     asm.label(endLabel),
-                    asm.uni("sete", regReg)
+                    asm.uni("sete", resReg)
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Collections.addAll(glueCodes,
-                    asm.bin("movq", lOp, regReg),
-                    asm.bin("cmp", rOp, lOp),
-                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, regReg)
+                    asm.bin("movq", lOp, resReg),
+                    asm.bin("cmp", rOp, resReg),
+                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resReg)
                 );
+            } else if (t.getType() == DecafParserTokenTypes.SLASH) {
+                Collections.addAll(glueCodes,
+                    asm.bin("movq", lOp, Reg.rax),
+                    asm.non("cqto"),
+                    asm.bin("idivq", rOp, Reg.rax),
+                    asm.bin("movq", Reg.rax, resReg)
+                );
+            } else if (t.getType() == DecafParserTokenTypes.PERCENT) {
+                Collections.addAll(glueCodes,
+                    asm.bin("movq", lOp, Reg.rax),
+                    asm.non("cqto"),
+                    asm.bin("idivq", rOp, Reg.rax),
+                    asm.bin("movq", Reg.rdx, resReg)
+                );               
             } else {
                 Collections.addAll(glueCodes,
-                    asm.bin("movq", lOp, regReg),
-                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, regReg)
+                    asm.bin("movq", lOp, resReg),
+                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resReg)
                 );
             }
             codes.addAll(leftCodes);
             codes.addAll(rightCodes);
             codes.addAll(glueCodes);
-            st.tmpPush(regReg);
+            st.tmpPush(resReg);
         }
         return returnType;
     }

@@ -10,8 +10,6 @@ public class AsmUtils {
         put(DecafParserTokenTypes.MINUS, "subq");
         put(DecafParserTokenTypes.PLUS, "addq");
         put(DecafParserTokenTypes.TIMES, "imulq");
-        put(DecafParserTokenTypes.SLASH, "idivq");
-        put(DecafParserTokenTypes.PERCENT, "divq");
         put(DecafParserTokenTypes.GREATER, "setg");
         put(DecafParserTokenTypes.LESS, "setl");
         put(DecafParserTokenTypes.GE, "setge");
