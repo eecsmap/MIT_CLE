@@ -89,9 +89,9 @@ public class Structure {
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Collections.addAll(glueCodes,
-                    asm.bin("movq", lOp, resReg),
-                    asm.bin("cmp", rOp, resReg),
-                    asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resReg)
+                    // asm.bin("movq", lOp, resReg),
+                    asm.bin("cmp", rOp, lOp),
+                    asm.uni(AsmUtils.binaryComp2Inst.get(t.getType()), resReg)
                 );
             } else if (t.getType() == DecafParserTokenTypes.SLASH) {
                 Addr divisor = st.newTmpAddr();
@@ -278,6 +278,7 @@ public class Structure {
     }
 
     static void parseStmt(AST t, ST st, List<String> codes) {
+        codes.add("");
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
                 Method.call(t, st, codes, false);
