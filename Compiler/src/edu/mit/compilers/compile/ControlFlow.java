@@ -7,7 +7,6 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.defs.Defs;

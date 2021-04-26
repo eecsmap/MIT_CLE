@@ -45,11 +45,19 @@ public class BasicOpration {
         }
         if (Program.shouldCompile()) {
             if (op.equals("=")) {
+                Reg tmpReg = st.newTmpReg();
                 Oprand rAddr = st.tmpPop();
                 Oprand lAddr = st.tmpPop();
-                codes.add(
-                    asm.bin("movq", rAddr, lAddr)  
-                ); 
+                if (rAddr instanceof Num) {
+                    codes.add(
+                        asm.bin("movq", rAddr, lAddr)  
+                    );
+                } else {
+                    Collections.addAll(codes,
+                        asm.bin("movq", rAddr, tmpReg),
+                        asm.bin("movq", tmpReg, lAddr)
+                    ); 
+                }
             } else {
                 String asmOp = op.equals("+=") ? "addq" : "subq";
                 Reg tmpReg = st.newTmpReg();
