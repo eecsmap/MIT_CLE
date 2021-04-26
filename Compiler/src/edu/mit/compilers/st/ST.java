@@ -228,6 +228,17 @@ public class ST {
         return null;
     }
 
+    // 1, 2, 4 bytes
+    public final Reg newTmpReg(Reg exclude) {
+        for(Reg reg: Constants.callerSavedReg) {
+            if (!this.callerSavedRegsUsage.containsKey(reg.getRegName()) && exclude.getRegName() != reg.getRegName()) {
+                String name = String.format("tmp%d", this.tmpCounter++);
+                return new Reg(reg, name);
+            }
+        }
+        return null;
+    }
+
     public final Addr newTmpAddr() {
         this.localOffsetIncrement();
         String name = String.format("tmp%d", this.tmpCounter++);
@@ -242,6 +253,8 @@ public class ST {
     public final void tmpPush(Oprand tmp) {
         if (tmp instanceof Reg) {
             this.callerSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
+        } else if (tmp instanceof Addr) {
+            ((Addr)tmp).getReservedRegs().forEach(e -> this.callerSavedRegsUsage.put(e.getRegName(), e));
         }
         this.tmpStack.push(tmp);
     }
@@ -250,6 +263,8 @@ public class ST {
         Oprand returnOp = this.tmpStack.pop();
         if (returnOp instanceof Reg) {
             this.callerSavedRegsUsage.remove(((Reg)returnOp).getRegName());
+        } else if (returnOp instanceof Addr) {
+            ((Addr)returnOp).getReservedRegs().forEach(e -> this.callerSavedRegsUsage.remove(e.getRegName()));
         }
         return returnOp;
     }

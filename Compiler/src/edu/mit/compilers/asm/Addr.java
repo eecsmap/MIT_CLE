@@ -1,5 +1,8 @@
 package edu.mit.compilers.asm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Addr extends Oprand {
     private Boolean isVarGlobal;
     private String str;
@@ -7,6 +10,7 @@ public class Addr extends Oprand {
     private Reg index;
     private Boolean isStringLiteral = false;
     private String varName = "";
+    private List<Reg> reservedRegs = new ArrayList<>();
 
     // for global variable
     public Addr(String str, Boolean isStringLiteral) {
@@ -44,6 +48,8 @@ public class Addr extends Oprand {
     public Addr(Reg regA, Reg regB) {
         this.isVarGlobal = false;
         this.str = String.format("(%s, %s)", regA, regB);
+        this.reservedRegs.add(regA);
+        this.reservedRegs.add(regB);
     }
 
     public Integer getOffset() {
@@ -56,6 +62,10 @@ public class Addr extends Oprand {
 
     public Boolean isStringLiteral() {
         return this.isStringLiteral;
+    }
+
+    public List<Reg> getReservedRegs() {
+        return this.reservedRegs;
     }
 
     @Override

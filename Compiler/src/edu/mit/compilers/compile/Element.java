@@ -43,8 +43,7 @@ public class Element {
             String varName = String.format("%s[]", desc.getText());
             Oprand index = st.tmpPop();
             Reg resReg = st.newTmpReg();
-            st.tmpPush(resReg);
-            Reg indexReg = st.newTmpReg();
+            Reg indexReg = st.newTmpReg(resReg);
             Integer offset = desc.getAddr().getOffset();
             // leaq	0(,%rax,8), %rdx	#, tmp86
             // leaq	a(%rip), %rax	#, tmp87
@@ -53,17 +52,19 @@ public class Element {
                 Collections.addAll(codes,
                     asm.bin("movq", index, indexReg),
                     asm.bin("leaq", new Addr(indexReg, varName), indexReg),
-                    asm.bin("leaq", desc.getAddr(), resReg),
-                    asm.bin("movq", resReg, new Addr(indexReg, resReg))
+                    asm.bin("leaq", desc.getAddr(), resReg)
                 );
+                st.tmpPush(new Addr(indexReg, resReg));
             } else {
                 Collections.addAll(codes,
                     asm.bin("movq", index, indexReg),
                     asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
                 );
+                st.tmpPush(resReg);
             }
         }
         return Defs.getArrayType(type);
+
     }
 
     static String intLiteral(AST t, ST st, boolean isNegative) {
