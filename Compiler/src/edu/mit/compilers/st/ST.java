@@ -60,10 +60,10 @@ public class ST {
     }
 
     private void argumentOffsetIncrement() {
-        if (this.varOffset > -40 && this.varOffset <= 0) {
+        if (this.varOffset >= -40 && this.varOffset <= 0) {
             // first six
             this.varOffset -= 8;
-        } else if (this.varOffset == -40) {
+        } else if (this.varOffset < -40) {
             // the seventh
             this.varOffset = 8;
         } else {

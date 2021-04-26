@@ -114,9 +114,10 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> methodDeclEnd() {
+    public static final List<String> methodDeclEnd(Label returnLabel) {
         List<String> codes = new ArrayList<>();
         Collections.addAll(codes,
+            label(returnLabel),
             non("leave"),
             non("ret")
         );

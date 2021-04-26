@@ -328,7 +328,7 @@ public class Structure {
                     Oprand returnVar = st.tmpPop();
                     Collections.addAll(codes, 
                         asm.bin("movq", returnVar, Reg.rax),
-                        asm.non("ret")
+                        asm.jmp("jmp", st.getReturnLabel())
                     );
                 }
                 return;
