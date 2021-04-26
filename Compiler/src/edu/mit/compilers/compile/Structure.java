@@ -327,7 +327,7 @@ public class Structure {
                 if (Program.shouldCompile()) {
                     Oprand returnVar = st.tmpPop();
                     Collections.addAll(codes, 
-                        asm.bin("movq", returnVar, Reg.rax.word()),
+                        asm.bin("movq", returnVar, Reg.rax),
                         asm.non("ret")
                     );
                 }

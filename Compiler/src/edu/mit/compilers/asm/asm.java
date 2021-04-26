@@ -106,7 +106,7 @@ public class asm {
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
         );
         // move arguments to memory
-        for (int i = 0; i < argsDesc.size(); i++) {
+        for (int i = 0; i < Math.min(argsDesc.size(), Constants.argRegMap.size()) ; i++) {
             codes.add(
                 bin("movq", Constants.argRegMap.get(i), argsDesc.get(i).getAddr())
             );
@@ -129,7 +129,7 @@ public class asm {
         for (int i = 0; i < argsCount; i++) {
             String instruction;
             Oprand oprand = argsList.get(i);
-            if (argsCount - i - 1 < 6) {
+            if (i < 6) {
                 String op;
                 if (oprand instanceof Addr) {
                     op = ((Addr)oprand).isStringLiteral() ? "leaq" : "movq";
@@ -146,7 +146,7 @@ public class asm {
             asm.uniDir("call", name)
         );
         return codes;
-}
+    }
 
     public static final List<String> saveRegs(ST st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
