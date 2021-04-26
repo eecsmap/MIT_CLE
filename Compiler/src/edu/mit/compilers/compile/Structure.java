@@ -85,14 +85,14 @@ public class Structure {
                 );
                 Collections.addAll(glueCodes,
                     asm.label(endLabel),
-                    asm.uni("sete", resReg)
+                    asm.uni("sete", resReg.bite())
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Reg interReg = st.newTmpReg();
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, interReg),
                     asm.bin("cmp", rOp, interReg),
-                    asm.uni(AsmUtils.binaryComp2Inst.get(t.getType()), resReg)
+                    asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite())
                 );
             } else if (t.getType() == DecafParserTokenTypes.SLASH) {
                 Addr divisor = st.newTmpAddr();
@@ -185,14 +185,15 @@ public class Structure {
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
         }
         if (Program.shouldCompile()) {
+            Reg tmpReg = st.newTmpReg();
             Oprand op = st.tmpPop();
             if (op instanceof Bool) {
                 st.tmpPush(((Bool)op).exclam());
             } else {
                 Collections.addAll(codes,
                     asm.bin("cmp", new Bool(false), op),
-                    asm.uni("sete", Reg.al),
-                    asm.bin("movzbl", Reg.al, op)
+                    asm.uni("sete", tmpReg.bite()),
+                    asm.bin("movzbl", tmpReg.bite(), op)
                 );
                 st.tmpPush(op);
             }
@@ -330,7 +331,7 @@ public class Structure {
                 if (Program.shouldCompile()) {
                     Oprand returnVar = st.tmpPop();
                     Collections.addAll(codes, 
-                        asm.bin("movq", returnVar, Reg.eax),
+                        asm.bin("movq", returnVar, Reg.rax.word()),
                         asm.non("ret")
                     );
                 }

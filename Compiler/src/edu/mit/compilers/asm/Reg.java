@@ -33,6 +33,9 @@ public class Reg extends Oprand {
 
     public Reg(Reg parent, String tmpName) {
         this.regName = parent.getRegName();
+        this.dWord = parent.dWord;
+        this.word = parent.word;
+        this.bite = parent.bite;
         this.tmpName = tmpName;
     }
 
@@ -43,7 +46,7 @@ public class Reg extends Oprand {
         this.bite = bite;
     }
 
-    public Reg doubleWord() {
+    public Reg dWord() {
         return new Reg(this.dWord);
     }
 

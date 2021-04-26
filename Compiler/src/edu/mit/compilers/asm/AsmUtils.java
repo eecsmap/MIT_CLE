@@ -5,7 +5,7 @@ import java.util.Map;
 import edu.mit.compilers.grammar.*;
 
 public class AsmUtils {
-    public static Map<Integer, String> binaryComp2Inst = new HashMap<>(){{
+    public static Map<Integer, String> setOnCondition = new HashMap<>(){{
         put(DecafParserTokenTypes.GREATER, "setg");
         put(DecafParserTokenTypes.LESS, "setl");
         put(DecafParserTokenTypes.GE, "setge");

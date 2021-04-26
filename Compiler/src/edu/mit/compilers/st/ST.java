@@ -36,7 +36,7 @@ public class ST {
     private Integer tmpCounter = 0;
 
     private Stack<Oprand> tmpStack = new Stack<>();
-    private Map<String, Reg> calleeSavedRegsUsage = new TreeMap<>();
+    private Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
     public ST() {
         this.isGlobal = true;
@@ -217,7 +217,7 @@ public class ST {
     // 1, 2, 4 bytes
     public final Reg newTmpReg() {
         for(Reg reg: Constants.callerSavedReg) {
-            if (!this.calleeSavedRegsUsage.containsKey(reg.getRegName())) {
+            if (!this.callerSavedRegsUsage.containsKey(reg.getRegName())) {
                 String name = String.format("tmp%d", this.tmpCounter++);
                 return new Reg(reg, name);
             }
@@ -238,7 +238,7 @@ public class ST {
 
     public final void tmpPush(Oprand tmp) {
         if (tmp instanceof Reg) {
-            this.calleeSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
+            this.callerSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
         }
         this.tmpStack.push(tmp);
     }
@@ -246,14 +246,14 @@ public class ST {
     public final Oprand tmpPop() {
         Oprand returnOp = this.tmpStack.pop();
         if (returnOp instanceof Reg) {
-            this.calleeSavedRegsUsage.remove(((Reg)returnOp).getRegName());
+            this.callerSavedRegsUsage.remove(((Reg)returnOp).getRegName());
         }
         return returnOp;
     }
 
     public final List<Reg> getUsedCalleeSavedRegs() {
         List<Reg> res = new ArrayList<>();
-        this.calleeSavedRegsUsage.forEach((k, v) -> res.add(v));
+        this.callerSavedRegsUsage.forEach((k, v) -> res.add(v));
         return res;
     }
 }
