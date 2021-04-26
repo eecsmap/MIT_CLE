@@ -44,7 +44,7 @@ public class Element {
             Collections.addAll(codes,
                 asm.bin("movq", index, indexReg),
                 asm.bin("cmp", new Num(((ArrayDesc)desc).getCap()), indexReg),
-                asm.jmp("jge", Defs.EXIT_LABEL)
+                asm.jmp("jge", Defs.EXIT_ARRAY_OUTBOUND_LABEL)
             );
             if (desc.getAddr().isGlobal()) {
                 Collections.addAll(codes,

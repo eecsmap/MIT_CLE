@@ -27,7 +27,7 @@ public class Defs {
     public static final String TYPE_STRING_LITERAL = "literal_string";
     public static final String TYPE_CHAR_LITERAL = "literal_char";
 
-    public static final Label EXIT_LABEL = new Label();
+    public static final Label EXIT_ARRAY_OUTBOUND_LABEL = new Label(".ExitArrayOutBound");
 
     public static final String getArrayType(String arrayType) {
         if (!isArrayType(arrayType)) {

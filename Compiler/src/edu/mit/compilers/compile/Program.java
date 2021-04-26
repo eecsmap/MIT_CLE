@@ -88,7 +88,7 @@ public class Program {
 
     static void addArrayOutBoundReturn(List<String> codes) {
         Collections.addAll(codes,
-            asm.label(Defs.EXIT_LABEL),
+            asm.label(Defs.EXIT_ARRAY_OUTBOUND_LABEL),
             asm.bin("movq", new Num(1L), Reg.rax),
             asm.bin("movq", new Num(255L), Reg.rbx),
             asm.uni("int", new Num(0x80L))
