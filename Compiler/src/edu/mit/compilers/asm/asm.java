@@ -128,7 +128,6 @@ public class asm {
         List<String> codes = new ArrayList<>();
         Integer argsCount = argsList.size();
         for (int i = 0; i < argsCount; i++) {
-            String instruction;
             Oprand oprand = argsList.get(i);
             if (i < 6) {
                 String op;
@@ -137,11 +136,14 @@ public class asm {
                 } else {
                     op = "movq";
                 }
-                instruction = bin(op, oprand, Constants.argRegMap.get(i));
+                codes.add(
+                    bin(op, oprand, Constants.argRegMap.get(i))
+                );
             } else {
-                instruction = uni("pushq", oprand);
+                codes.add(6,
+                    uni("pushq", oprand)
+                );
             }
-            codes.add(instruction);
         }
         codes.add(
             asm.uniDir("call", name)

@@ -60,12 +60,12 @@ public class ST {
     }
 
     private void argumentOffsetIncrement() {
-        if (this.varOffset >= -40 && this.varOffset <= 0) {
+        if (this.varOffset > -48 && this.varOffset <= 0) {
             // first six
             this.varOffset -= 8;
-        } else if (this.varOffset < -40) {
-            // the seventh
-            this.varOffset = 8;
+        } else if (this.varOffset <= -48) {
+            // the seventh (return address and saved rbp)
+            this.varOffset = 16;
         } else {
             // and after
             this.varOffset += 8;
