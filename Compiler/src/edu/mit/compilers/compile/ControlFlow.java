@@ -136,13 +136,11 @@ public class ControlFlow {
         Structure.block(c, localST, codesCondition);
         if (Program.shouldCompile()) {
             Reg condition = (Reg)localST.tmpPop();
-            codesExecution.add(0,
-                asm.jmp("jmp", conditionBeginLabel)
-            );
             Collections.addAll(codesCondition,
                 asm.bin("cmp", new Num(0L), condition.bite()),
-                asm.jmp("jle", executionBeginLabel)
+                asm.jmp("jne", executionBeginLabel)
             );
+            codes.add(asm.jmp("jmp", conditionBeginLabel));
             codes.add(asm.label(executionBeginLabel));
             codes.addAll(codesExecution);
             codes.add(asm.label(conditionBeginLabel));

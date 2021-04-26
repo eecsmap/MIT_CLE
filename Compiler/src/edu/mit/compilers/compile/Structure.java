@@ -302,11 +302,21 @@ public class Structure {
                     System.err.printf("23 ");
                     Er.errBreak(t);
                 }
+                if (Program.shouldCompile()) {
+                    codes.add(
+                        asm.jmp("jmp", st.getBreakLabel())
+                    );
+                }
                 return;
             case DecafScannerTokenTypes.TK_continue:
                 if (!AstUtils.isLoop(st.getContext())) {
                     System.err.printf("24 ");
                     Er.errContinue(t);
+                }
+                if (Program.shouldCompile()) {
+                    codes.add(
+                        asm.jmp("jmp", st.getContinueLabel())
+                    );
                 }
                 return;
             case DecafScannerTokenTypes.TK_return:
