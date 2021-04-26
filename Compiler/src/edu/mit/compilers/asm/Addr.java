@@ -26,8 +26,14 @@ public class Addr extends Oprand {
         this.isVarGlobal = false;
         this.offset = offset;
         this.index = index;
-        this.str = String.format("%d(%%rbp, %s, 4)", this.offset, this.index);
+        this.str = String.format("%d(%%rbp, %s, 8)", this.offset, this.index);
         this.varName = varName;
+    }
+
+    // regA + regB
+    public Addr(Reg regA, Reg regB) {
+        this.isVarGlobal = false;
+        this.str = String.format("(%s, %s)", regA, regB);
     }
 
     public Integer getOffset() {

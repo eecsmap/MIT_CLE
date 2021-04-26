@@ -45,10 +45,22 @@ public class Element {
             Reg indexReg = st.newTmpReg();
             Reg resReg = st.newTmpReg();
             Integer offset = desc.getAddr().getOffset();
-            Collections.addAll(codes,
-                asm.bin("movq", index, indexReg),
-                asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
-            );
+            // leaq	0(,%rax,8), %rdx	#, tmp86
+            // leaq	a(%rip), %rax	#, tmp87
+            // movq	(%rdx,%rax), %rax	# a, _4
+            if (desc.getAddr().isGlobal()) {
+                Collections.addAll(codes,
+                    asm.bin("movq", index, indexReg),
+                    asm.bin("leaq", new Addr(0, indexReg, varName), indexReg),
+                    asm.bin("leaq", desc.getAddr(), resReg),
+                    asm.bin("movq", new Addr(indexReg, resReg), resReg)
+                );
+            } else {
+                Collections.addAll(codes,
+                    asm.bin("movq", index, indexReg),
+                    asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
+                );
+            }
             st.tmpPush(resReg);
         }
         return Defs.getArrayType(type);

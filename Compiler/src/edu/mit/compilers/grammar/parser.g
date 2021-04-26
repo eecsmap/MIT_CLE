@@ -106,9 +106,11 @@ method_arg : expr | STRINGLITERAL;
 
 location : ID^ (LSQUAR! expr RSQUAR!)?;
 
+length : TK_len^ LPAREN! ID RPAREN!;
+
 type : TK_int | TK_bool;
 expr : quesexpr;
-atom : location | literal | LPAREN! expr RPAREN! | method_call;
+atom : location | literal | LPAREN! expr RPAREN! | method_call | length;
 minusexpr : MINUS^ minusexpr | atom;
 exclamexpr : EXCLAM^ exclamexpr | minusexpr;
 multiexpr : exclamexpr ((TIMES^|SLASH^|PERCENT^) exclamexpr)*;
