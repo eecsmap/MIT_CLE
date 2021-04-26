@@ -15,6 +15,7 @@ public class Addr extends Oprand {
         this.isStringLiteral = isStringLiteral;
     }
 
+    // local variable
     public Addr(Integer offset, String varName) {
         this.isVarGlobal = false;
         this.offset = offset;
@@ -22,11 +23,20 @@ public class Addr extends Oprand {
         this.varName = varName;
     }
 
+    // local array
     public Addr(Integer offset, Reg index, String varName) {
         this.isVarGlobal = false;
         this.offset = offset;
         this.index = index;
         this.str = String.format("%d(%%rbp, %s, 8)", this.offset, this.index);
+        this.varName = varName;
+    }
+
+    // global array index
+    public Addr(Reg index, String varName) {
+        this.isVarGlobal = false;
+        this.index = index;
+        this.str = String.format("0(, %s, 8)", this.index);
         this.varName = varName;
     }
 

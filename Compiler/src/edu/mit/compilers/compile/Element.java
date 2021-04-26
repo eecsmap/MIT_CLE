@@ -42,8 +42,9 @@ public class Element {
         if (Program.shouldCompile()) {
             String varName = String.format("%s[]", desc.getText());
             Oprand index = st.tmpPop();
-            Reg indexReg = st.newTmpReg();
             Reg resReg = st.newTmpReg();
+            st.tmpPush(resReg);
+            Reg indexReg = st.newTmpReg();
             Integer offset = desc.getAddr().getOffset();
             // leaq	0(,%rax,8), %rdx	#, tmp86
             // leaq	a(%rip), %rax	#, tmp87
@@ -51,9 +52,9 @@ public class Element {
             if (desc.getAddr().isGlobal()) {
                 Collections.addAll(codes,
                     asm.bin("movq", index, indexReg),
-                    asm.bin("leaq", new Addr(0, indexReg, varName), indexReg),
+                    asm.bin("leaq", new Addr(indexReg, varName), indexReg),
                     asm.bin("leaq", desc.getAddr(), resReg),
-                    asm.bin("movq", new Addr(indexReg, resReg), resReg)
+                    asm.bin("movq", resReg, new Addr(indexReg, resReg))
                 );
             } else {
                 Collections.addAll(codes,
@@ -61,7 +62,6 @@ public class Element {
                     asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
                 );
             }
-            st.tmpPush(resReg);
         }
         return Defs.getArrayType(type);
     }

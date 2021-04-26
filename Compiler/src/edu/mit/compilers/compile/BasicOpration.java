@@ -55,11 +55,17 @@ public class BasicOpration {
                 Reg tmpReg = st.newTmpReg();
                 Oprand rAddr = st.tmpPop();
                 Oprand lAddr = st.tmpPop();
-                Collections.addAll(codes,
-                    asm.bin("movq", lAddr, tmpReg),
-                    asm.bin(asmOp, rAddr, tmpReg),
-                    asm.bin("movq", tmpReg, lAddr)  
-                );
+                if (rAddr instanceof Num) {
+                    codes.add(
+                        asm.bin(asmOp, rAddr, lAddr)
+                    );
+                } else {
+                    Collections.addAll(codes,
+                        asm.bin("movq", lAddr, tmpReg),
+                        asm.bin(asmOp, rAddr, tmpReg),
+                        asm.bin("movq", tmpReg, lAddr)  
+                    );
+                }
             }
 
         }
