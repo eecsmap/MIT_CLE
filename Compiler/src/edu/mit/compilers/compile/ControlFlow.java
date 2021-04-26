@@ -7,6 +7,7 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
+import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.defs.Defs;
@@ -37,7 +38,16 @@ public class ControlFlow {
             Structure.block(c.getFirstChild(), localST, codesElseExecution);
         }
         if (Program.shouldCompile()) {
-            Reg condition = (Reg)localST.tmpPop();
+            Oprand conditionOp = localST.tmpPop();
+            Reg condition;
+            if (conditionOp instanceof Reg) {
+                condition = (Reg)conditionOp;
+            } else {
+                condition = st.newTmpReg();
+                codesCondition.add(
+                    asm.bin("movq", conditionOp, condition)    
+                );
+            }
             Collections.addAll(codesCondition,
                 asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("je", ifExecutionEndLabel)
@@ -93,7 +103,16 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, localST, codesExecution);
         if (Program.shouldCompile()) {
-            Reg condition = (Reg)localST.tmpPop();
+            Oprand conditionOp = localST.tmpPop();
+            Reg condition;
+            if (conditionOp instanceof Reg) {
+                condition = (Reg)conditionOp;
+            } else {
+                condition = st.newTmpReg();
+                codesCondition.add(
+                    asm.bin("movq", conditionOp, condition)    
+                );
+            }
             codesInit.add(
                 asm.jmp("jmp", conditionBeginLabel)
             );
@@ -145,7 +164,16 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, localST, codesExecution);
         if (Program.shouldCompile()) {
-            Reg condition = (Reg)localST.tmpPop();
+            Oprand conditionOp = localST.tmpPop();
+            Reg condition;
+            if (conditionOp instanceof Reg) {
+                condition = (Reg)conditionOp;
+            } else {
+                condition = st.newTmpReg();
+                codesCondition.add(
+                    asm.bin("movq", conditionOp, condition)    
+                );
+            }
             Collections.addAll(codesCondition,
                 asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("jne", executionBeginLabel)
