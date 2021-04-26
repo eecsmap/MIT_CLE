@@ -43,6 +43,7 @@ public class ST {
     }
 
     public ST(ST subst) {
+        this.varOffset = subst.varOffset;
         this.isGlobal = false;
         this.subST = subst;
     }

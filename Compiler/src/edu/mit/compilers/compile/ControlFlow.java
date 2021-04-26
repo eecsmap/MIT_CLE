@@ -133,19 +133,23 @@ public class ControlFlow {
         // execution block
         c = c.getNextSibling();
         List<String> codesExecution = new ArrayList<>();
-        Structure.block(c, localST, codesCondition);
+        Structure.block(c, localST, codesExecution);
         if (Program.shouldCompile()) {
             Reg condition = (Reg)localST.tmpPop();
             Collections.addAll(codesCondition,
                 asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("jne", executionBeginLabel)
             );
+            codes.add(asm.cmt("while - start"));
             codes.add(asm.jmp("jmp", conditionBeginLabel));
+            codes.add(asm.cmt("while - codesExecution "));
             codes.add(asm.label(executionBeginLabel));
             codes.addAll(codesExecution);
+            codes.add(asm.cmt("while - codesCondition "));
             codes.add(asm.label(conditionBeginLabel));
             codes.addAll(codesCondition);
             codes.add(asm.label(loopEndLabel));
+            codes.add(asm.cmt("while - end"));
         }
         localST.popContext();
         if (Program.shouldCompile()) {
