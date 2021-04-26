@@ -9,6 +9,7 @@ import java.util.List;
 // Instructions
 public class asm {
     private static boolean isFirstGlobalVariable = true;
+    private static boolean isFirstFunction = true;
 
     private static final Integer calculateAlign(Integer size) {
         int align = 4;
@@ -86,6 +87,9 @@ public class asm {
             uniDir(".zero", sizeStr)
         );
         if (isFirstGlobalVariable) {
+            codes.add(0,
+                nonDir(".data")
+            );
             codes.add(1,
                 nonDir(".bss")
             );
@@ -97,6 +101,12 @@ public class asm {
     public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
         // call stack initialization
         List<String> codes = new ArrayList<>();
+        if (isFirstFunction) {
+            codes.add(
+                nonDir(".text")
+            );
+            isFirstFunction = false;
+        }
         Collections.addAll(codes,
             uniDir(".globl", name),
             binDir(".type", name, "@function"),

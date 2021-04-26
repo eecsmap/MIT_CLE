@@ -18,11 +18,11 @@ class Field {
             switch (t.getType()) {
                 case DecafScannerTokenTypes.TK_bool:
                     type = Defs.DESC_TYPE_BOOL;
-                    size = 1;
+                    size = 8;
                     break;
                 case DecafScannerTokenTypes.TK_int:
                     type = Defs.DESC_TYPE_INT;
-                    size = 4;
+                    size = 8;
                     break;
             }
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
