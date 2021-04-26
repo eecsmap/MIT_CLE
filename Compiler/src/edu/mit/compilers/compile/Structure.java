@@ -94,24 +94,16 @@ public class Structure {
                     asm.bin("cmp", rOp, interReg),
                     asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite())
                 );
-            } else if (t.getType() == DecafParserTokenTypes.SLASH) {
+            } else if (t.getType() == DecafParserTokenTypes.SLASH || t.getType() == DecafParserTokenTypes.PERCENT) {
+                Reg resultReg = t.getType() == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
                 Addr divisor = st.newTmpAddr();
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, Reg.rax),
                     asm.bin("movq", rOp, divisor),
                     asm.non("cqto"),
                     asm.uni("idivq", divisor),
-                    asm.bin("movq", Reg.rax, resReg)
-                );
-            } else if (t.getType() == DecafParserTokenTypes.PERCENT) {
-                Addr divisor = st.newTmpAddr();
-                Collections.addAll(glueCodes,
-                    asm.bin("movq", lOp, Reg.rax),
-                    asm.bin("movq", rOp, divisor),
-                    asm.non("cqto"),
-                    asm.uni("idivq", divisor),
-                    asm.bin("movq", Reg.rdx, resReg)
-                );               
+                    asm.bin("movq", resultReg, resReg)
+                );     
             } else {
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, resReg),

@@ -1,10 +1,13 @@
 package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.Num;
+import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ST;
@@ -33,8 +36,10 @@ public class ControlFlow {
             hasElse = true;
             Structure.block(c.getFirstChild(), localST, codesElseExecution);
         }
-        if (!Er.hasError() && Program.compile) {
-            codesCondition.add(
+        if (Program.shouldCompile()) {
+            Oprand condition = localST.tmpPop();
+            Collections.addAll(codesCondition,
+                asm.bin("cmp", new Num(0L), condition),
                 asm.jmp("je", ifExecutionEndLabel)
             );
             if (hasElse) 
@@ -59,7 +64,7 @@ public class ControlFlow {
         Label conditionBeginLabel = new Label();
         Label loopEndLabel = new Label();
         localST.pushContext(t.getType());
-        if (!Er.hasError() && Program.compile) {
+        if (Program.shouldCompile()) {
             localST.pushContinueLabel(conditionBeginLabel);
             localST.pushBreakLabel(loopEndLabel);
         }
@@ -82,11 +87,13 @@ public class ControlFlow {
         // block
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, localST, codesExecution);
-        if (!Er.hasError() && Program.compile) {
+        if (Program.shouldCompile()) {
+            Oprand condition = localST.tmpPop();
             codesInit.add(
                 asm.jmp("jmp", conditionBeginLabel)
             );
-            codesCondition.add(
+            Collections.addAll(codesCondition,
+                asm.bin("cmp", new Num(0L), condition),
                 asm.jmp("jle", executionBeginLabel)
             );
             codes.addAll(codesInit);
@@ -98,7 +105,7 @@ public class ControlFlow {
             codes.add(asm.label(loopEndLabel));
         }
         localST.popContext();
-        if (!Er.hasError() && Program.compile) {
+        if (Program.shouldCompile()) {
             localST.popContinueLabel();
             localST.popBreakLabel();
         }
@@ -110,7 +117,7 @@ public class ControlFlow {
         Label conditionBeginLabel = new Label();
         Label loopEndLabel = new Label();
         localST.pushContext(t.getType());
-        if (!Er.hasError() && Program.compile) {
+        if (Program.shouldCompile()) {
             localST.pushContinueLabel(conditionBeginLabel);
             localST.pushBreakLabel(loopEndLabel);
         }
@@ -126,11 +133,13 @@ public class ControlFlow {
         c = c.getNextSibling();
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, localST, codesCondition);
-        if (!Er.hasError() && Program.compile) {
+        if (Program.shouldCompile()) {
+            Oprand condition = localST.tmpPop();
             codesExecution.add(0,
                 asm.jmp("jmp", conditionBeginLabel)
             );
-            codesCondition.add(
+            Collections.addAll(codesCondition,
+                asm.bin("cmp", new Num(0L), condition),
                 asm.jmp("jle", executionBeginLabel)
             );
             codes.add(asm.label(executionBeginLabel));
@@ -140,7 +149,7 @@ public class ControlFlow {
             codes.add(asm.label(loopEndLabel));
         }
         localST.popContext();
-        if (!Er.hasError() && Program.compile) {
+        if (Program.shouldCompile()) {
             localST.popContinueLabel();
             localST.popBreakLabel();
         }

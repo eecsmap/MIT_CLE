@@ -6,18 +6,15 @@ public class Label {
     private final String name;
 
     public Label() {
-        Integer number = globalNumber++;
-        this.name = String.format(".L%d", number);
+        this.name = String.format(".L%d", globalNumber++);
     }
 
     public Label(Boolean isConst) {
         if (!isConst) {
-            Integer number = globalNumber++;
-            this.name = String.format(".L%d", number);
+            this.name = String.format(".L%d", globalNumber++);
             return;
         }
-        Integer number = globalConstNumber++;
-        this.name = String.format(".LC%d", number);
+        this.name = String.format(".LC%d", globalConstNumber++);
     }
 
     public String toString() {
