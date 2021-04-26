@@ -80,13 +80,28 @@ public class Structure {
             if (AstUtils.isBinaryBoolOp(t)) {
                 String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "je" : "jne";
                 Label endLabel = new Label();
-                Collections.addAll(leftCodes,
-                    asm.bin("cmp", new Num(0L), ((Reg)lOp).bite()),
-                    asm.jmp(jmpOp, endLabel)
-                );
-                rightCodes.add(
-                    asm.bin("cmp", new Num(0L), ((Reg)rOp).bite())
-                );
+                if (lOp instanceof Reg) {
+                    Collections.addAll(leftCodes,
+                        asm.bin("cmp", new Num(0L), ((Reg)lOp).bite()),
+                        asm.jmp(jmpOp, endLabel)
+                    );
+                } else {
+                    Collections.addAll(leftCodes,
+                        asm.bin("movq", lOp, resReg),
+                        asm.bin("cmp", new Num(0L), resReg),
+                        asm.jmp(jmpOp, endLabel)
+                    );
+                }
+                if (rOp instanceof Reg) {
+                    rightCodes.add(
+                        asm.bin("cmp", new Num(0L), ((Reg)rOp).bite())
+                    );
+                } else {
+                    Collections.addAll(rightCodes,
+                        asm.bin("movq", rOp, resReg),
+                        asm.bin("cmp", new Num(0L), resReg)
+                    );
+                }
                 Collections.addAll(glueCodes,
                     asm.label(endLabel),
                     asm.uni("setne", resReg.bite())

@@ -1,6 +1,7 @@
 package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import antlr.collections.AST;
@@ -77,7 +78,16 @@ class Method {
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 Structure.expr(c, st, codes);
                 if (Program.shouldCompile()) {
-                    argsList.add(st.tmpPop());
+                    Oprand arg = st.tmpPop();
+                    if (arg instanceof Reg) {
+                        Addr tmp = st.newTmpAddr();
+                        codes.add(
+                            asm.bin("movq", arg, tmp)
+                        );
+                        argsList.add(tmp);
+                    } else {
+                        argsList.add(arg);
+                    }
                 }
             }
         } else {
@@ -99,7 +109,16 @@ class Method {
                     Er.errType(c, params.get(i), cType);
                 }
                 if (Program.shouldCompile()) {
-                    argsList.add(st.tmpPop());
+                    Oprand arg = st.tmpPop();
+                    if (arg instanceof Reg) {
+                        Addr tmp = st.newTmpAddr();
+                        codes.add(
+                            asm.bin("movq", arg, tmp)
+                        );
+                        argsList.add(tmp);
+                    } else {
+                        argsList.add(arg);
+                    }
                 }
             }
             methodType = Defs.getMethodType(method.getType());
