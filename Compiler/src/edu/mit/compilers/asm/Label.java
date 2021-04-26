@@ -17,6 +17,10 @@ public class Label {
         this.name = String.format(".LC%d", globalConstNumber++);
     }
 
+    public Label(String name) {
+        this.name = name;
+    }
+
     public String toString() {
         return this.name;
     }

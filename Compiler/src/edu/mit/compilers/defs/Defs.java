@@ -1,5 +1,7 @@
 package edu.mit.compilers.defs;
 
+import edu.mit.compilers.asm.Label;
+
 // ClassDesc -> "class name" "name", "fieldST" "methodST"
 // MethodDesc -> "return type" "name", "localST"
 // TypeDesc -> "type" "int" | "bool" | "$class"
@@ -24,6 +26,8 @@ public class Defs {
     public static final String DESC_TYPE_WILDCARD = "*";
     public static final String TYPE_STRING_LITERAL = "literal_string";
     public static final String TYPE_CHAR_LITERAL = "literal_char";
+
+    public static final Label EXIT_LABEL = new Label();
 
     public static final String getArrayType(String arrayType) {
         if (!isArrayType(arrayType)) {

@@ -10,6 +10,8 @@ import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.Num;
+import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
@@ -47,6 +49,7 @@ public class Program {
             Er.errMainNotDefined(t);
         }
         addROData(codes);
+        addArrayOutBoundReturn(codes);
     }
 
     // return the next AST to parse
@@ -81,5 +84,14 @@ public class Program {
             }
             codes.addAll(0, rodata);
         }
+    }
+
+    static void addArrayOutBoundReturn(List<String> codes) {
+        Collections.addAll(codes,
+            asm.label(Defs.EXIT_LABEL),
+            asm.bin("movq", new Num(1L), Reg.rax),
+            asm.bin("movq", new Num(255L), Reg.rbx),
+            asm.uni("int", new Num(0x80L))
+        );
     }
 }

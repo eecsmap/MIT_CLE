@@ -59,7 +59,7 @@ public class asm {
     }
 
     public static final String label(String lableStr) {
-        return lableStr;
+        return lableStr + ":";
     }
     
     public static final String jmp(String instruction, Label dst) {
@@ -83,7 +83,7 @@ public class asm {
             uniDir(".align", alignStr),
             binDir(".type", func, "@object"),
             binDir(".size", func, sizeStr),
-            label(func + ":"),
+            label(func),
             uniDir(".zero", sizeStr)
         );
         if (isFirstGlobalVariable) {
@@ -110,7 +110,7 @@ public class asm {
         Collections.addAll(codes,
             uniDir(".globl", name),
             binDir(".type", name, "@function"),
-            label(name + ":"),
+            label(name),
             uni("pushq", Reg.rbp),
             bin("movq", Reg.rsp, Reg.rbp),
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)

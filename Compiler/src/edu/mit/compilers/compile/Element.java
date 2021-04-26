@@ -5,11 +5,13 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.defs.Defs;
+import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
@@ -35,19 +37,17 @@ public class Element {
             Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, indexType);
             return Defs.getArrayType(type);
         }
-        if (c.getType() == DecafScannerTokenTypes.INTLITERAL && desc.findVar(c.getText()) == null) {
-            System.err.printf("13 ");
-            Er.errArrayOutbound(t, desc.getText(), c.getText());
-        }
         if (Program.shouldCompile()) {
             String varName = String.format("%s[]", desc.getText());
             Oprand index = st.tmpPop();
             Reg resReg = st.newTmpReg();
             Reg indexReg = st.newTmpReg(resReg);
             Integer offset = desc.getAddr().getOffset();
-            // leaq	0(,%rax,8), %rdx	#, tmp86
-            // leaq	a(%rip), %rax	#, tmp87
-            // movq	(%rdx,%rax), %rax	# a, _4
+            Collections.addAll(codes,
+                asm.bin("movq", index, indexReg),
+                asm.bin("cmp", new Num(((ArrayDesc)desc).getCap()), indexReg),
+                asm.jmp("jge", Defs.EXIT_LABEL)
+            );
             if (desc.getAddr().isGlobal()) {
                 Collections.addAll(codes,
                     asm.bin("movq", index, indexReg),

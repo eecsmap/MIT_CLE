@@ -52,10 +52,6 @@ public class Er {
         report(t, "expect type <%s>, given <%s>\n", expectedType, givenType);
     }
 
-    public static final void errArrayOutbound(AST t, String arrayID, String given) {
-        report(t, "array $%s index %s is outbound\n", arrayID, given);
-    }
-
     public static final void errBreak(AST t) {
         report(t, "not break inside loop\n");
     }
