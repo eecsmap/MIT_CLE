@@ -176,14 +176,16 @@ public class Structure {
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
         }
         if (Program.shouldCompile()) {
+            Reg tmpReg = st.newTmpReg();
             Oprand op = st.tmpPop();
             if (op instanceof Num) {
                 st.tmpPush(((Num)op).neg());
             } else {
-                codes.add(
-                    asm.uni("neg", op)
+                Collections.addAll(codes,
+                    asm.bin("movq", op, tmpReg),
+                    asm.uni("negq", tmpReg)
                 );
-                st.tmpPush(op);
+                st.tmpPush(tmpReg);
             }
         }
         return Defs.DESC_TYPE_INT;
@@ -204,9 +206,9 @@ public class Structure {
                 Collections.addAll(codes,
                     asm.bin("cmp", new Bool(false), op),
                     asm.uni("sete", tmpReg.bite()),
-                    asm.bin("movzbl", tmpReg.bite(), op)
+                    asm.bin("movzbq", tmpReg.bite(), tmpReg)
                 );
-                st.tmpPush(op);
+                st.tmpPush(tmpReg);
             }
         }
         return Defs.DESC_TYPE_BOOL;
