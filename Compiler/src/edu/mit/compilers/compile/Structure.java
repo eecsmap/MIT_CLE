@@ -78,14 +78,18 @@ public class Structure {
             Oprand lOp = st.tmpPop();
             List<String> glueCodes = new ArrayList<>();
             if (AstUtils.isBinaryBoolOp(t)) {
-                String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "jne" : "je";
+                String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "je" : "jne";
                 Label endLabel = new Label();
-                leftCodes.add(
+                Collections.addAll(leftCodes,
+                    asm.bin("cmp", new Num(0L), ((Reg)lOp).bite()),
                     asm.jmp(jmpOp, endLabel)
+                );
+                rightCodes.add(
+                    asm.bin("cmp", new Num(0L), ((Reg)rOp).bite())
                 );
                 Collections.addAll(glueCodes,
                     asm.label(endLabel),
-                    asm.uni("sete", resReg.bite())
+                    asm.uni("setne", resReg.bite())
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Reg interReg = st.newTmpReg();

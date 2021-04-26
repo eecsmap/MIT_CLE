@@ -8,6 +8,7 @@ import antlr.collections.AST;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
+import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ST;
@@ -37,9 +38,9 @@ public class ControlFlow {
             Structure.block(c.getFirstChild(), localST, codesElseExecution);
         }
         if (Program.shouldCompile()) {
-            Oprand condition = localST.tmpPop();
+            Reg condition = (Reg)localST.tmpPop();
             Collections.addAll(codesCondition,
-                asm.bin("cmp", new Num(0L), condition),
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("je", ifExecutionEndLabel)
             );
             if (hasElse) 
@@ -88,12 +89,12 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, localST, codesExecution);
         if (Program.shouldCompile()) {
-            Oprand condition = localST.tmpPop();
+            Reg condition = (Reg)localST.tmpPop();
             codesInit.add(
                 asm.jmp("jmp", conditionBeginLabel)
             );
             Collections.addAll(codesCondition,
-                asm.bin("cmp", new Num(0L), condition),
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("jle", executionBeginLabel)
             );
             codes.addAll(codesInit);
@@ -134,12 +135,12 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, localST, codesCondition);
         if (Program.shouldCompile()) {
-            Oprand condition = localST.tmpPop();
+            Reg condition = (Reg)localST.tmpPop();
             codesExecution.add(0,
                 asm.jmp("jmp", conditionBeginLabel)
             );
             Collections.addAll(codesCondition,
-                asm.bin("cmp", new Num(0L), condition),
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("jle", executionBeginLabel)
             );
             codes.add(asm.label(executionBeginLabel));

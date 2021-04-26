@@ -27,8 +27,9 @@ public class Reg extends Oprand {
     // use as tmp
     private String tmpName = "";
 
-    private Reg(String regName) {
+    private Reg(String regName, String tmpName) {
         this.regName = regName;
+        this.tmpName = tmpName;
     }
 
     public Reg(Reg parent, String tmpName) {
@@ -47,15 +48,15 @@ public class Reg extends Oprand {
     }
 
     public Reg dWord() {
-        return new Reg(this.dWord);
+        return new Reg(this.dWord, this.tmpName);
     }
 
     public Reg word() {
-        return new Reg(this.word);
+        return new Reg(this.word, this.tmpName);
     }
 
     public Reg bite() {
-        return new Reg(this.bite);
+        return new Reg(this.bite, this.tmpName);
     }
 
     public String getRegName() {
