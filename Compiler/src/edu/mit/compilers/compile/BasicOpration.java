@@ -33,22 +33,35 @@ public class BasicOpration {
         return lType;
     }
 
-    // =
-    private static void binaryAssign(AST t, ST st, boolean simple, List<String> codes) {
+    // =, +=, -=
+    private static void binaryAssign(AST t, ST st, String op, List<String> codes) {
         String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
         String rType = Structure.expr(c, st, codes);
-        if (lType != null && (!Defs.equals(lType, rType) || (!simple && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
+        if (lType != null && (!Defs.equals(lType, rType) || (!op.equals("=") && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
         }
         if (Program.shouldCompile()) {
-            Oprand rAddr = st.tmpPop();
-            Oprand lAddr = st.tmpPop();
-            codes.add(
-                asm.bin("movq", rAddr, lAddr)  
-            );
+            if (op.equals("=")) {
+                Oprand rAddr = st.tmpPop();
+                Oprand lAddr = st.tmpPop();
+                codes.add(
+                    asm.bin("movq", rAddr, lAddr)  
+                ); 
+            } else {
+                String asmOp = op.equals("+=") ? "addq" : "subq";
+                Reg tmpReg = st.newTmpReg();
+                Oprand rAddr = st.tmpPop();
+                Oprand lAddr = st.tmpPop();
+                Collections.addAll(codes,
+                    asm.bin("movq", lAddr, tmpReg),
+                    asm.bin(asmOp, rAddr, tmpReg),
+                    asm.bin("movq", tmpReg, lAddr)  
+                );
+            }
+
         }
     }
 
@@ -62,7 +75,7 @@ public class BasicOpration {
         }
         if (Program.shouldCompile()) {
             Oprand lAddr = st.tmpPop();
-            String op = t.getType() == DecafParserTokenTypes.INCRE ? "add" : "sub";
+            String op = t.getType() == DecafParserTokenTypes.INCRE ? "addq" : "subq";
             codes.add(
                 asm.bin(op, new Num(1L), lAddr)  
             );
@@ -71,14 +84,14 @@ public class BasicOpration {
 
     // only =, forwarder
     static void simpleAssign(AST t, ST st, List<String> codes) {
-        binaryAssign(t, st, true, codes);
+        binaryAssign(t, st, "=", codes);
     }
 
     // +=, -=, =, ++, --, forwarder
     static void moreAssign(AST t, ST st, List<String> codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
-            binaryAssign(t, st, op.equals("="), codes);
+            binaryAssign(t, st, op, codes);
         } else {
             unaryAssign(t, st, codes);
         }

@@ -95,15 +95,21 @@ public class ControlFlow {
             );
             Collections.addAll(codesCondition,
                 asm.bin("cmp", new Num(0L), condition.bite()),
-                asm.jmp("jle", executionBeginLabel)
+                asm.jmp("jne", executionBeginLabel)
             );
+            codes.add(asm.cmt("for loop - start"));
+            codes.add(asm.cmt("for loop - variable initialization"));
             codes.addAll(codesInit);
+            codes.add(asm.cmt("for loop - execution"));
             codes.add(asm.label(executionBeginLabel));
             codes.addAll(codesExecution);
+            codes.add(asm.cmt("for loop - increment"));
             codes.addAll(codesIncrement);
             codes.add(asm.label(conditionBeginLabel));
+            codes.add(asm.cmt("for loop - condition"));
             codes.addAll(codesCondition);
             codes.add(asm.label(loopEndLabel));
+            codes.add(asm.cmt("for loop - end"));
         }
         localST.popContext();
         if (Program.shouldCompile()) {
