@@ -62,25 +62,4 @@ public class Defs {
     public static final boolean equals(String lType, String rType) {
         return lType.equals(rType) || rType.equals(Defs.DESC_TYPE_WILDCARD);
     }
-
-    public enum Type {
-        IMPORT,
-        FIELD,
-        FUNCTION_DECLARE,
-        IF,
-        IF_ELSE,
-        WHILE,
-        FOR,
-    }
-
-    public enum Action {
-        LOAD,
-        STORE,
-    }
-
-    public enum FlowOp {
-        CONTINUE,
-        BREAK,
-        RETURN,
-    }
 }

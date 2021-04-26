@@ -5,7 +5,6 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Addr;
-import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
@@ -15,7 +14,6 @@ import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
-import edu.mit.compilers.grammar.*;
 
 public class Element {
     static String arrayElement(AST t, ST st, List<String> codes) {
