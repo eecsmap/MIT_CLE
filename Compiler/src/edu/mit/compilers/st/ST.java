@@ -214,6 +214,7 @@ public class ST {
         return this.returnLabel;
     }
 
+    // 1, 2, 4 bytes
     public final Reg newTmpReg() {
         for(Reg reg: Constants.callerSavedReg) {
             if (!this.calleeSavedRegsUsage.containsKey(reg.getRegName())) {
