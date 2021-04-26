@@ -43,18 +43,23 @@ public class ControlFlow {
                 asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("je", ifExecutionEndLabel)
             );
-            if (hasElse) 
+            if (hasElse)
             codesIfExecution.add(
                 asm.jmp("jmp", ifElseEndLabel)
             );
+            codes.add(asm.cmt("if - start"));
+            codes.add(asm.cmt("if - condition"));
             codes.addAll(codesCondition);
+            codes.add(asm.cmt("if - ifExecution"));
             codes.addAll(codesIfExecution);
             codes.add(asm.label(ifExecutionEndLabel));
             if (hasElse)
             {
+            codes.add(asm.cmt("if - elseExecution"));
             codes.addAll(codesElseExecution);
             codes.add(asm.label(ifElseEndLabel));
             }
+            codes.add(asm.cmt("if - end"));
         }
     }
 

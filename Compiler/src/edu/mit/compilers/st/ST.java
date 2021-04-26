@@ -43,9 +43,11 @@ public class ST {
     }
 
     public ST(ST subst) {
-        this.varOffset = subst.varOffset;
         this.isGlobal = false;
         this.subST = subst;
+        this.varOffset = subst.varOffset;
+        this.returnType = subst.returnType;
+        this.returnLabel = subst.returnLabel;
     }
 
     public ST(ST subst, String type) {
