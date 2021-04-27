@@ -77,11 +77,12 @@ public class ControlFlow {
     static void forFlow(AST t, ST st, List<String> codes) {
         ST localST = new ST(st);
         Label executionBeginLabel = new Label();
+        Label incrementBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
         Label loopEndLabel = new Label();
         localST.pushContext(t.getType());
         if (Program.shouldCompile()) {
-            localST.pushContinueLabel(conditionBeginLabel);
+            localST.pushContinueLabel(incrementBeginLabel);
             localST.pushBreakLabel(loopEndLabel);
         }
         AST c = t.getFirstChild();
@@ -128,6 +129,7 @@ public class ControlFlow {
             codes.add(asm.label(executionBeginLabel));
             codes.addAll(codesExecution);
             codes.add(asm.cmt("for loop - increment"));
+            codes.add(asm.label(incrementBeginLabel));
             codes.addAll(codesIncrement);
             codes.add(asm.label(conditionBeginLabel));
             codes.add(asm.cmt("for loop - condition"));
