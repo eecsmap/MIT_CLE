@@ -132,12 +132,23 @@ public class BasicOpration {
             Er.errType(t, ifType, elseType);
         }
         if (Program.shouldCompile()) {
-            Oprand elseOp = st.tmpPop();
-            Oprand ifOp = st.tmpPop();
             Reg resultReg = st.newTmpReg();
-            codesCondition.add(
+            Oprand conditionOp = st.tmpPop();
+            Reg condition;
+            if (conditionOp instanceof Reg) {
+                condition = (Reg)conditionOp;
+            } else {
+                condition = st.newTmpReg();
+                codesCondition.add(
+                    asm.bin("movq", conditionOp, condition)    
+                );
+            }
+            Collections.addAll(codesCondition,
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("je", ifExecutionEndLabel)
             );
+            Oprand elseOp = st.tmpPop();
+            Oprand ifOp = st.tmpPop();
             Collections.addAll(codesIfExecution,
                 asm.bin("movq", ifOp, resultReg),
                 asm.jmp("jmp", ifElseEndLabel)
@@ -145,11 +156,16 @@ public class BasicOpration {
             codesElseExecution.add(
                 asm.bin("movq", elseOp, resultReg)
             );
+            codes.add(asm.cmt("ternary - start"));
+            codes.add(asm.cmt("ternary - condition"));
             codes.addAll(codesCondition);
+            codes.add(asm.cmt("ternary - if execution"));
             codes.addAll(codesIfExecution);
             codes.add(asm.label(ifExecutionEndLabel));
+            codes.add(asm.cmt("ternary - else execution"));
             codes.addAll(codesElseExecution);
             codes.add(asm.label(ifElseEndLabel));
+            codes.add(asm.cmt("ternary - end"));
             st.tmpPush(resultReg);
         }
         return ifType;
