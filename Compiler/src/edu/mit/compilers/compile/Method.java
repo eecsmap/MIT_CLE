@@ -51,7 +51,7 @@ class Method {
             if (Program.shouldCompile()) {
                 codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc, localST.bytesToAllocate()));
                 codes.addAll(codesMethod);
-                codes.addAll(asm.methodDeclEnd(localST.getReturnLabel()));
+                codes.addAll(asm.methodDeclEnd(localST.getReturnLabel(), Defs.DESC_TYPE_VOID.equals(returnType)));
             }
         }
         return t;

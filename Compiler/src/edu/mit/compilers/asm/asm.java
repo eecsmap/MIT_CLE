@@ -124,10 +124,18 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> methodDeclEnd(Label returnLabel) {
+    public static final List<String> methodDeclEnd(Label returnLabel, boolean returnIsVoid) {
         List<String> codes = new ArrayList<>();
+        if (!returnIsVoid)
         Collections.addAll(codes,
-            label(returnLabel),
+            asm.bin("movq", new Num(1L), Reg.rax),
+            asm.bin("movq", new Num(254L), Reg.rbx),
+            asm.uni("int", new Num(0x80L))
+        );
+        codes.add(
+            label(returnLabel)
+        );
+        Collections.addAll(codes,
             non("leave"),
             non("ret")
         );
