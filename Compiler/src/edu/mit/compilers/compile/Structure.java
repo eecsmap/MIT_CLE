@@ -111,7 +111,8 @@ public class Structure {
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, resReg),
                     asm.bin("cmp", rOp, resReg),
-                    asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite())
+                    asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite()),
+                    asm.bin("movzbq", resReg.bite(), resReg)
                 );
             } else if (t.getType() == DecafParserTokenTypes.SLASH || t.getType() == DecafParserTokenTypes.PERCENT) {
                 Reg resultReg = t.getType() == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
