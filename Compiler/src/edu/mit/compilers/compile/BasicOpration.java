@@ -133,6 +133,8 @@ public class BasicOpration {
         }
         if (Program.shouldCompile()) {
             Reg resultReg = st.newTmpReg();
+            Oprand elseOp = st.tmpPop();
+            Oprand ifOp = st.tmpPop();
             Oprand conditionOp = st.tmpPop();
             Reg condition;
             if (conditionOp instanceof Reg) {
@@ -147,8 +149,6 @@ public class BasicOpration {
                 asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("je", ifExecutionEndLabel)
             );
-            Oprand elseOp = st.tmpPop();
-            Oprand ifOp = st.tmpPop();
             Collections.addAll(codesIfExecution,
                 asm.bin("movq", ifOp, resultReg),
                 asm.jmp("jmp", ifElseEndLabel)
