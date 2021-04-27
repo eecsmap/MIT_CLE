@@ -1,6 +1,5 @@
 code gen
-1. if encountered error, stop codegen, but continues doing semantics checking
-2. remove new localST in if/for/while, instead, record every new variable, delete them at the end of control
+1. divide need to save register
 
 possible improvement:
 1. remove redundant labels when break/continue not called

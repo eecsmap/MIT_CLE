@@ -116,7 +116,7 @@ public class Structure {
                 );
             } else if (t.getType() == DecafParserTokenTypes.SLASH || t.getType() == DecafParserTokenTypes.PERCENT) {
                 Reg resultReg = t.getType() == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
-                Addr divisor = st.newTmpAddr();
+                Reg divisor = st.newTmpReg();
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, Reg.rax),
                     asm.bin("movq", rOp, divisor),
