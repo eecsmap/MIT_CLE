@@ -9,6 +9,7 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
@@ -16,7 +17,7 @@ import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
 
 public class Element {
-    static String arrayElement(AST t, ST st, List<String> codes) {
+    static String arrayElement(AST t, ST st, ActionType action, List<String> codes) {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
             System.err.printf("11 ");
@@ -25,7 +26,7 @@ public class Element {
         }
         String type = desc.getType();
         AST c = t.getFirstChild();
-        String indexType = Structure.expr(c, st, codes);
+        String indexType = Structure.expr(c, st, ActionType.LOAD, codes);
         if (indexType == null) {
             Er.errType(t, Defs.getArrayType(type), type);
             return Defs.getArrayType(type);
@@ -52,7 +53,14 @@ public class Element {
                     asm.bin("leaq", new Addr(indexReg, varName), indexReg),
                     asm.bin("leaq", desc.getAddr(), resReg)
                 );
-                st.tmpPush(new Addr(indexReg, resReg));
+                if (action == ActionType.STORE) {
+                    st.tmpPush(new Addr(indexReg, resReg));
+                } else {
+                    codes.add(
+                        asm.bin("movq", new Addr(indexReg, resReg), resReg)
+                    );
+                    st.tmpPush(resReg);
+                }
             } else {
                 Collections.addAll(codes,
                     asm.bin("movq", index, indexReg),

@@ -13,6 +13,7 @@ import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.AsmUtils;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
@@ -36,8 +37,8 @@ public class Structure {
         AST r = l.getNextSibling();
         List<String> leftCodes = new ArrayList<>();
         List<String> rightCodes = new ArrayList<>();
-        String lType = expr(l, st, leftCodes);
-        String rType = expr(r, st, rightCodes);
+        String lType = expr(l, st, ActionType.STORE, leftCodes);
+        String rType = expr(r, st, ActionType.LOAD, rightCodes);
         String returnType = null;
         if (AstUtils.isBinaryOp(t)) {
             if (lType != null && !Defs.equals(lType, rType)) {
@@ -137,7 +138,7 @@ public class Structure {
         return returnType;
     }
 
-    private static String idExpr(AST t, ST st, List<String> codes) {
+    private static String idExpr(AST t, ST st, ActionType action, List<String> codes) {
         Descriptor desc = st.getDesc(t.getText());
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
@@ -153,7 +154,7 @@ public class Structure {
             if (t.getNumberOfChildren() == 0) {
                 return type;
             }
-            return Element.arrayElement(t, st, codes);
+            return Element.arrayElement(t, st, action, codes);
         }
         // method
         if (Defs.isMethodType(type)) {
@@ -170,7 +171,7 @@ public class Structure {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
             return Element.intLiteral(t.getFirstChild(), st, true);
         }
-        String subType = expr(t.getFirstChild(), st, codes);
+        String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
             System.err.printf("20 ");
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
@@ -192,7 +193,7 @@ public class Structure {
     }
 
     private static String exclamExpr(AST t, ST st, List<String> codes) {
-        String subType = expr(t.getFirstChild(), st, codes);
+        String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
             System.err.printf("21 ");
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
@@ -221,7 +222,7 @@ public class Structure {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    static String expr(AST t, ST st, List<String> codes) {
+    static String expr(AST t, ST st, ActionType action, List<String> codes) {
         if (t == null) {
             st.tmpPush(null);
             return null;
@@ -231,7 +232,7 @@ public class Structure {
         }
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                return idExpr(t, st, codes);
+                return idExpr(t, st, action, codes);
             case DecafScannerTokenTypes.INTLITERAL:
                 return Element.intLiteral(t, st, false);
             case DecafScannerTokenTypes.TK_true:
@@ -343,7 +344,7 @@ public class Structure {
                     Er.report(t, "null return");
                     return;
                 }
-                String actualReturnType = expr(t.getFirstChild(), st, codes);
+                String actualReturnType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
                 if (actualReturnType == null) {
                     actualReturnType = Defs.DESC_TYPE_VOID;
                 }

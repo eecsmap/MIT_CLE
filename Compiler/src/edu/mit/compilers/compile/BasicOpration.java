@@ -6,6 +6,7 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.asm.*;
+import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
@@ -24,7 +25,7 @@ public class BasicOpration {
             System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
         } else if (Defs.isArrayType(lType)) {
-            lType = Element.arrayElement(c, st, codes);
+            lType = Element.arrayElement(c, st, ActionType.STORE, codes);
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
         } else {
@@ -38,7 +39,7 @@ public class BasicOpration {
         String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
-        String rType = Structure.expr(c, st, codes);
+        String rType = Structure.expr(c, st, ActionType.LOAD, codes);
         if (lType != null && (!Defs.equals(lType, rType) || (!op.equals("=") && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
             System.err.printf("2 ");
             Er.errType(c, lType, rType);
@@ -119,14 +120,14 @@ public class BasicOpration {
         List<String> codesElseExecution = new ArrayList<>();
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
-        String cond = Structure.expr(cc, st, codesCondition);
+        String cond = Structure.expr(cc, st, ActionType.LOAD, codesCondition);
         if (!Defs.equals(Defs.DESC_TYPE_BOOL, cond)) {
             Er.errType(t, Defs.DESC_TYPE_BOOL, cond);
         }
         cc = cc.getNextSibling();
-        String ifType = Structure.expr(cc, st, codesIfExecution);
+        String ifType = Structure.expr(cc, st, ActionType.LOAD, codesIfExecution);
         c = c.getNextSibling();
-        String elseType = Structure.expr(c, st, codesElseExecution);
+        String elseType = Structure.expr(c, st, ActionType.LOAD, codesElseExecution);
         if (!Defs.equals(ifType, elseType)) {
             Er.errType(t, ifType, elseType);
         }

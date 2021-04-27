@@ -155,8 +155,9 @@ public class asm {
                 );
             }
         }
-        codes.add(
-            asm.uniDir("call", name)
+        Collections.addAll(codes,
+            bin("movq", new Num(0L), Reg.rax),
+            uniDir("call", name)
         );
         return codes;
     }

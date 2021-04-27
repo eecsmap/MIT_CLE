@@ -1,7 +1,6 @@
 package edu.mit.compilers.compile;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import antlr.collections.AST;
@@ -9,6 +8,7 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
@@ -76,7 +76,7 @@ class Method {
             }
             methodType = Defs.DESC_TYPE_WILDCARD;
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
-                Structure.expr(c, st, codes);
+                Structure.expr(c, st, ActionType.LOAD, codes);
                 if (Program.shouldCompile()) {
                     Oprand arg = st.tmpPop();
                     if (arg instanceof Reg) {
@@ -103,7 +103,7 @@ class Method {
                 return Defs.getMethodType(method.getType());
             }
             for (int i = 0; c != null; c = c.getNextSibling(), i++) {
-                String cType = Structure.expr(c, st, codes);
+                String cType = Structure.expr(c, st, ActionType.LOAD, codes);
                 if (!Defs.equals(params.get(i), cType)) {
                     System.err.printf("10 ");
                     Er.errType(c, params.get(i), cType);

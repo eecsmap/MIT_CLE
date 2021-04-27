@@ -10,6 +10,7 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ST;
 import edu.mit.compilers.tools.Er;
@@ -22,7 +23,7 @@ public class ControlFlow {
         Label ifElseEndLabel = new Label();
         // condition
         List<String> codesCondition = new ArrayList<>();
-        String type = Structure.expr(c, localST, codesCondition);
+        String type = Structure.expr(c, localST, ActionType.LOAD, codesCondition);
         Boolean hasElse = false;
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("14 ");
@@ -90,7 +91,7 @@ public class ControlFlow {
         c = c.getNextSibling();
         // condition expr
         List<String> codesCondition = new ArrayList<>();
-        String conditionExprType = Structure.expr(c, localST, codesCondition);
+        String conditionExprType = Structure.expr(c, localST, ActionType.LOAD, codesCondition);
         if (!Defs.equals(Defs.DESC_TYPE_BOOL, conditionExprType)) {
             Er.errType(c, Defs.DESC_TYPE_BOOL, conditionExprType);
         }
@@ -154,7 +155,7 @@ public class ControlFlow {
         // condition
         AST c = t.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
-        String type = Structure.expr(c, localST, codesCondition);
+        String type = Structure.expr(c, localST, ActionType.LOAD, codesCondition);
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
             System.err.printf("15 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
