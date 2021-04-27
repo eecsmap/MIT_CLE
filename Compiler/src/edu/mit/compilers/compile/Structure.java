@@ -353,11 +353,18 @@ public class Structure {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 if (Program.shouldCompile()) {
-                    Oprand returnVar = st.tmpPop();
-                    Collections.addAll(codes, 
-                        asm.bin("movq", returnVar, Reg.rax),
-                        asm.jmp("jmp", st.getReturnLabel())
-                    );
+                    if (Defs.DESC_TYPE_VOID.equals(expectedReturnType)) {
+                        st.tmpPop();
+                        codes.add(
+                            asm.jmp("jmp", st.getReturnLabel())
+                        );
+                    } else {
+                        Oprand returnVar = st.tmpPop();
+                        Collections.addAll(codes, 
+                            asm.bin("movq", returnVar, Reg.rax),
+                            asm.jmp("jmp", st.getReturnLabel())
+                        );
+                    }
                 }
                 return;
             default:
