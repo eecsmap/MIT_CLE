@@ -119,6 +119,6 @@ compexpr : addexpr ((GREATER^|LESS^|GE^|LE^) addexpr)*;
 eqexpr : compexpr ((EQ^|NEQ^) compexpr)*;
 andexpr : eqexpr (AND^ eqexpr)*;
 orexpr : andexpr (OR^ andexpr)*;
-quesexpr : orexpr (QUESTION^ quesexpr COLON^ orexpr)*;
+quesexpr : orexpr (QUESTION^ quesexpr COLON^ quesexpr)?;
 
 literal : INTLITERAL | CHARLITERAL | TK_true | TK_false;
