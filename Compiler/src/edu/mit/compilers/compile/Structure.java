@@ -108,10 +108,9 @@ public class Structure {
                     asm.uni("setne", resReg.bite())
                 );
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
-                Reg interReg = st.newTmpReg();
                 Collections.addAll(glueCodes,
-                    asm.bin("movq", lOp, interReg),
-                    asm.bin("cmp", rOp, interReg),
+                    asm.bin("movq", lOp, resReg),
+                    asm.bin("cmp", rOp, resReg),
                     asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite())
                 );
             } else if (t.getType() == DecafParserTokenTypes.SLASH || t.getType() == DecafParserTokenTypes.PERCENT) {

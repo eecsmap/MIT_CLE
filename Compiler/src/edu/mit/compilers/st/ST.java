@@ -269,6 +269,10 @@ public class ST {
         return returnOp;
     }
 
+    public final Oprand tmpPeek() {
+        return this.tmpStack.peek();
+    }
+
     public final List<Reg> getUsedCalleeSavedRegs() {
         List<Reg> res = new ArrayList<>();
         this.callerSavedRegsUsage.forEach((k, v) -> res.add(v));
