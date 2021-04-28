@@ -44,9 +44,9 @@ public class Element {
             Integer offset = desc.getAddr().getOffset();
             Collections.addAll(codes,
                 asm.bin("movq", index, indexReg),
-                asm.bin("cmp", new Num(((ArrayDesc)desc).getCap()), indexReg),
+                asm.bin("cmpq", new Num(((ArrayDesc)desc).getCap()), indexReg),
                 asm.jmp("jge", Defs.EXIT_ARRAY_OUTBOUND_LABEL),
-                asm.bin("cmp", new Num(0L), indexReg),
+                asm.bin("cmpq", new Num(0L), indexReg),
                 asm.jmp("jl", Defs.EXIT_ARRAY_OUTBOUND_LABEL)
             );
             if (desc.getAddr().isGlobal()) {
@@ -65,10 +65,16 @@ public class Element {
                 }
             } else {
                 Collections.addAll(codes,
-                    asm.bin("movq", index, indexReg),
-                    asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
+                    asm.bin("movq", index, indexReg)
                 );
-                st.tmpPush(resReg);
+                if (action == ActionType.STORE) {
+                    st.tmpPush(new Addr(offset, indexReg, varName));
+                } else {
+                    codes.add(
+                        asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
+                    );
+                    st.tmpPush(resReg);
+                }
             }
         }
         return Defs.getArrayType(type);

@@ -1,9 +1,10 @@
 package edu.mit.compilers.asm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 public class Constants {
     private Constants() {};
@@ -15,16 +16,16 @@ public class Constants {
         put(4, Reg.r8);
         put(5, Reg.r9);
     }};
-    public static final Set<Reg> callerSavedReg = new HashSet<>(){{
-        add(Reg.rax);
+    public static final List<Reg> callerSavedReg = new ArrayList<>(){{
         add(Reg.rcx);
-        add(Reg.rdx);
         add(Reg.r8);
         add(Reg.r9);
         add(Reg.r10);
         add(Reg.r11);
+        add(Reg.rdx);
+        add(Reg.rax);
     }};
-    public static final Set<Reg> calleeSavedReg = new HashSet<>(){{
+    public static final List<Reg> calleeSavedReg = new ArrayList<>(){{
         add(Reg.rbx);
         add(Reg.rbp);
         add(Reg.rdi);

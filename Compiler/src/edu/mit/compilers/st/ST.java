@@ -250,6 +250,10 @@ public class ST {
         return (bytes + 15) / 16 * 16;
     }
 
+    public final Integer getOffset() {
+        return this.varOffset;
+    }
+
     public final void tmpPush(Oprand tmp) {
         if (tmp instanceof Reg) {
             this.callerSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));

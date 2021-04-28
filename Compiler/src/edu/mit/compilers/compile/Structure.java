@@ -89,7 +89,7 @@ public class Structure {
                 } else {
                     Collections.addAll(leftCodes,
                         asm.bin("movq", lOp, resReg),
-                        asm.bin("cmp", new Num(0L), resReg),
+                        asm.bin("cmpq", new Num(0L), resReg),
                         asm.jmp(jmpOp, endLabel)
                     );
                 }
@@ -100,7 +100,7 @@ public class Structure {
                 } else {
                     Collections.addAll(rightCodes,
                         asm.bin("movq", rOp, resReg),
-                        asm.bin("cmp", new Num(0L), resReg)
+                        asm.bin("cmpq", new Num(0L), resReg)
                     );
                 }
                 Collections.addAll(glueCodes,
@@ -110,7 +110,7 @@ public class Structure {
             } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
                 Collections.addAll(glueCodes,
                     asm.bin("movq", lOp, resReg),
-                    asm.bin("cmp", rOp, resReg),
+                    asm.bin("cmpq", rOp, resReg),
                     asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite()),
                     asm.bin("movzbq", resReg.bite(), resReg)
                 );

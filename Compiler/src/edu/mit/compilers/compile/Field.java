@@ -4,6 +4,8 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
@@ -41,10 +43,20 @@ class Field {
                     if (!st.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
-                    if (Program.shouldCompile() && st.isGlobal()) {
-                        codes.addAll(
-                            asm.globalDecl(c.getText(), size * cap)
-                        );
+                    if (Program.shouldCompile()) {
+                        if (st.isGlobal()) {
+                            codes.addAll(
+                                asm.globalDecl(c.getText(), size * cap)
+                            );
+                        } else {
+                            Integer topOffset = st.getOffset();
+                            Integer baseOffset = st.getDesc(c.getText()).getAddr().getOffset();
+                            for (int i = baseOffset; i < topOffset; i += 8) {
+                                codes.add(
+                                    asm.bin("movq", new Num(0L), new Addr(i, "array init"))
+                                );
+                            }
+                        }
                     }
                     continue;
                 }
@@ -56,10 +68,16 @@ class Field {
                 if (!st.push(new VarDesc(type, c.getText()), false)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                 }
-                if (Program.shouldCompile() && st.isGlobal()) {
-                    codes.addAll(
-                        asm.globalDecl(c.getText(), size)
-                    );
+                if (Program.shouldCompile()) {
+                    if (st.isGlobal()) {
+                        codes.addAll(
+                            asm.globalDecl(c.getText(), size)
+                        );
+                    } else {
+                        codes.add(
+                            asm.bin("movq", new Num(0L), st.getDesc(c.getText()).getAddr())
+                        );
+                    }
                 }
             }
         }
