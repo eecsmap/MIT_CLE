@@ -120,10 +120,19 @@ public class ST {
             if (this.isGlobal) {
                 desc.setAddr(new Addr(desc.getText(), false));
             } else {
-                if (isArgument) {
-                    this.argumentOffsetIncrement();
+                if (desc instanceof ArrayDesc) {
+                    for (int i = 0; i < ((ArrayDesc)desc).getCap(); i++)
+                    if (isArgument) {
+                        this.argumentOffsetIncrement();
+                    } else {
+                        this.localOffsetIncrement();
+                    }
                 } else {
-                    this.localOffsetIncrement();
+                    if (isArgument) {
+                        this.argumentOffsetIncrement();
+                    } else {
+                        this.localOffsetIncrement();
+                    }
                 }
                 desc.setAddr(new Addr(this.varOffset, desc.getText()));
             }

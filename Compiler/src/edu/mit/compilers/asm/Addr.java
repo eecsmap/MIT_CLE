@@ -34,6 +34,7 @@ public class Addr extends Oprand {
         this.index = index;
         this.str = String.format("%d(%%rbp, %s, 8)", this.offset, this.index);
         this.varName = varName;
+        this.reservedRegs.add(index);
     }
 
     // global array index
