@@ -269,9 +269,15 @@ public class Structure {
                 return Defs.TYPE_STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
                 if (Program.shouldCompile()) {
-                    // ? WHERE IS IT
+                    Reg tmpReg = st.newTmpReg();
+                    char charLiteral = t.getText().charAt(0);
+                    int ascii = (int) charLiteral;
+                    codes.add(
+                        asm.bin("movq", new Num(Long.valueOf(ascii)), tmpReg)
+                    );
+                    st.tmpPush(tmpReg);
                 }
-                return Defs.TYPE_CHAR_LITERAL;
+                return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.COLON:
                 return BasicOpration.relOps(t, st, codes);
             default:
