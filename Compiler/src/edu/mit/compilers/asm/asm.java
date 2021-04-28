@@ -173,6 +173,11 @@ public class asm {
     public static final List<String> saveRegs(ST st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
         List<Reg> regsToSave = st.getUsedCalleeSavedRegs();
+        if (regsToSave.size() > 0) {
+            codes.add(
+                asm.cmt("save - start")
+            );
+        }
         for (Reg reg: regsToSave) {
             Addr addr = st.newTmpAddr();
             codes.add(
@@ -180,18 +185,33 @@ public class asm {
             );
             addrs.add(addr);
         }
+        if (regsToSave.size() > 0) {
+            codes.add(
+                asm.cmt("save - end")
+            );
+        }
         return codes;
     }
 
     public static final List<String> recoverRegs(ST st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
         List<Reg> regsToRecover = st.getUsedCalleeSavedRegs();
+        if (regsToRecover.size() > 0) {
+            codes.add(
+                asm.cmt("recover - start")
+            );
+        }
         int i = 0;
         for (Reg reg: regsToRecover) {
             codes.add(
                 asm.bin("movq", addrs.get(i), reg)
             );
             i++;
+        }
+        if (regsToRecover.size() > 0) {
+            codes.add(
+                asm.cmt("recover - end")
+            );
         }
         return codes;
     }
