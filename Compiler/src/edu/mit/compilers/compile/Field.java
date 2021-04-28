@@ -49,11 +49,10 @@ class Field {
                                 asm.globalDecl(c.getText(), size * cap)
                             );
                         } else {
-                            Integer topOffset = st.getOffset();
-                            Integer baseOffset = st.getDesc(c.getText()).getAddr().getOffset();
-                            for (int i = baseOffset; i < topOffset; i += 8) {
+                            Integer topOffset = st.getDesc(c.getText()).getAddr().getOffset();
+                            for (int i = 0; i < cap; i++) {
                                 codes.add(
-                                    asm.bin("movq", new Num(0L), new Addr(i, "array init"))
+                                    asm.bin("movq", new Num(0L), new Addr(topOffset + 8 * i, "array init"))
                                 );
                             }
                         }
