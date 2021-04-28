@@ -77,9 +77,12 @@ public class ST {
 
     private void localOffsetIncrement() {
         if (this.varOffset > 0) {
-            this.varOffset = -24;
+            this.varOffset = -56;
         }
         this.varOffset -= 8;
+        if (!this.subST.isGlobal) {
+            this.subST.setOffset(this.varOffset);
+        }
     }
 
     public final Descriptor getDesc(String text) {
@@ -121,11 +124,12 @@ public class ST {
                 desc.setAddr(new Addr(desc.getText(), false));
             } else {
                 if (desc instanceof ArrayDesc) {
-                    for (int i = 0; i < ((ArrayDesc)desc).getCap(); i++)
-                    if (isArgument) {
-                        this.argumentOffsetIncrement();
-                    } else {
-                        this.localOffsetIncrement();
+                    for (int i = 0; i < ((ArrayDesc)desc).getCap(); i++) {
+                        if (isArgument) {
+                            this.argumentOffsetIncrement();
+                        } else {
+                            this.localOffsetIncrement();
+                        }
                     }
                 } else {
                     if (isArgument) {
@@ -261,6 +265,13 @@ public class ST {
 
     public final Integer getOffset() {
         return this.varOffset;
+    }
+
+    private final void setOffset(Integer offset) {
+        this.varOffset = offset;
+        if (!this.subST.isGlobal) {
+            this.subST.setOffset(this.varOffset);
+        }
     }
 
     public final void tmpPush(Oprand tmp) {
