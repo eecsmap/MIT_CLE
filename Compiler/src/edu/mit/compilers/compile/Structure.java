@@ -270,8 +270,7 @@ public class Structure {
             case DecafScannerTokenTypes.CHARLITERAL:
                 if (Program.shouldCompile()) {
                     Reg tmpReg = st.newTmpReg();
-                    char charLiteral = t.getText().charAt(0);
-                    int ascii = (int) charLiteral;
+                    int ascii = t.getText().charAt(1);
                     codes.add(
                         asm.bin("movq", new Num(Long.valueOf(ascii)), tmpReg)
                     );
