@@ -50,7 +50,7 @@ public class ControlFlow {
                 );
             }
             Collections.addAll(codesCondition,
-                asm.bin("cmpq", new Num(0L), condition),
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("je", ifExecutionEndLabel)
             );
             if (hasElse)
@@ -119,7 +119,7 @@ public class ControlFlow {
                 asm.jmp("jmp", conditionBeginLabel)
             );
             Collections.addAll(codesCondition,
-                asm.bin("cmpq", new Num(0L), condition),
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("jne", executionBeginLabel)
             );
             codes.add(asm.cmt("for loop - start"));
@@ -178,7 +178,7 @@ public class ControlFlow {
                 );
             }
             Collections.addAll(codesCondition,
-                asm.bin("cmpq", new Num(0L), condition),
+                asm.bin("cmp", new Num(0L), condition.bite()),
                 asm.jmp("jne", executionBeginLabel)
             );
             codes.add(asm.cmt("while - start"));

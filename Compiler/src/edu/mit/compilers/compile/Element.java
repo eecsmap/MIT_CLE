@@ -51,7 +51,6 @@ public class Element {
             );
             if (desc.getAddr().isGlobal()) {
                 Collections.addAll(codes,
-                    asm.bin("movq", index, indexReg),
                     asm.bin("leaq", new Addr(indexReg, varName), indexReg),
                     asm.bin("leaq", desc.getAddr(), resReg)
                 );
@@ -64,9 +63,6 @@ public class Element {
                     st.tmpPush(resReg);
                 }
             } else {
-                Collections.addAll(codes,
-                    asm.bin("movq", index, indexReg)
-                );
                 if (action == ActionType.STORE) {
                     st.tmpPush(new Addr(offset, indexReg, varName));
                 } else {
