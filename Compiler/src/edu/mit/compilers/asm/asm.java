@@ -115,6 +115,12 @@ public class asm {
             bin("movq", Reg.rsp, Reg.rbp),
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
         );
+        // initialize the stack
+        for (int i = 8; i < bytesToAllocate; i += 8) {
+            codes.add(
+                bin("movq", new Num(0L), new Addr(-i, "init stack"))
+            );
+        }
         // move arguments to memory
         for (int i = 0; i < Math.min(argsDesc.size(), Constants.argRegMap.size()) ; i++) {
             codes.add(
