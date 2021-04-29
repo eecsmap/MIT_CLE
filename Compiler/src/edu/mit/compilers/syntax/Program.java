@@ -1,7 +1,6 @@
 package edu.mit.compilers.syntax;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +9,6 @@ import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Label;
-import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.Reg;
-import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
 import edu.mit.compilers.defs.Defs;
