@@ -42,33 +42,27 @@ public class Structure {
         String returnType = null;
         if (AstUtils.isBinaryOp(t)) {
             if (lType != null && !Defs.equals(lType, rType)) {
-                System.err.printf("16 ");
                 Er.errType(l, lType, rType);
             }
             returnType = lType;
         } else if (AstUtils.isBinaryCompOp(t)) {
             if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
-                System.err.printf("31 ");
                 Er.errType(r, lType, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;    
         } else if (AstUtils.isBinaryBoolOp(t)) {
             if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
-                System.err.printf("17 ");
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
             }
             if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
-                System.err.printf("18 ");
                 Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
         } else if (AstUtils.isBinaryIntCompOp(t)) {
             if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-                System.err.printf("27 ");
                 Er.errType(l, Defs.DESC_TYPE_INT, lType);
             }
             if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
-                System.err.printf("28 ");
                 Er.errType(r, Defs.DESC_TYPE_INT, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
@@ -143,7 +137,6 @@ public class Structure {
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
             if (desc == null) {
-                System.out.printf("19 ");
                 Er.errNotDefined(t, t.getText());
                 return Defs.DESC_TYPE_WILDCARD;
             }
@@ -173,7 +166,6 @@ public class Structure {
         }
         String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
-            System.err.printf("20 ");
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
         }
         if (Program.shouldCompile()) {
@@ -195,7 +187,6 @@ public class Structure {
     private static String exclamExpr(AST t, ST st, List<String> codes) {
         String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
-            System.err.printf("21 ");
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
         }
         if (Program.shouldCompile()) {
@@ -254,7 +245,6 @@ public class Structure {
                 Descriptor desc = st.getDesc(c.getText());
                 String subType = desc.getType();
                 if (subType == null || !Defs.isArrayType(subType)) {
-                    System.err.printf("22 ");
                     Er.errNotDefined(c, c.getText());
                 }
                 if (Program.shouldCompile()) {
@@ -322,7 +312,6 @@ public class Structure {
                 return;
             case DecafScannerTokenTypes.TK_break:
                 if (!AstUtils.isLoop(st.getContext())) {
-                    System.err.printf("23 ");
                     Er.errBreak(t);
                 }
                 if (Program.shouldCompile()) {
@@ -333,7 +322,6 @@ public class Structure {
                 return;
             case DecafScannerTokenTypes.TK_continue:
                 if (!AstUtils.isLoop(st.getContext())) {
-                    System.err.printf("24 ");
                     Er.errContinue(t);
                 }
                 if (Program.shouldCompile()) {
@@ -345,7 +333,6 @@ public class Structure {
             case DecafScannerTokenTypes.TK_return:
                 String expectedReturnType = st.getReturnType();
                 if (expectedReturnType == null) {
-                    System.err.printf("25 ");
                     Er.report(t, "null return");
                     return;
                 }
@@ -354,7 +341,6 @@ public class Structure {
                     actualReturnType = Defs.DESC_TYPE_VOID;
                 }
                 if (!Defs.equals(expectedReturnType, actualReturnType)) {
-                    System.err.printf("26 ");
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 if (Program.shouldCompile()) {

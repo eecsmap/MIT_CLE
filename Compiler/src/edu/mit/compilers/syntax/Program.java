@@ -14,6 +14,7 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
+import edu.mit.compilers.compile.CompileProgram;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
@@ -48,8 +49,8 @@ public class Program {
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
         }
-        addROData(codes);
-        addArrayOutBoundReturn(codes);
+        CompileProgram.addROData(stringLiteralList, stringLiteralLabelList, codes);
+        CompileProgram.addArrayOutBoundReturn(codes);
     }
 
     // return the next AST to parse
@@ -67,31 +68,5 @@ public class Program {
             }
         }
         return t;
-    }
-
-    static void addROData(List<String> codes) {
-        if (shouldCompile() && !stringLiteralList.isEmpty()) {
-            List<String> rodata = new ArrayList<>();
-            Collections.addAll(rodata,
-                asm.nonDir(".text"),
-                asm.uniDir(".section", ".rodata")
-            );
-            for (int i = 0; i < stringLiteralList.size(); i++) {
-                Collections.addAll(rodata,
-                    asm.label(stringLiteralLabelList.get(i)),
-                    asm.uniDir(".string", stringLiteralList.get(i))
-                );
-            }
-            codes.addAll(0, rodata);
-        }
-    }
-
-    static void addArrayOutBoundReturn(List<String> codes) {
-        Collections.addAll(codes,
-            asm.label(Defs.EXIT_ARRAY_OUTBOUND_LABEL),
-            asm.bin("movq", new Num(1L), Reg.rax),
-            asm.bin("movq", new Num(255L), Reg.rbx),
-            asm.uni("int", new Num(0x80L))
-        );
     }
 }
