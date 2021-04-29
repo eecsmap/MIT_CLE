@@ -6,11 +6,9 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.Oprand;
-import edu.mit.compilers.asm.Reg;
-import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.Action.ActionType;
-import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.ast.AstUtils;
+import edu.mit.compilers.compile.CompileMethod;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
@@ -48,11 +46,7 @@ class Method {
             // parse block
             List<String> codesMethod = new ArrayList<>();
             Structure.block(c, localST, codesMethod);
-            if (Program.shouldCompile()) {
-                codes.addAll(asm.methodDeclStart(t.getText(), paramsDesc, localST.bytesToAllocate()));
-                codes.addAll(codesMethod);
-                codes.addAll(asm.methodDeclEnd(localST.getReturnLabel(), Defs.DESC_TYPE_VOID.equals(returnType)));
-            }
+            CompileMethod.declare(localST, t.getText(), returnType, paramsDesc, codesMethod, codes);
         }
         return t;
     }
@@ -77,18 +71,7 @@ class Method {
             methodType = Defs.DESC_TYPE_WILDCARD;
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 Structure.expr(c, st, ActionType.LOAD, codes);
-                if (Program.shouldCompile()) {
-                    Oprand arg = st.tmpPop();
-                    if (arg instanceof Reg) {
-                        Addr tmp = st.newTmpAddr();
-                        codes.add(
-                            asm.bin("movq", arg, tmp)
-                        );
-                        argsList.add(tmp);
-                    } else {
-                        argsList.add(arg);
-                    }
-                }
+                CompileMethod.callParseArgs(st, argsList, codes);
             }
         } else {
             AST c = t.getFirstChild();
@@ -108,37 +91,11 @@ class Method {
                     System.err.printf("10 ");
                     Er.errType(c, params.get(i), cType);
                 }
-                if (Program.shouldCompile()) {
-                    Oprand arg = st.tmpPop();
-                    if (arg instanceof Reg) {
-                        Addr tmp = st.newTmpAddr();
-                        codes.add(
-                            asm.bin("movq", arg, tmp)
-                        );
-                        argsList.add(tmp);
-                    } else {
-                        argsList.add(arg);
-                    }
-                }
+                CompileMethod.callParseArgs(st, argsList, codes);
             }
             methodType = Defs.getMethodType(method.getType());
         }
-        if (Program.shouldCompile() && needReturnValue) {
-            Reg res = st.newTmpReg();
-            List<Addr> addrs = new ArrayList<>();
-            codes.addAll(asm.saveRegs(st, addrs));
-            codes.addAll(asm.methodCall(methodName, argsList));
-            codes.add(
-                asm.bin("movq", Reg.rax, res)
-            );
-            codes.addAll(asm.recoverRegs(st, addrs));
-            st.tmpPush(res);
-        } else {
-            List<Addr> addrs = new ArrayList<>();
-            codes.addAll(asm.saveRegs(st, addrs));
-            codes.addAll(asm.methodCall(methodName, argsList));
-            codes.addAll(asm.recoverRegs(st, addrs));
-        }
+        CompileMethod.call(st, argsList, needReturnValue, methodName, codes);
         return methodType;
     }
 }
