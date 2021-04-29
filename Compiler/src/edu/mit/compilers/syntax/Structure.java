@@ -40,11 +40,13 @@ public class Structure {
                 Er.errType(l, lType, rType);
             }
             returnType = lType;
+            CompileStructure.binaryOpExpr(st, t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryCompOp(t)) {
             if ((!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
                 Er.errType(r, lType, rType);
             }
-            returnType = Defs.DESC_TYPE_BOOL;    
+            returnType = Defs.DESC_TYPE_BOOL;
+            CompileStructure.binaryCompExpr(st, t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryBoolOp(t)) {
             if (!Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
@@ -53,6 +55,7 @@ public class Structure {
                 Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
+            CompileStructure.binaryBoolExpr(st, t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryIntCompOp(t)) {
             if (!Defs.equals(Defs.DESC_TYPE_INT, lType)) {
                 Er.errType(l, Defs.DESC_TYPE_INT, lType);
@@ -61,8 +64,8 @@ public class Structure {
                 Er.errType(r, Defs.DESC_TYPE_INT, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
+            CompileStructure.binaryCompExpr(st, t.getType(), leftCodes, rightCodes, codes); 
         }
-        CompileStructure.binaryExpr(t, st, leftCodes, rightCodes, codes);
         return returnType;
     }
 

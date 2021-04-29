@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import antlr.collections.AST;
 import edu.mit.compilers.asm.AsmUtils;
 import edu.mit.compilers.asm.Bool;
 import edu.mit.compilers.asm.Label;
@@ -12,7 +11,6 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
-import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.grammar.DecafScannerTokenTypes;
@@ -20,49 +18,13 @@ import edu.mit.compilers.st.ST;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
-    public static final void binaryExpr(AST t, ST st, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryOpExpr(ST st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();
         List<String> glueCodes = new ArrayList<>();
-        if (AstUtils.isBinaryBoolOp(t)) {
-            String jmpOp = t.getType() == DecafScannerTokenTypes.AND ? "je" : "jne";
-            Label endLabel = new Label();
-            if (lOp instanceof Reg) {
-                Collections.addAll(leftCodes,
-                    asm.bin("cmp", new Num(0L), ((Reg)lOp).bite()),
-                    asm.jmp(jmpOp, endLabel)
-                );
-            } else {
-                Collections.addAll(leftCodes,
-                    asm.bin("movq", lOp, resReg),
-                    asm.bin("cmpq", new Num(0L), resReg),
-                    asm.jmp(jmpOp, endLabel)
-                );
-            }
-            if (rOp instanceof Reg) {
-                rightCodes.add(
-                    asm.bin("cmp", new Num(0L), ((Reg)rOp).bite())
-                );
-            } else {
-                Collections.addAll(rightCodes,
-                    asm.bin("movq", rOp, resReg),
-                    asm.bin("cmpq", new Num(0L), resReg)
-                );
-            }
-            Collections.addAll(glueCodes,
-                asm.label(endLabel),
-                asm.uni("setne", resReg.bite())
-            );
-        } else if (AstUtils.isBinaryCompOp(t) || AstUtils.isBinaryIntCompOp(t)) {
-            Collections.addAll(glueCodes,
-                asm.bin("movq", lOp, resReg),
-                asm.bin("cmpq", rOp, resReg),
-                asm.uni(AsmUtils.setOnCondition.get(t.getType()), resReg.bite()),
-                asm.bin("movzbq", resReg.bite(), resReg)
-            );
-        } else if (t.getType() == DecafParserTokenTypes.SLASH || t.getType() == DecafParserTokenTypes.PERCENT) {
-            Reg resultReg = t.getType() == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
+        if (operator == DecafParserTokenTypes.SLASH || operator == DecafParserTokenTypes.PERCENT) {
+            Reg resultReg = operator == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
             Reg divisor = st.newTmpReg();
             Collections.addAll(glueCodes,
                 asm.bin("movq", lOp, Reg.rax),
@@ -74,9 +36,66 @@ public class CompileStructure {
         } else {
             Collections.addAll(glueCodes,
                 asm.bin("movq", lOp, resReg),
-                asm.bin(AsmUtils.binaryOpToken2Inst.get(t.getType()), rOp, resReg)
+                asm.bin(AsmUtils.binaryOpToken2Inst.get(operator), rOp, resReg)
             );
         }
+        codes.addAll(leftCodes);
+        codes.addAll(rightCodes);
+        codes.addAll(glueCodes);
+        st.tmpPush(resReg);
+    }
+
+    public static final void binaryBoolExpr(ST st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+        Reg resReg = st.newTmpReg();
+        Oprand rOp = st.tmpPop();
+        Oprand lOp = st.tmpPop();
+        List<String> glueCodes = new ArrayList<>();
+        String jmpOp = operator == DecafScannerTokenTypes.AND ? "je" : "jne";
+        Label endLabel = new Label();
+        if (lOp instanceof Reg) {
+            Collections.addAll(leftCodes,
+                asm.bin("cmp", new Num(0L), ((Reg)lOp).bite()),
+                asm.jmp(jmpOp, endLabel)
+            );
+        } else {
+            Collections.addAll(leftCodes,
+                asm.bin("movq", lOp, resReg),
+                asm.bin("cmpq", new Num(0L), resReg),
+                asm.jmp(jmpOp, endLabel)
+            );
+        }
+        if (rOp instanceof Reg) {
+            rightCodes.add(
+                asm.bin("cmp", new Num(0L), ((Reg)rOp).bite())
+            );
+        } else {
+            Collections.addAll(rightCodes,
+                asm.bin("movq", rOp, resReg),
+                asm.bin("cmpq", new Num(0L), resReg)
+            );
+        }
+        Collections.addAll(glueCodes,
+            asm.label(endLabel),
+            asm.uni("setne", resReg.bite())
+        );
+        codes.addAll(leftCodes);
+        codes.addAll(rightCodes);
+        codes.addAll(glueCodes);
+        st.tmpPush(resReg);
+    }
+
+
+    public static final void binaryCompExpr(ST st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+        Reg resReg = st.newTmpReg();
+        Oprand rOp = st.tmpPop();
+        Oprand lOp = st.tmpPop();
+        List<String> glueCodes = new ArrayList<>();
+        Collections.addAll(glueCodes,
+            asm.bin("movq", lOp, resReg),
+            asm.bin("cmpq", rOp, resReg),
+            asm.uni(AsmUtils.setOnCondition.get(operator), resReg.bite()),
+            asm.bin("movzbq", resReg.bite(), resReg)
+        );
         codes.addAll(leftCodes);
         codes.addAll(rightCodes);
         codes.addAll(glueCodes);
