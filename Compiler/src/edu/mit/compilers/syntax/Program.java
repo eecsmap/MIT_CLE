@@ -1,4 +1,4 @@
-package edu.mit.compilers.compile;
+package edu.mit.compilers.syntax;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ public class Program {
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
-    static boolean shouldCompile() {
+    public static boolean shouldCompile() {
         return !Er.hasError() && compile;
     }
     private static List<Label> stringLiteralLabelList = new ArrayList<>();

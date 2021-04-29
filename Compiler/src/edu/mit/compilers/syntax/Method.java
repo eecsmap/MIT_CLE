@@ -1,4 +1,4 @@
-package edu.mit.compilers.compile;
+package edu.mit.compilers.syntax;
 
 import java.util.ArrayList;
 import java.util.List;
