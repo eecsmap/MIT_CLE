@@ -42,17 +42,17 @@ public class Structure {
         String rType = expr(r, st, ActionType.LOAD, rightCodes);
         String returnType = null;
         if (AstUtils.isBinaryOp(t)) {
-            if (lType != null && !Defs.equals(lType, rType)) {
+            if (!Defs.equals(lType, rType)) {
                 Er.errType(l, lType, rType);
             }
             returnType = lType;
         } else if (AstUtils.isBinaryCompOp(t)) {
-            if (lType != null && (!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
+            if ((!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
                 Er.errType(r, lType, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;    
         } else if (AstUtils.isBinaryBoolOp(t)) {
-            if (lType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
+            if (!Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
             }
             if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
@@ -60,7 +60,7 @@ public class Structure {
             }
             returnType = Defs.DESC_TYPE_BOOL;
         } else if (AstUtils.isBinaryIntCompOp(t)) {
-            if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
+            if (!Defs.equals(Defs.DESC_TYPE_INT, lType)) {
                 Er.errType(l, Defs.DESC_TYPE_INT, lType);
             }
             if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
