@@ -13,23 +13,23 @@ import edu.mit.compilers.syntax.Program;
 
 public class CompileProgram {
     public static void addROData(List<String> stringLiteralList, List<Label> stringLiteralLabelList, List<String> codes) {
-        if (Program.shouldCompile() && !stringLiteralList.isEmpty()) {
-            List<String> rodata = new ArrayList<>();
+        if (!Program.shouldCompile() || !stringLiteralList.isEmpty()) return;
+        List<String> rodata = new ArrayList<>();
+        Collections.addAll(rodata,
+            asm.nonDir(".text"),
+            asm.uniDir(".section", ".rodata")
+        );
+        for (int i = 0; i < stringLiteralList.size(); i++) {
             Collections.addAll(rodata,
-                asm.nonDir(".text"),
-                asm.uniDir(".section", ".rodata")
+                asm.label(stringLiteralLabelList.get(i)),
+                asm.uniDir(".string", stringLiteralList.get(i))
             );
-            for (int i = 0; i < stringLiteralList.size(); i++) {
-                Collections.addAll(rodata,
-                    asm.label(stringLiteralLabelList.get(i)),
-                    asm.uniDir(".string", stringLiteralList.get(i))
-                );
-            }
-            codes.addAll(0, rodata);
         }
+        codes.addAll(0, rodata);
     }
 
     public static void addArrayOutBoundReturn(List<String> codes) {
+        if (!Program.shouldCompile()) return;
         Collections.addAll(codes,
             asm.label(Defs.EXIT_ARRAY_OUTBOUND_LABEL),
             asm.bin("movq", new Num(1L), Reg.rax),

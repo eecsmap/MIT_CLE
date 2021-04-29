@@ -10,9 +10,7 @@ import edu.mit.compilers.syntax.Program;
 
 public class CompileField {
     public static final void declareArray(ST st, String name, Integer size, Integer cap, List<String> codes) {
-        if (!Program.shouldCompile()) {
-            return;
-        }
+        if (!Program.shouldCompile()) return;
         if (st.isGlobal()) {
             codes.addAll(
                 asm.globalDecl(name, size * cap)
@@ -28,9 +26,7 @@ public class CompileField {
     }
 
     public static final void declareVariable(ST st, String name, Integer size, List<String> codes) {
-        if (!Program.shouldCompile()) {
-            return;
-        }
+        if (!Program.shouldCompile()) return;
         if (st.isGlobal()) {
             codes.addAll(
                 asm.globalDecl(name, size)

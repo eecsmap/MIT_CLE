@@ -17,9 +17,7 @@ import edu.mit.compilers.syntax.Program;
 
 public class CompileElement {
     public static void arrayElement(ST st, ActionType action, Descriptor desc, List<String> codes) {
-        if (!Program.shouldCompile()) {
-            return;
-        }
+        if (!Program.shouldCompile()) return;
         String varName = String.format("%s[]", desc.getText());
         Oprand index = st.tmpPop();
         Reg resReg = st.newTmpReg();

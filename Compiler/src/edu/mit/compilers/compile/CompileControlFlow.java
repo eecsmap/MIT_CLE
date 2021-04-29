@@ -13,9 +13,7 @@ import edu.mit.compilers.syntax.Program;
 
 public class CompileControlFlow {
     public static final void ifFlow(ST st, ST localST, Boolean hasElse, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
-        if (!Program.shouldCompile()) {
-            return;
-        }
+        if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
         Oprand conditionOp = localST.tmpPop();
@@ -53,9 +51,7 @@ public class CompileControlFlow {
 
     public static final void forFlow(ST st, ST localST, Label incrementBeginLabel, Label loopEndLabel,
     List<String> codesInit, List<String> codesCondition, List<String> codesIncrement, List<String> codesExecution, List<String> codes) {
-        if (!Program.shouldCompile()) {
-            return;
-        }
+        if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
         Oprand conditionOp = localST.tmpPop();
@@ -93,9 +89,7 @@ public class CompileControlFlow {
 
     public static final void whileFlow(ST st, ST localST, Label conditionBeginLabel, Label loopEndLabel, List<String> codesCondition, 
     List<String> codesExecution, List<String> codes) {
-        if (!Program.shouldCompile()) {
-            return;
-        }
+        if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Oprand conditionOp = localST.tmpPop();
         Reg condition;
