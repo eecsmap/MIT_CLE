@@ -13,7 +13,7 @@ import edu.mit.compilers.syntax.Program;
 
 public class CompileProgram {
     public static void addROData(List<String> stringLiteralList, List<Label> stringLiteralLabelList, List<String> codes) {
-        if (!Program.shouldCompile() || !stringLiteralList.isEmpty()) return;
+        if (!Program.shouldCompile() || stringLiteralList.isEmpty()) return;
         List<String> rodata = new ArrayList<>();
         Collections.addAll(rodata,
             asm.nonDir(".text"),

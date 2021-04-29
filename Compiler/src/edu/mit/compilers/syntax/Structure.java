@@ -15,6 +15,7 @@ import edu.mit.compilers.asm.AsmUtils;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
+import edu.mit.compilers.compile.CompileStructure;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
@@ -154,9 +155,7 @@ public class Structure {
             return Method.call(t, st, codes, true);
         }
         // var
-        if (Program.shouldCompile()) {
-            st.tmpPush(desc.getAddr());
-        }
+        st.tmpPush(desc.getAddr());
         return type;
     }
 
@@ -168,19 +167,7 @@ public class Structure {
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
         }
-        if (Program.shouldCompile()) {
-            Reg tmpReg = st.newTmpReg();
-            Oprand op = st.tmpPop();
-            if (op instanceof Num) {
-                st.tmpPush(((Num)op).neg());
-            } else {
-                Collections.addAll(codes,
-                    asm.bin("movq", op, tmpReg),
-                    asm.uni("negq", tmpReg)
-                );
-                st.tmpPush(tmpReg);
-            }
-        }
+        CompileStructure.minusExpr(st, codes);
         return Defs.DESC_TYPE_INT;
     }
 
@@ -189,20 +176,7 @@ public class Structure {
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
         }
-        if (Program.shouldCompile()) {
-            Reg tmpReg = st.newTmpReg();
-            Oprand op = st.tmpPop();
-            if (op instanceof Bool) {
-                st.tmpPush(((Bool)op).exclam());
-            } else {
-                Collections.addAll(codes,
-                    asm.bin("cmp", new Bool(false), op),
-                    asm.uni("sete", tmpReg.bite()),
-                    asm.bin("movzbq", tmpReg.bite(), tmpReg)
-                );
-                st.tmpPush(tmpReg);
-            }
-        }
+        CompileStructure.exclamExpr(st, codes);
         return Defs.DESC_TYPE_BOOL;
     }
 
@@ -227,14 +201,10 @@ public class Structure {
             case DecafScannerTokenTypes.INTLITERAL:
                 return Element.intLiteral(t, st, false);
             case DecafScannerTokenTypes.TK_true:
-                if (Program.shouldCompile()) {
-                    st.tmpPush(new Bool(true));
-                }
+                st.tmpPush(new Bool(true));
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_false:
-                if (Program.shouldCompile()) {
-                    st.tmpPush(new Bool(false));
-                }
+                st.tmpPush(new Bool(false));
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 return minusExpr(t, st, codes);
@@ -247,9 +217,7 @@ public class Structure {
                 if (subType == null || !Defs.isArrayType(subType)) {
                     Er.errNotDefined(c, c.getText());
                 }
-                if (Program.shouldCompile()) {
-                    st.tmpPush(new Num(((ArrayDesc)desc).getCap()));
-                }
+                st.tmpPush(new Num(((ArrayDesc)desc).getCap()));
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
@@ -258,14 +226,7 @@ public class Structure {
                 }
                 return Defs.TYPE_STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
-                if (Program.shouldCompile()) {
-                    Reg tmpReg = st.newTmpReg();
-                    int ascii = t.getText().charAt(1);
-                    codes.add(
-                        asm.bin("movq", new Num(Long.valueOf(ascii)), tmpReg)
-                    );
-                    st.tmpPush(tmpReg);
-                }
+                CompileStructure.charLiteral(st, t.getText().charAt(1), codes);
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.COLON:
                 return BasicOpration.relOps(t, st, codes);
@@ -314,21 +275,13 @@ public class Structure {
                 if (!AstUtils.isLoop(st.getContext())) {
                     Er.errBreak(t);
                 }
-                if (Program.shouldCompile()) {
-                    codes.add(
-                        asm.jmp("jmp", st.getBreakLabel())
-                    );
-                }
+                CompileStructure.tkBreak(st, codes);
                 return;
             case DecafScannerTokenTypes.TK_continue:
                 if (!AstUtils.isLoop(st.getContext())) {
                     Er.errContinue(t);
                 }
-                if (Program.shouldCompile()) {
-                    codes.add(
-                        asm.jmp("jmp", st.getContinueLabel())
-                    );
-                }
+                CompileStructure.tkContinue(st, codes);
                 return;
             case DecafScannerTokenTypes.TK_return:
                 String expectedReturnType = st.getReturnType();
@@ -343,20 +296,7 @@ public class Structure {
                 if (!Defs.equals(expectedReturnType, actualReturnType)) {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
-                if (Program.shouldCompile()) {
-                    if (Defs.DESC_TYPE_VOID.equals(expectedReturnType)) {
-                        st.tmpPop();
-                        codes.add(
-                            asm.jmp("jmp", st.getReturnLabel())
-                        );
-                    } else {
-                        Oprand returnVar = st.tmpPop();
-                        Collections.addAll(codes, 
-                            asm.bin("movq", returnVar, Reg.rax),
-                            asm.jmp("jmp", st.getReturnLabel())
-                        );
-                    }
-                }
+                CompileStructure.tkReturn(st, expectedReturnType, codes);
                 return;
             default:
                 return;
