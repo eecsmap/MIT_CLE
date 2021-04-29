@@ -4,10 +4,8 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
-import edu.mit.compilers.asm.Addr;
-import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.ast.AstUtils;
+import edu.mit.compilers.compile.CompileField;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
@@ -43,20 +41,7 @@ class Field {
                     if (!st.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
-                    if (Program.shouldCompile()) {
-                        if (st.isGlobal()) {
-                            codes.addAll(
-                                asm.globalDecl(c.getText(), size * cap)
-                            );
-                        } else {
-                            Integer topOffset = st.getDesc(c.getText()).getAddr().getOffset();
-                            for (int i = 0; i < cap; i++) {
-                                codes.add(
-                                    asm.bin("movq", new Num(0L), new Addr(topOffset + 8 * i, "array init"))
-                                );
-                            }
-                        }
-                    }
+                    CompileField.declareArray(st, c.getText(), size, cap, codes);
                     continue;
                 }
                 if (Program.importST.getMethod(c.getText()) != null) {
@@ -67,17 +52,7 @@ class Field {
                 if (!st.push(new VarDesc(type, c.getText()), false)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                 }
-                if (Program.shouldCompile()) {
-                    if (st.isGlobal()) {
-                        codes.addAll(
-                            asm.globalDecl(c.getText(), size)
-                        );
-                    } else {
-                        codes.add(
-                            asm.bin("movq", new Num(0L), st.getDesc(c.getText()).getAddr())
-                        );
-                    }
-                }
+                CompileField.declareVariable(st, c.getText(), size, codes);
             }
         }
         return t;
