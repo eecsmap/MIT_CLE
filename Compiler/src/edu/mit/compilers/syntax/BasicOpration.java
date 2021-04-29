@@ -20,7 +20,6 @@ public class BasicOpration {
         Descriptor lDesc = st.getDesc(lID);
         String lType = lDesc.getType();
         if (lType == null) {
-            System.err.printf("1 ");
             Er.errNotDefined(c, c.getText());
         } else if (Defs.isArrayType(lType)) {
             lType = Element.arrayElement(c, st, ActionType.STORE, codes);
@@ -39,7 +38,6 @@ public class BasicOpration {
         c = c.getNextSibling();
         String rType = Structure.expr(c, st, ActionType.LOAD, codes);
         if (lType != null && (!Defs.equals(lType, rType) || (!op.equals("=") && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
-            System.err.printf("2 ");
             Er.errType(c, lType, rType);
         }
         CompileBasicOperation.binaryAssign(st, op, codes);
@@ -50,7 +48,6 @@ public class BasicOpration {
         String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-            System.err.printf("31 ");
             Er.errType(c, Defs.DESC_TYPE_INT, lType);
         }
         CompileBasicOperation.unaryAssign(st, t.getType(), codes);

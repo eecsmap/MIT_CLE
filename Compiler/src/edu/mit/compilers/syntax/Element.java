@@ -15,7 +15,6 @@ public class Element {
     static String arrayElement(AST t, ST st, ActionType action, List<String> codes) {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
-            System.err.printf("11 ");
             Er.errNotDefined(t, t.getText());
             return null;
         }
@@ -27,7 +26,6 @@ public class Element {
             return Defs.getArrayType(type);
         }
         if (!Defs.equals(Defs.DESC_TYPE_INT, indexType)) {
-            System.err.printf("12 ");
             Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, indexType);
             return Defs.getArrayType(type);
         }

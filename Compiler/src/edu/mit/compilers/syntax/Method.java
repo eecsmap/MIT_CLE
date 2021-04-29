@@ -64,7 +64,6 @@ class Method {
         if (method == null) {
             method = Program.importST.getMethod(methodName);
             if (method == null) {
-                System.err.printf("8 ");
                 Er.errNotDefined(t, methodName);
                 return null;
             }
@@ -77,7 +76,6 @@ class Method {
             AST c = t.getFirstChild();
             ArrayList<String> params = Program.methodMap.get(method.getText());
             if (params == null) {
-                System.err.printf("9 ");
                 Er.errNotDefined(c, method.getText());
                 return Defs.DESC_TYPE_WILDCARD;
             }
@@ -88,7 +86,6 @@ class Method {
             for (int i = 0; c != null; c = c.getNextSibling(), i++) {
                 String cType = Structure.expr(c, st, ActionType.LOAD, codes);
                 if (!Defs.equals(params.get(i), cType)) {
-                    System.err.printf("10 ");
                     Er.errType(c, params.get(i), cType);
                 }
                 CompileMethod.callParseArgs(st, argsList, codes);

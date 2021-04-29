@@ -21,7 +21,6 @@ public class ControlFlow {
         String type = Structure.expr(c, localST, ActionType.LOAD, codesCondition);
         Boolean hasElse = false;
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
-            System.err.printf("14 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         // if block
@@ -88,7 +87,6 @@ public class ControlFlow {
         List<String> codesCondition = new ArrayList<>();
         String type = Structure.expr(c, localST, ActionType.LOAD, codesCondition);
         if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
-            System.err.printf("15 ");
             Er.errType(c, Defs.DESC_TYPE_BOOL, type);
         }
         // execution block
