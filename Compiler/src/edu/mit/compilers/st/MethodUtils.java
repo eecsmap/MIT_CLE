@@ -24,7 +24,7 @@ public class MethodUtils {
     private Label returnLabel;
 
     // for / while
-    private Stack<Integer> context = new Stack<>();
+    private Integer contextCount = 0;
     private Stack<Label> continueLabelStack = new Stack<>();
     private Stack<Label> breakLabelStack = new Stack<>();
     private Boolean isGlobal;
@@ -48,14 +48,20 @@ public class MethodUtils {
     }
 
     public void enterScope(boolean isLoop) {
-        if (isLoop)
-            this.context.push(0);
+        if (isLoop) {
+            this.contextCount++;
+            continueLabelStack.push(new Label());
+            breakLabelStack.push(new Label());
+        }
         this.symbolTable = new SymbolTable(this.symbolTable);
     }
 
     public void leaveScope(boolean isLoop) {
-        if (isLoop)
-            this.context.pop();
+        if (isLoop) {
+            this.contextCount--;
+            continueLabelStack.pop();
+            breakLabelStack.pop();
+        }
         this.symbolTable = this.symbolTable.getParent();
     }
 
@@ -110,40 +116,18 @@ public class MethodUtils {
     }
 
     public final Boolean isInLoop() {
-        return !this.context.empty();
+        return this.contextCount > 0;
     }
 
     public final String getReturnType() {
         return this.returnType;
     }
 
-    public final void pushContinueLabel(Label continueLabel) {
-        this.continueLabelStack.push(continueLabel);
-    }
-
-    public final void pushBreakLabel(Label breakLabel) {
-        this.breakLabelStack.push(breakLabel);
-    }
-
-    public final void popContinueLabel() {
-        this.continueLabelStack.pop();
-    }
-
-    public final void popBreakLabel() {
-        this.breakLabelStack.pop();
-    }
-
     public final Label getContinueLabel() {
-        if (this.continueLabelStack.empty()) {
-            return null;
-        }
         return this.continueLabelStack.peek();
     }
 
     public final Label getBreakLabel() {
-        if (this.breakLabelStack.empty()) {
-            return null;
-        }
         return this.breakLabelStack.peek();
     }
 

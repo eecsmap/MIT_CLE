@@ -38,12 +38,6 @@ public class ControlFlow {
     // doesn't suppeort declaration in for loop
     static void forFlow(AST t, MethodUtils st, List<String> codes) {
         st.enterScope(true);
-        Label incrementBeginLabel = new Label();
-        Label loopEndLabel = new Label();
-        if (Program.shouldCompile()) {
-            st.pushContinueLabel(incrementBeginLabel);
-            st.pushBreakLabel(loopEndLabel);
-        }
         AST c = t.getFirstChild();
         // simple assign
         List<String> codesInit = new ArrayList<>();
@@ -63,22 +57,12 @@ public class ControlFlow {
         // block
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, st, codesExecution);
-        if (Program.shouldCompile()) {
-            st.popContinueLabel();
-            st.popBreakLabel();
-        }
-        CompileControlFlow.forFlow(st, incrementBeginLabel, loopEndLabel, codesInit, codesCondition, codesIncrement, codesExecution, codes);
+        CompileControlFlow.forFlow(st, codesInit, codesCondition, codesIncrement, codesExecution, codes);
         st.leaveScope(true);
     }
 
     static void whileFlow(AST t, MethodUtils st, List<String> codes) {
         st.enterScope(true);
-        Label conditionBeginLabel = new Label();
-        Label loopEndLabel = new Label();
-        if (Program.shouldCompile()) {
-            st.pushContinueLabel(conditionBeginLabel);
-            st.pushBreakLabel(loopEndLabel);
-        }
         // condition
         AST c = t.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
@@ -90,11 +74,7 @@ public class ControlFlow {
         c = c.getNextSibling();
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, st, codesExecution);
-        if (Program.shouldCompile()) {
-            st.popContinueLabel();
-            st.popBreakLabel();
-        }
-        CompileControlFlow.whileFlow(st, conditionBeginLabel, loopEndLabel, codesCondition, codesExecution, codes);
+        CompileControlFlow.whileFlow(st, codesCondition, codesExecution, codes);
         st.leaveScope(true);
     }
 }

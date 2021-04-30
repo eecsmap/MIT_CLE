@@ -49,8 +49,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("if - end"));
     }
 
-    public static final void forFlow(MethodUtils st, Label incrementBeginLabel, Label loopEndLabel,
-    List<String> codesInit, List<String> codesCondition, List<String> codesIncrement, List<String> codesExecution, List<String> codes) {
+    public static final void forFlow(MethodUtils st, List<String> codesInit, List<String> codesCondition, List<String> codesIncrement, List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
@@ -78,17 +77,16 @@ public class CompileControlFlow {
         codes.add(asm.label(executionBeginLabel));
         codes.addAll(codesExecution);
         codes.add(asm.cmt("for loop - increment"));
-        codes.add(asm.label(incrementBeginLabel));
+        codes.add(asm.label(st.getContinueLabel()));
         codes.addAll(codesIncrement);
         codes.add(asm.label(conditionBeginLabel));
         codes.add(asm.cmt("for loop - condition"));
         codes.addAll(codesCondition);
-        codes.add(asm.label(loopEndLabel));
+        codes.add(asm.label(st.getBreakLabel()));
         codes.add(asm.cmt("for loop - end"));
     }
 
-    public static final void whileFlow(MethodUtils st, Label conditionBeginLabel, Label loopEndLabel, List<String> codesCondition, 
-    List<String> codesExecution, List<String> codes) {
+    public static final void whileFlow(MethodUtils st, List<String> codesCondition, List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Oprand conditionOp = st.tmpPop();
@@ -106,14 +104,14 @@ public class CompileControlFlow {
             asm.jmp("jne", executionBeginLabel)
         );
         codes.add(asm.cmt("while - start"));
-        codes.add(asm.jmp("jmp", conditionBeginLabel));
+        codes.add(asm.jmp("jmp", st.getContinueLabel()));
         codes.add(asm.cmt("while - codesExecution "));
         codes.add(asm.label(executionBeginLabel));
         codes.addAll(codesExecution);
         codes.add(asm.cmt("while - codesCondition "));
-        codes.add(asm.label(conditionBeginLabel));
+        codes.add(asm.label(st.getContinueLabel()));
         codes.addAll(codesCondition);
-        codes.add(asm.label(loopEndLabel));
+        codes.add(asm.label(st.getBreakLabel()));
         codes.add(asm.cmt("while - end"));
     }
 }
