@@ -24,7 +24,6 @@ public class MethodUtils {
     private Label returnLabel;
 
     // for / while
-    private Integer contextCount = 0;
     private Stack<Label> continueLabelStack = new Stack<>();
     private Stack<Label> breakLabelStack = new Stack<>();
     private Boolean isGlobal;
@@ -49,7 +48,6 @@ public class MethodUtils {
 
     public void enterScope(boolean isLoop) {
         if (isLoop) {
-            this.contextCount++;
             continueLabelStack.push(new Label());
             breakLabelStack.push(new Label());
         }
@@ -58,7 +56,6 @@ public class MethodUtils {
 
     public void leaveScope(boolean isLoop) {
         if (isLoop) {
-            this.contextCount--;
             continueLabelStack.pop();
             breakLabelStack.pop();
         }
@@ -116,7 +113,7 @@ public class MethodUtils {
     }
 
     public final Boolean isInLoop() {
-        return this.contextCount > 0;
+        return !this.breakLabelStack.empty();
     }
 
     public final String getReturnType() {

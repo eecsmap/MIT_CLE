@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileControlFlow;
 import edu.mit.compilers.defs.Defs;
