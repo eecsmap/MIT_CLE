@@ -12,11 +12,11 @@ import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileControlFlow {
-    public static final void ifFlow(MethodUtils st, MethodUtils localST, Boolean hasElse, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
+    public static final void ifFlow(MethodUtils st, Boolean hasElse, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
-        Oprand conditionOp = localST.tmpPop();
+        Oprand conditionOp = st.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
@@ -49,12 +49,12 @@ public class CompileControlFlow {
         codes.add(asm.cmt("if - end"));
     }
 
-    public static final void forFlow(MethodUtils st, MethodUtils localST, Label incrementBeginLabel, Label loopEndLabel,
+    public static final void forFlow(MethodUtils st, Label incrementBeginLabel, Label loopEndLabel,
     List<String> codesInit, List<String> codesCondition, List<String> codesIncrement, List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
-        Oprand conditionOp = localST.tmpPop();
+        Oprand conditionOp = st.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
@@ -87,11 +87,11 @@ public class CompileControlFlow {
         codes.add(asm.cmt("for loop - end"));
     }
 
-    public static final void whileFlow(MethodUtils st, MethodUtils localST, Label conditionBeginLabel, Label loopEndLabel, List<String> codesCondition, 
+    public static final void whileFlow(MethodUtils st, Label conditionBeginLabel, Label loopEndLabel, List<String> codesCondition, 
     List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
-        Oprand conditionOp = localST.tmpPop();
+        Oprand conditionOp = st.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;

@@ -167,8 +167,4 @@ public class AstUtils {
     public static final boolean isUnaryAssignOp(AST t) {
         return s4.contains(t.getType());
     }
-
-    public static final boolean isLoop(int token) {
-        return token == DecafParserTokenTypes.TK_while || token == DecafParserTokenTypes.TK_for;
-    }
 }

@@ -208,13 +208,13 @@ public class Structure {
                 ControlFlow.whileFlow(t, st, codes);
                 return;
             case DecafScannerTokenTypes.TK_break:
-                if (!AstUtils.isLoop(st.getContext())) {
+                if (!st.isInLoop()) {
                     Er.errBreak(t);
                 }
                 CompileStructure.tkBreak(st, codes);
                 return;
             case DecafScannerTokenTypes.TK_continue:
-                if (!AstUtils.isLoop(st.getContext())) {
+                if (!st.isInLoop()) {
                     Er.errContinue(t);
                 }
                 CompileStructure.tkContinue(st, codes);

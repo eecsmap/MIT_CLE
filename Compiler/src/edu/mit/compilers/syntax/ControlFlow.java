@@ -13,9 +13,8 @@ import edu.mit.compilers.tools.Er;
 
 public class ControlFlow {
     static void ifFlow(AST t, MethodUtils st, List<String> codes) {
-        st.enterScope();
+        st.enterScope(false);
         AST c = t.getFirstChild();
-
         // condition
         List<String> codesCondition = new ArrayList<>();
         String type = Structure.expr(c, st, ActionType.LOAD, codesCondition);
@@ -32,16 +31,15 @@ public class ControlFlow {
             hasElse = true;
             Structure.block(c.getFirstChild(), st, codesElseExecution);
         }
-        CompileControlFlow.ifFlow(st, st, hasElse, codesCondition, codesIfExecution, codesElseExecution, codes);
-        st.leaveScope();
+        CompileControlFlow.ifFlow(st, hasElse, codesCondition, codesIfExecution, codesElseExecution, codes);
+        st.leaveScope(false);
     }
 
     // doesn't suppeort declaration in for loop
     static void forFlow(AST t, MethodUtils st, List<String> codes) {
-        st.enterScope();
+        st.enterScope(true);
         Label incrementBeginLabel = new Label();
         Label loopEndLabel = new Label();
-        st.pushContext(t.getType());
         if (Program.shouldCompile()) {
             st.pushContinueLabel(incrementBeginLabel);
             st.pushBreakLabel(loopEndLabel);
@@ -65,21 +63,18 @@ public class ControlFlow {
         // block
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, st, codesExecution);
-
-        st.popContext();
         if (Program.shouldCompile()) {
             st.popContinueLabel();
             st.popBreakLabel();
         }
-        CompileControlFlow.forFlow(st, st, incrementBeginLabel, loopEndLabel, codesInit, codesCondition, codesIncrement, codesExecution, codes);
-        st.leaveScope();
+        CompileControlFlow.forFlow(st, incrementBeginLabel, loopEndLabel, codesInit, codesCondition, codesIncrement, codesExecution, codes);
+        st.leaveScope(true);
     }
 
     static void whileFlow(AST t, MethodUtils st, List<String> codes) {
-        st.enterScope();
+        st.enterScope(true);
         Label conditionBeginLabel = new Label();
         Label loopEndLabel = new Label();
-        st.pushContext(t.getType());
         if (Program.shouldCompile()) {
             st.pushContinueLabel(conditionBeginLabel);
             st.pushBreakLabel(loopEndLabel);
@@ -95,12 +90,11 @@ public class ControlFlow {
         c = c.getNextSibling();
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, st, codesExecution);
-        st.popContext();
         if (Program.shouldCompile()) {
             st.popContinueLabel();
             st.popBreakLabel();
         }
-        CompileControlFlow.whileFlow(st, st, conditionBeginLabel, loopEndLabel, codesCondition, codesExecution, codes);
-        st.leaveScope();
+        CompileControlFlow.whileFlow(st, conditionBeginLabel, loopEndLabel, codesCondition, codesExecution, codes);
+        st.leaveScope(true);
     }
 }

@@ -47,11 +47,15 @@ public class MethodUtils {
         this.symbolTable = new SymbolTable(global.symbolTable);
     }
 
-    public void enterScope() {
+    public void enterScope(boolean isLoop) {
+        if (isLoop)
+            this.context.push(0);
         this.symbolTable = new SymbolTable(this.symbolTable);
     }
 
-    public void leaveScope() {
+    public void leaveScope(boolean isLoop) {
+        if (isLoop)
+            this.context.pop();
         this.symbolTable = this.symbolTable.getParent();
     }
 
@@ -105,20 +109,8 @@ public class MethodUtils {
         return true;
     }
 
-
-    public final int getContext() {
-        if (this.context.empty()) {
-            return -1;
-        }
-        return this.context.peek();
-    }
-
-    public final void pushContext(int cxt) {
-        this.context.push(cxt);
-    }
-
-    public final void popContext() {
-        this.context.pop();
+    public final Boolean isInLoop() {
+        return !this.context.empty();
     }
 
     public final String getReturnType() {
