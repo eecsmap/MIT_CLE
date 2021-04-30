@@ -26,7 +26,6 @@ public class MethodUtils {
     // for / while
     private Stack<Label> continueLabelStack = new Stack<>();
     private Stack<Label> breakLabelStack = new Stack<>();
-    private Boolean isGlobal;
     // only for non-global ST
     private Integer varOffset = 0;
     private Integer tmpCounter = 0;
@@ -35,12 +34,10 @@ public class MethodUtils {
     private Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
     public MethodUtils() {
-        this.isGlobal = true;
         this.symbolTable = new SymbolTable();
     }
 
     public MethodUtils(MethodUtils global, String returnType) {
-        this.isGlobal = false;
         this.returnType = returnType;
         this.returnLabel = new Label();
         this.symbolTable = new SymbolTable(global.symbolTable);
@@ -104,7 +101,7 @@ public class MethodUtils {
             else
                 this.localOffsetIncrement();
         }
-        if (this.isGlobal && !Defs.isMethodType(desc.getType())) {
+        if (this.isGlobal() && !Defs.isMethodType(desc.getType())) {
             desc.setAddr(new Addr(desc.getText(), false));
         } else {
             desc.setAddr(new Addr(this.varOffset, desc.getText()));
@@ -129,7 +126,7 @@ public class MethodUtils {
     }
 
     public final Boolean isGlobal() {
-        return this.isGlobal;
+        return this.symbolTable.getParent() == null;
     }
 
     public final Label getReturnLabel() {
@@ -196,7 +193,7 @@ public class MethodUtils {
         return this.tmpStack.peek();
     }
 
-    public final List<Reg> getUsedCalleeSavedRegs() {
+    public final List<Reg> getUsedCallerSavedRegs() {
         List<Reg> res = new ArrayList<>();
         this.callerSavedRegsUsage.forEach((k, v) -> res.add(v));
         return res;

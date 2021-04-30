@@ -19,6 +19,7 @@ import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
     public static final void binaryOpExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+        if (!Program.shouldCompile()) return;
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();
@@ -46,6 +47,7 @@ public class CompileStructure {
     }
 
     public static final void binaryBoolExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+        if (!Program.shouldCompile()) return;
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();
@@ -86,6 +88,7 @@ public class CompileStructure {
 
 
     public static final void binaryCompExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+        if (!Program.shouldCompile()) return;
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();

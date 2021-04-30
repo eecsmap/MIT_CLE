@@ -172,7 +172,7 @@ public class asm {
 
     public static final List<String> saveRegs(MethodUtils st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
-        List<Reg> regsToSave = st.getUsedCalleeSavedRegs();
+        List<Reg> regsToSave = st.getUsedCallerSavedRegs();
         if (regsToSave.size() > 0) {
             codes.add(
                 asm.cmt("save - start")
@@ -195,7 +195,7 @@ public class asm {
 
     public static final List<String> recoverRegs(MethodUtils st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
-        List<Reg> regsToRecover = st.getUsedCalleeSavedRegs();
+        List<Reg> regsToRecover = st.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(
                 asm.cmt("recover - start")
