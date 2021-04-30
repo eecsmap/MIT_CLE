@@ -9,12 +9,12 @@ import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.tools.Er;
 
 public class BasicOpration {
     // return lType
-    private static String leftValue(AST t, ST st, List<String> codes) {
+    private static String leftValue(AST t, MethodUtils st, List<String> codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         Descriptor lDesc = st.getDesc(lID);
@@ -32,7 +32,7 @@ public class BasicOpration {
     }
 
     // =, +=, -=
-    private static void binaryAssign(AST t, ST st, String op, List<String> codes) {
+    private static void binaryAssign(AST t, MethodUtils st, String op, List<String> codes) {
         String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
@@ -44,7 +44,7 @@ public class BasicOpration {
     }
 
     // ++, --
-    private static void unaryAssign(AST t, ST st, List<String> codes) {
+    private static void unaryAssign(AST t, MethodUtils st, List<String> codes) {
         String lType = leftValue(t, st, codes);
         AST c = t.getFirstChild();
         if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
@@ -54,12 +54,12 @@ public class BasicOpration {
     }
 
     // only =, forwarder
-    static void simpleAssign(AST t, ST st, List<String> codes) {
+    static void simpleAssign(AST t, MethodUtils st, List<String> codes) {
         binaryAssign(t, st, "=", codes);
     }
 
     // +=, -=, =, ++, --, forwarder
-    static void moreAssign(AST t, ST st, List<String> codes) {
+    static void moreAssign(AST t, MethodUtils st, List<String> codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
             binaryAssign(t, st, op, codes);
@@ -68,7 +68,7 @@ public class BasicOpration {
         }
     }
 
-    static String relOps(AST t, ST st, List<String> codes) {
+    static String relOps(AST t, MethodUtils st, List<String> codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
         List<String> codesCondition = new ArrayList<>();

@@ -1,7 +1,6 @@
 package edu.mit.compilers.st;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -13,19 +12,17 @@ import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.defs.Defs;
-import edu.mit.compilers.tools.Er;
 
 // field symbol table -> field desc []
 // param symbol table -> param desc [], last local ST (if have) used in for loop 
 // local symbol table -> local desc [], param ST
 // method symbol table -> method desc []
 // type symbol table -> type desc []
-public class ST {
-    private ST subST = null;
-    private String returnType = null;
-    private Label returnLabel = null;
-    // text -> Descriptor
-    private Map<String, Descriptor> table = new HashMap<>();
+public class MethodUtils {
+    private SymbolTable symbolTable;
+    private String returnType;
+    private Label returnLabel;
+
     // for / while
     private Stack<Integer> context = new Stack<>();
     private Stack<Label> continueLabelStack = new Stack<>();
@@ -38,28 +35,24 @@ public class ST {
     private Stack<Oprand> tmpStack = new Stack<>();
     private Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
-    public ST() {
+    public MethodUtils() {
         this.isGlobal = true;
+        this.symbolTable = new SymbolTable();
     }
 
-    public ST(ST subst) {
+    public MethodUtils(MethodUtils global, String returnType) {
         this.isGlobal = false;
-        this.subST = subst;
-        this.varOffset = subst.varOffset;
-        this.returnType = subst.returnType;
-        this.returnLabel = subst.returnLabel;
-    }
-
-    public ST(ST subst, String type) {
-        this.isGlobal = false;
-        this.subST = subst;
-        this.returnType = type;
+        this.returnType = returnType;
         this.returnLabel = new Label();
+        this.symbolTable = new SymbolTable(global.symbolTable);
     }
 
-    private final String getTypeNonRecursive(String text) {
-        Descriptor desc = this.table.get(text);
-        return (desc != null) ? desc.getType() : null;
+    public void enterScope() {
+        this.symbolTable = new SymbolTable(this.symbolTable);
+    }
+
+    public void leaveScope() {
+        this.symbolTable = this.symbolTable.getParent();
     }
 
     private void argumentOffsetIncrement() {
@@ -80,91 +73,44 @@ public class ST {
             this.varOffset = -56;
         }
         this.varOffset -= 8;
-        if (!this.subST.isGlobal) {
-            this.subST.setOffset(this.varOffset);
-        }
     }
 
     public final Descriptor getDesc(String text) {
-        Descriptor desc = this.table.get(text);
-        if (desc != null) {
-            return desc;
-        }
-        if (this.subST != null) {
-            return this.subST.getDesc(text);
-        }
-        return null;
+        return this.symbolTable.getDesc(text);
     }
 
     public final Descriptor getMethod(String text) {
-        Descriptor desc = this.table.get(text);
-        if(desc != null && desc.getText().equals(text) && Defs.isMethodType(desc.getType())) {
-            return desc;
-        }
-        if (this.subST != null) {
-            return this.subST.getMethod(text);
-        }
-        return null;
+        return this.symbolTable.getMethod(text);
     }
 
     public final Descriptor getArray(String text) {
-        Descriptor desc = this.table.get(text);
-        if(desc != null && desc.getText().equals(text) && Defs.isArrayType(desc.getType())) {
-            return desc;
-        }
-        if (this.subST != null) {
-            return this.subST.getArray(text);
-        }
-        return null;
+        return this.symbolTable.getArray(text);
     }
 
-    public final boolean push(Descriptor desc, boolean isArgument) {
-        if (!Er.hasError() && !Defs.isMethodType(desc.getType())) {
-            if (this.isGlobal) {
-                desc.setAddr(new Addr(desc.getText(), false));
-            } else {
-                if (desc instanceof ArrayDesc) {
-                    for (int i = 0; i < ((ArrayDesc)desc).getCap(); i++) {
-                        if (isArgument) {
-                            this.argumentOffsetIncrement();
-                        } else {
-                            this.localOffsetIncrement();
-                        }
-                    }
-                } else {
-                    if (isArgument) {
-                        this.argumentOffsetIncrement();
-                    } else {
-                        this.localOffsetIncrement();
-                    }
-                }
-                desc.setAddr(new Addr(this.varOffset, desc.getText()));
-            }
-        }
-        if (this.getTypeNonRecursive(desc.getText()) != null) {
+    public final Boolean push(Descriptor desc, boolean isArgument) {
+        Long sizeToAlloc = this.symbolTable.push(desc, isArgument);
+        if (sizeToAlloc == 0L)
             return false;
+        for (int i = 0; i < sizeToAlloc; i++) {
+            if (isArgument)
+                this.argumentOffsetIncrement();
+            else
+                this.localOffsetIncrement();
         }
-        this.table.put(desc.getText(), desc);
+        if (this.isGlobal && !Defs.isMethodType(desc.getType())) {
+            desc.setAddr(new Addr(desc.getText(), false));
+        } else {
+            desc.setAddr(new Addr(this.varOffset, desc.getText()));
+        }
         return true;
     }
 
-    public final void print(int level) {
-        String tab = new String(new char[level]).replace("\0", "\t");
-        for (Descriptor desc: this.table.values()) {
-            System.out.println(tab + desc.getType() + " " + desc.getText());
-        }
-        this.subST.print(level + 1);
-    }
 
     public final int getContext() {
-        try {
-            return this.context.peek();
-        } catch (Exception e) {
-            if (this.subST == null) {
-                return -1;
-            }
-            return this.subST.getContext();
+        if (this.context.empty()) {
+            return -1;
         }
+        return this.context.peek();
     }
 
     public final void pushContext(int cxt) {
@@ -176,9 +122,6 @@ public class ST {
     }
 
     public final String getReturnType() {
-        if (this.returnType == null && this.subST != null) {
-            return this.subST.getReturnType();
-        }
         return this.returnType;
     }
 
@@ -199,27 +142,17 @@ public class ST {
     }
 
     public final Label getContinueLabel() {
-        try {
-            return this.continueLabelStack.peek();
-        } catch (Exception e) {
-            if (this.subST == null) {
-                Er.setError();
-                return null;
-            }
-            return this.subST.getContinueLabel();
+        if (this.continueLabelStack.empty()) {
+            return null;
         }
+        return this.continueLabelStack.peek();
     }
 
     public final Label getBreakLabel() {
-        try {
-            return this.breakLabelStack.peek();
-        } catch (Exception e) {
-            if (this.subST == null) {
-                Er.setError();
-                return null;
-            }
-            return this.subST.getBreakLabel();
+        if (this.breakLabelStack.empty()) {
+            return null;
         }
+        return this.breakLabelStack.peek();
     }
 
     public final Boolean isGlobal() {
@@ -265,13 +198,6 @@ public class ST {
 
     public final Integer getOffset() {
         return this.varOffset;
-    }
-
-    private final void setOffset(Integer offset) {
-        this.varOffset = offset;
-        if (!this.subST.isGlobal) {
-            this.subST.setOffset(this.varOffset);
-        }
     }
 
     public final void tmpPush(Oprand tmp) {

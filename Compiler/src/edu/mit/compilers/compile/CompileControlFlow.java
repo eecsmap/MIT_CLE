@@ -8,11 +8,11 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileControlFlow {
-    public static final void ifFlow(ST st, ST localST, Boolean hasElse, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
+    public static final void ifFlow(MethodUtils st, MethodUtils localST, Boolean hasElse, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
@@ -49,7 +49,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("if - end"));
     }
 
-    public static final void forFlow(ST st, ST localST, Label incrementBeginLabel, Label loopEndLabel,
+    public static final void forFlow(MethodUtils st, MethodUtils localST, Label incrementBeginLabel, Label loopEndLabel,
     List<String> codesInit, List<String> codesCondition, List<String> codesIncrement, List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
@@ -87,7 +87,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("for loop - end"));
     }
 
-    public static final void whileFlow(ST st, ST localST, Label conditionBeginLabel, Label loopEndLabel, List<String> codesCondition, 
+    public static final void whileFlow(MethodUtils st, MethodUtils localST, Label conditionBeginLabel, Label loopEndLabel, List<String> codesCondition, 
     List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();

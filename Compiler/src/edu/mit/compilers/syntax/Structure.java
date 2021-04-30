@@ -13,7 +13,7 @@ import edu.mit.compilers.compile.CompileStructure;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
@@ -27,7 +27,7 @@ public class Structure {
         || AstUtils.isBinaryIntCompOp(t);
     }
 
-    private static String binaryExpr(AST t, ST st, List<String> codes) {
+    private static String binaryExpr(AST t, MethodUtils st, List<String> codes) {
         AST l = t.getFirstChild();
         AST r = l.getNextSibling();
         List<String> leftCodes = new ArrayList<>();
@@ -69,7 +69,7 @@ public class Structure {
         return returnType;
     }
 
-    private static String idExpr(AST t, ST st, ActionType action, List<String> codes) {
+    private static String idExpr(AST t, MethodUtils st, ActionType action, List<String> codes) {
         Descriptor desc = st.getDesc(t.getText());
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
@@ -95,7 +95,7 @@ public class Structure {
         return type;
     }
 
-    private static String minusExpr(AST t, ST st, List<String> codes) {
+    private static String minusExpr(AST t, MethodUtils st, List<String> codes) {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
             return Element.intLiteral(t.getFirstChild(), st, true);
         }
@@ -107,7 +107,7 @@ public class Structure {
         return Defs.DESC_TYPE_INT;
     }
 
-    private static String exclamExpr(AST t, ST st, List<String> codes) {
+    private static String exclamExpr(AST t, MethodUtils st, List<String> codes) {
         String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
@@ -123,7 +123,7 @@ public class Structure {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    static String expr(AST t, ST st, ActionType action, List<String> codes) {
+    static String expr(AST t, MethodUtils st, ActionType action, List<String> codes) {
         if (t == null) {
             st.tmpPush(null);
             return null;
@@ -172,7 +172,7 @@ public class Structure {
     }
 
     // if null -> return; if TK_else -> return current AST
-    static AST block(AST t, ST st, List<String> codes) {
+    static AST block(AST t, MethodUtils st, List<String> codes) {
         // parse fields
         t = Field.declare(t, st, codes);
         // parse statements
@@ -185,7 +185,7 @@ public class Structure {
         return null;
     }
 
-    static void parseStmt(AST t, ST st, List<String> codes) {
+    static void parseStmt(AST t, MethodUtils st, List<String> codes) {
         codes.add("");
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:

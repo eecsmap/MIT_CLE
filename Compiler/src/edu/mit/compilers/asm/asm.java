@@ -1,6 +1,6 @@
 package edu.mit.compilers.asm;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -170,7 +170,7 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> saveRegs(ST st, List<Addr> addrs) {
+    public static final List<String> saveRegs(MethodUtils st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
         List<Reg> regsToSave = st.getUsedCalleeSavedRegs();
         if (regsToSave.size() > 0) {
@@ -193,7 +193,7 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> recoverRegs(ST st, List<Addr> addrs) {
+    public static final List<String> recoverRegs(MethodUtils st, List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
         List<Reg> regsToRecover = st.getUsedCalleeSavedRegs();
         if (regsToRecover.size() > 0) {

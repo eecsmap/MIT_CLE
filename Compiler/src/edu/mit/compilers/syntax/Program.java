@@ -17,8 +17,8 @@ import edu.mit.compilers.tools.Er;
 
 public class Program {
     private Program() {}
-    static final ST importST = new ST();
-    static final ST globalST = new ST();
+    static final MethodUtils importST = new MethodUtils();
+    static final MethodUtils globalST = new MethodUtils();
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
@@ -50,7 +50,7 @@ public class Program {
     }
 
     // return the next AST to parse
-    static AST importDecl(AST t, ST importST) {
+    static AST importDecl(AST t, MethodUtils importST) {
         for (; t != null && AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
             String methodName = t.getFirstChild().getText();

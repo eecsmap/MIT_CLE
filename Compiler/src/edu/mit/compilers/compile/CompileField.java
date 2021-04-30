@@ -5,11 +5,11 @@ import java.util.List;
 import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.asm;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileField {
-    public static final void declareArray(ST st, String name, Integer size, Integer cap, List<String> codes) {
+    public static final void declareArray(MethodUtils st, String name, Integer size, Integer cap, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (st.isGlobal()) {
             codes.addAll(
@@ -25,7 +25,7 @@ public class CompileField {
         }
     }
 
-    public static final void declareVariable(ST st, String name, Integer size, List<String> codes) {
+    public static final void declareVariable(MethodUtils st, String name, Integer size, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (st.isGlobal()) {
             codes.addAll(

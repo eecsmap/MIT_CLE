@@ -9,11 +9,11 @@ import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileBasicOperation {
-    public static void binaryAssign(ST st, String op, List<String> codes) {
+    public static void binaryAssign(MethodUtils st, String op, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (op.equals("=")) {
             Reg tmpReg = st.newTmpReg();
@@ -48,7 +48,7 @@ public class CompileBasicOperation {
         }
     }
 
-    public static void unaryAssign(ST st, Integer operator, List<String> codes) {
+    public static void unaryAssign(MethodUtils st, Integer operator, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Oprand lAddr = st.tmpPop();
         String op = operator == DecafParserTokenTypes.INCRE ? "addq" : "subq";
@@ -57,7 +57,7 @@ public class CompileBasicOperation {
         );
     }
 
-    public static void relOps(ST st, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
+    public static void relOps(MethodUtils st, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();

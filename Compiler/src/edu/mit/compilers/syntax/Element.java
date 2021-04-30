@@ -8,11 +8,11 @@ import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileElement;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.tools.Er;
 
 public class Element {
-    static String arrayElement(AST t, ST st, ActionType action, List<String> codes) {
+    static String arrayElement(AST t, MethodUtils st, ActionType action, List<String> codes) {
         Descriptor desc = st.getArray(t.getText());
         if (desc == null) {
             Er.errNotDefined(t, t.getText());
@@ -34,7 +34,7 @@ public class Element {
 
     }
 
-    static String intLiteral(AST t, ST st, boolean isNegative) {
+    static String intLiteral(AST t, MethodUtils st, boolean isNegative) {
         String number;
         Long result = null;
         if (isNegative) {

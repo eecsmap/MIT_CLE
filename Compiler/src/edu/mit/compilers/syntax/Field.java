@@ -11,7 +11,7 @@ import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 class Field {
-    static final AST declare(AST t, ST st, List<String> codes) {
+    static final AST declare(AST t, MethodUtils st, List<String> codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             String type = null;
             Integer size = 0;

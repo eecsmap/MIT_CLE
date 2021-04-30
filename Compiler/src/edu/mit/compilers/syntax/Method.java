@@ -13,7 +13,7 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
 class Method {
-    static AST declare(AST t, ST globalST, List<String> codes) {
+    static AST declare(AST t, MethodUtils globalST, List<String> codes) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
@@ -25,7 +25,7 @@ class Method {
             if (isMain) {
                 Program.mainDeclared = true;
             }
-            ST localST = new ST(globalST, returnType);
+            MethodUtils localST = new MethodUtils(globalST, returnType);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -52,7 +52,7 @@ class Method {
     }
 
     // return method type
-    static String call(AST t, ST st, List<String> codes, boolean needReturnValue) {
+    static String call(AST t, MethodUtils st, List<String> codes, boolean needReturnValue) {
         String methodName = t.getText();
         Descriptor desc = st.getDesc(methodName);
         if (desc != null && !Defs.isMethodType(desc.getType())) {

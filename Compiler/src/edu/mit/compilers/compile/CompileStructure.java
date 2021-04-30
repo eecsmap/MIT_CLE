@@ -14,11 +14,11 @@ import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.grammar.DecafScannerTokenTypes;
-import edu.mit.compilers.st.ST;
+import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
-    public static final void binaryOpExpr(ST st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryOpExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();
@@ -45,7 +45,7 @@ public class CompileStructure {
         st.tmpPush(resReg);
     }
 
-    public static final void binaryBoolExpr(ST st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryBoolExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();
@@ -85,7 +85,7 @@ public class CompileStructure {
     }
 
 
-    public static final void binaryCompExpr(ST st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryCompExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         Reg resReg = st.newTmpReg();
         Oprand rOp = st.tmpPop();
         Oprand lOp = st.tmpPop();
@@ -102,7 +102,7 @@ public class CompileStructure {
         st.tmpPush(resReg);
     }
 
-    public static final void minusExpr(ST st, List<String> codes) {
+    public static final void minusExpr(MethodUtils st, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = st.newTmpReg();
         Oprand op = st.tmpPop();
@@ -117,7 +117,7 @@ public class CompileStructure {
         }
     }
 
-    public static final void exclamExpr(ST st, List<String> codes) {
+    public static final void exclamExpr(MethodUtils st, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = st.newTmpReg();
         Oprand op = st.tmpPop();
@@ -133,7 +133,7 @@ public class CompileStructure {
         }
     }
 
-    public static final void charLiteral(ST st, char theChar, List<String> codes) {
+    public static final void charLiteral(MethodUtils st, char theChar, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = st.newTmpReg();
         int ascii = theChar;
@@ -143,21 +143,21 @@ public class CompileStructure {
         st.tmpPush(tmpReg);
     }
 
-    public static final void tkBreak(ST st, List<String> codes) {
+    public static final void tkBreak(MethodUtils st, List<String> codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.jmp("jmp", st.getBreakLabel())
         );
     }
 
-    public static final void tkContinue(ST st, List<String> codes) {
+    public static final void tkContinue(MethodUtils st, List<String> codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.jmp("jmp", st.getContinueLabel())
         );
     }
 
-    public static final void tkReturn(ST st, String expectedReturnType, List<String> codes) {
+    public static final void tkReturn(MethodUtils st, String expectedReturnType, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (Defs.DESC_TYPE_VOID.equals(expectedReturnType)) {
             st.tmpPop();
