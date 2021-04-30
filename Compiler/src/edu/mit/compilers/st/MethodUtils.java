@@ -95,15 +95,15 @@ public class MethodUtils {
         Long sizeToAlloc = this.symbolTable.push(desc, isArgument);
         if (sizeToAlloc == 0L)
             return false;
-        for (int i = 0; i < sizeToAlloc; i++) {
-            if (isArgument)
-                this.argumentOffsetIncrement();
-            else
-                this.localOffsetIncrement();
-        }
         if (this.isGlobal() && !Defs.isMethodType(desc.getType())) {
             desc.setAddr(new Addr(desc.getText(), false));
         } else {
+            for (int i = 0; i < sizeToAlloc; i++) {
+                if (isArgument)
+                    this.argumentOffsetIncrement();
+                else
+                    this.localOffsetIncrement();
+            }
             desc.setAddr(new Addr(this.varOffset, desc.getText()));
         }
         return true;
