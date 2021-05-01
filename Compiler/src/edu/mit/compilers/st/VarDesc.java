@@ -10,12 +10,4 @@ public class VarDesc extends Descriptor {
     public VarDesc(VarType type, String text) {
         super(type, text);
     }
-
-    @Override
-    public final String findVar(String text) {
-        return null;
-    }
-
-    @Override
-    public final String findMethod(String text) { return null; }
 }

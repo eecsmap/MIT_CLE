@@ -23,7 +23,4 @@ public abstract class Descriptor {
     public String getText() { return this.text; }
     public void setAddr(Addr addr) { this.addr = addr; }
     public Addr getAddr() { return this.addr; }
-
-    public abstract String findVar(String text);
-    public abstract String findMethod(String text);
 }
