@@ -10,7 +10,7 @@ import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 
 public class BasicOpration {
     // return lType
@@ -20,11 +20,11 @@ public class BasicOpration {
         Descriptor lDesc = Manager.getDesc(lID);
         VarType lType = lDesc.getType();
         if (lType == null) {
-            Er.errNotDefined(c, c.getText());
+            Err.errNotDefined(c, c.getText());
         } else if (lDesc.getType().isArray()) {
             lType = Element.arrayElement(c, ActionType.STORE, codes);
         } else if (c.getNumberOfChildren() > 0) {
-            Er.errVarIsNotArray(c, lID);
+            Err.errVarIsNotArray(c, lID);
         } else {
             Manager.tmpPush(lDesc.getAddr());
         }
@@ -38,7 +38,7 @@ public class BasicOpration {
         c = c.getNextSibling();
         VarType rType = Structure.expr(c, ActionType.LOAD, codes);
         if (lType != null && (!lType.equals(rType) || (!op.equals("=") && !lType.isInt()))) {
-            Er.errType(c, lType, rType);
+            Err.errType(c, lType, rType);
         }
         CompileBasicOperation.binaryAssign(op, codes);
     }
@@ -48,7 +48,7 @@ public class BasicOpration {
         VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
         if (lType != null && !lType.isInt()) {
-            Er.errType(c, VarType.INT, lType);
+            Err.errType(c, VarType.INT, lType);
         }
         CompileBasicOperation.unaryAssign(t.getType(), codes);
     }
@@ -75,15 +75,15 @@ public class BasicOpration {
         List<String> codesIfExecution = new ArrayList<>();
         List<String> codesElseExecution = new ArrayList<>();
         VarType cond = Structure.expr(cc, ActionType.LOAD, codesCondition);
-        if (!VarType.BOOL.equals(cond)) {
-            Er.errType(t, VarType.BOOL, cond);
+        if (!cond.isBool()) {
+            Err.errType(t, VarType.BOOL, cond);
         }
         cc = cc.getNextSibling();
         VarType ifType = Structure.expr(cc, ActionType.LOAD, codesIfExecution);
         c = c.getNextSibling();
         VarType elseType = Structure.expr(c, ActionType.LOAD, codesElseExecution);
         if (!ifType.equals(elseType)) {
-            Er.errType(t, ifType, elseType);
+            Err.errType(t, ifType, elseType);
         }
         CompileBasicOperation.relOps(codesCondition, codesIfExecution, codesElseExecution, codes);
         return ifType;

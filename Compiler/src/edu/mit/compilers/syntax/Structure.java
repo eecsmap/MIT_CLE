@@ -14,7 +14,7 @@ import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 import edu.mit.compilers.grammar.*;
 
 public class Structure {
@@ -37,31 +37,31 @@ public class Structure {
         VarType returnType = null;
         if (AstUtils.isBinaryOp(t)) {
             if (!lType.equals(rType)) {
-                Er.errType(l, lType, rType);
+                Err.errType(l, lType, rType);
             }
             returnType = lType;
             CompileStructure.binaryOpExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryCompOp(t)) {
             if (!lType.equals(rType) || lType.isVoid()) {
-                Er.errType(r, lType, rType);
+                Err.errType(r, lType, rType);
             }
             returnType = VarType.BOOL;
             CompileStructure.binaryCompExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryBoolOp(t)) {
             if (!lType.isBool()) {
-                Er.errType(l, VarType.BOOL, lType);
+                Err.errType(l, VarType.BOOL, lType);
             }
-            if (rType != null && !VarType.BOOL.equals(rType)) {
-                Er.errType(r, VarType.BOOL, rType);
+            if (rType != null && !rType.isBool()) {
+                Err.errType(r, VarType.BOOL, rType);
             }
             returnType = VarType.BOOL;
             CompileStructure.binaryBoolExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryIntCompOp(t)) {
             if (!lType.isInt()) {
-                Er.errType(l, VarType.INT, lType);
+                Err.errType(l, VarType.INT, lType);
             }
             if (rType != null && !rType.isInt()) {
-                Er.errType(r, VarType.INT, rType);
+                Err.errType(r, VarType.INT, rType);
             }
             returnType = VarType.BOOL;
             CompileStructure.binaryCompExpr(t.getType(), leftCodes, rightCodes, codes); 
@@ -74,7 +74,7 @@ public class Structure {
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
             if (desc == null) {
-                Er.errNotDefined(t, t.getText());
+                Err.errNotDefined(t, t.getText());
                 return VarType.WILDCARD;
             }
         }
@@ -101,7 +101,7 @@ public class Structure {
         }
         VarType subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
         if (subType != null && !subType.isInt()) {
-            Er.errType(t, VarType.INT, subType);
+            Err.errType(t, VarType.INT, subType);
         }
         CompileStructure.minusExpr(codes);
         return VarType.INT;
@@ -110,7 +110,7 @@ public class Structure {
     private static VarType exclamExpr(AST t, List<String> codes) {
         VarType subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
         if (subType != null && !subType.isBool()) {
-            Er.errType(t, VarType.BOOL, subType); 
+            Err.errType(t, VarType.BOOL, subType); 
         }
         CompileStructure.exclamExpr(codes);
         return VarType.BOOL;
@@ -151,7 +151,7 @@ public class Structure {
                 Descriptor desc = Manager.getDesc(c.getText());
                 VarType subType = desc.getType();
                 if (subType == null || !subType.isArray()) {
-                    Er.errNotDefined(c, c.getText());
+                    Err.errNotDefined(c, c.getText());
                 }
                 Manager.tmpPush(new Num(((ArrayDesc)desc).getCap()));
                 return VarType.INT;
@@ -209,20 +209,20 @@ public class Structure {
                 return;
             case DecafScannerTokenTypes.TK_break:
                 if (!Manager.isInLoop()) {
-                    Er.errBreak(t);
+                    Err.errBreak(t);
                 }
                 CompileStructure.tkBreak(codes);
                 return;
             case DecafScannerTokenTypes.TK_continue:
                 if (!Manager.isInLoop()) {
-                    Er.errContinue(t);
+                    Err.errContinue(t);
                 }
                 CompileStructure.tkContinue(codes);
                 return;
             case DecafScannerTokenTypes.TK_return:
                 VarType expectedReturnType = Manager.getReturnType();
                 if (expectedReturnType == null) {
-                    Er.report(t, "null return");
+                    Err.report(t, "null return");
                     return;
                 }
                 VarType actualReturnType = expr(t.getFirstChild(), ActionType.LOAD, codes);
@@ -230,7 +230,7 @@ public class Structure {
                     actualReturnType = VarType.VOID;
                 }
                 if (!expectedReturnType.equals(actualReturnType)) {
-                    Er.errType(t, expectedReturnType, actualReturnType);
+                    Err.errType(t, expectedReturnType, actualReturnType);
                 }
                 CompileStructure.tkReturn(expectedReturnType, codes);
                 return;

@@ -3,7 +3,7 @@ package edu.mit.compilers.st;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 
 public class SymbolTable {
     // text -> Descriptor
@@ -56,7 +56,7 @@ public class SymbolTable {
     // return the number of new variable
     public final Long push(Descriptor desc, boolean isArgument) {
         Long size = 0L;
-        if (!Er.hasError() && !desc.getType().isMethod()) {
+        if (!Err.hasError() && !desc.getType().isMethod()) {
             if (desc instanceof ArrayDesc) {
                 size = ((ArrayDesc)desc).getCap();
             } else {

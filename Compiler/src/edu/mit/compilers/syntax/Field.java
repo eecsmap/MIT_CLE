@@ -7,7 +7,7 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileField;
 import edu.mit.compilers.defs.VarType;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 import edu.mit.compilers.grammar.*;
 
 class Field {
@@ -31,26 +31,26 @@ class Field {
                     // cc is not null -> is array
                     Integer cap = Integer.parseInt(cc.getText());
                     if (cap <= 0) {
-                        Er.errBadArrayCap(cc);
+                        Err.errBadArrayCap(cc);
                         cap = 1000000000;
                     }
                     if (Manager.isGlobal() && Program.importST.getMethod(c.getText()) != null) {
-                        Er.errDuplicatedDeclaration(c, c.getText());
+                        Err.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
                     if (!Manager.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
-                        Er.errDuplicatedDeclaration(c, c.getText());
+                        Err.errDuplicatedDeclaration(c, c.getText());
                     }
                     CompileField.declareArray(c.getText(), size, cap, codes);
                     continue;
                 }
                 if (Program.importST.getMethod(c.getText()) != null) {
-                    Er.errDuplicatedDeclaration(c, c.getText());
+                    Err.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
                 // cc is null -> it's single Variable
                 if (!Manager.push(new VarDesc(type, c.getText()), false)) {
-                    Er.errDuplicatedDeclaration(c, c.getText());
+                    Err.errDuplicatedDeclaration(c, c.getText());
                 }
                 CompileField.declareVariable(c.getText(), size, codes);
             }

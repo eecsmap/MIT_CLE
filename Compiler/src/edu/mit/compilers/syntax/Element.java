@@ -9,24 +9,24 @@ import edu.mit.compilers.compile.CompileElement;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 
 public class Element {
     static VarType arrayElement(AST t, ActionType action, List<String> codes) {
         Descriptor desc = Manager.getArray(t.getText());
         if (desc == null) {
-            Er.errNotDefined(t, t.getText());
+            Err.errNotDefined(t, t.getText());
             return null;
         }
         VarType type = desc.getType();
         AST c = t.getFirstChild();
         if (!type.isArray()) {
-            Er.errNotArrayType(t, type);
+            Err.errNotArrayType(t, type);
             return type;
         }
         VarType indexType = Structure.expr(c, ActionType.LOAD, codes);
         if (!indexType.isInt()) {
-            Er.errArrayIndexNotInt(t, desc.getText(), indexType);
+            Err.errArrayIndexNotInt(t, desc.getText(), indexType);
             return type.plain();
         }
         CompileElement.arrayElement(action, desc, codes);
@@ -47,7 +47,7 @@ public class Element {
             try {
                 result = Long.decode(number);
             } catch (Exception ee) {
-                Er.errIntegerTooLarge(t, number);
+                Err.errIntegerTooLarge(t, number);
             }
         }
         Manager.tmpPush(new Num(result));

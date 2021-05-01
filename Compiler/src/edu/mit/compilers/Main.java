@@ -15,7 +15,7 @@ import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.syntax.Program;
 import edu.mit.compilers.tools.CLI;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 import edu.mit.compilers.tools.CLI.Action;
 
 class Main {
@@ -109,10 +109,10 @@ class Main {
         AST t = parse(inputStream, false);
         // AstUtils.printAST(t, 0);
         if (CLI.debug) {
-            Er.setTrace();
+            Err.setTrace();
         }
         Program.irParse(t, null);
-        if(Er.hasError()) {
+        if(Err.hasError()) {
             System.exit(1);
         }
     }
@@ -122,11 +122,11 @@ class Main {
         AST t = parse(inputStream, false);
         // AstUtils.printAST(t, 0);
         if (CLI.debug) {
-            Er.setTrace();
+            Err.setTrace();
         }
         List<String> codes = new ArrayList<>();
         Program.irParse(t, codes);
-        if(Er.hasError()) {
+        if(Err.hasError()) {
             System.exit(1);
         } else {
             codes.forEach(outputStream::println);

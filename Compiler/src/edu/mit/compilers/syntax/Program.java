@@ -12,7 +12,7 @@ import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
 import edu.mit.compilers.defs.VarType;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 
 
 public class Program {
@@ -22,7 +22,7 @@ public class Program {
     static boolean mainDeclared = false;
     static boolean compile;
     public static boolean shouldCompile() {
-        return !Er.hasError() && compile;
+        return !Err.hasError() && compile;
     }
     private static List<Label> stringLiteralLabelList = new ArrayList<>();
     private static List<String> stringLiteralList = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Program {
         t = Field.declare(t, codes);
         t = Method.declare(t, codes);
         if (!mainDeclared) {
-            Er.errMainNotDefined(t);
+            Err.errMainNotDefined(t);
         }
         CompileProgram.addROData(stringLiteralList, stringLiteralLabelList, codes);
         CompileProgram.addArrayOutBoundReturn(codes);
@@ -54,12 +54,12 @@ public class Program {
             // parse single import statement
             String methodName = t.getFirstChild().getText();
             if (methodName.equals("main")) {
-                Er.errBadImport(t.getFirstChild(), methodName);
+                Err.errBadImport(t.getFirstChild(), methodName);
                 continue;
             }
             MethodDesc desc = new MethodDesc(VarType.WILDCARD, methodName);
             if (importST.push(desc, false) != -1L) {
-                Er.errDuplicatedDeclaration(t, methodName);
+                Err.errDuplicatedDeclaration(t, methodName);
             }
         }
         return t;

@@ -4,7 +4,7 @@ import antlr.collections.AST;
 import edu.mit.compilers.defs.VarType;
 
 // Error Reporter
-public class Er {
+public class Err {
     private static boolean trace = false;
     private static boolean error = false;
 

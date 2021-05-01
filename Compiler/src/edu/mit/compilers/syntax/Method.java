@@ -12,7 +12,7 @@ import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileMethod;
 import edu.mit.compilers.defs.VarType;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 
 class Method {
     static Map<String, VarType> stringToVarType = new HashMap<>(){{
@@ -26,7 +26,7 @@ class Method {
             AST c = t.getFirstChild();
             VarType returnType = stringToVarType.get(c.getText());
             if (Program.importST.getMethod(t.getText()) != null || !Manager.push(new MethodDesc(returnType, t.getText()), false)) {
-                Er.errDuplicatedDeclaration(t, t.getText());
+                Err.errDuplicatedDeclaration(t, t.getText());
             }
             boolean isMain = t.getText().equals("main");
             if (isMain) {
@@ -41,13 +41,13 @@ class Method {
                 Descriptor desc = new VarDesc(stringToVarType.get(c.getFirstChild().getText()), c.getText());
                 paramsDesc.add(desc);
                 if (!Manager.push(desc, true)) {
-                    Er.errDuplicatedDeclaration(c, c.getText());
+                    Err.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
                 params.add(stringToVarType.get(c.getFirstChild().getText()));
             }
             if (isMain && (params.size() > 0 || !returnType.isVoid())) {
-                Er.errMalformedMain(t, returnType, params.size());
+                Err.errMalformedMain(t, returnType, params.size());
             }
             Program.methodMap.put(t.getText(), params);
             // parse block
@@ -64,7 +64,7 @@ class Method {
         String methodName = t.getText();
         Descriptor desc = Manager.getDesc(methodName);
         if (desc != null && !desc.getType().isMethod()) {
-            Er.errDuplicatedDeclaration(t, methodName);
+            Err.errDuplicatedDeclaration(t, methodName);
         }
         Descriptor method = Manager.getMethod(methodName);
         List<Oprand> argsList = new ArrayList<>();
@@ -72,7 +72,7 @@ class Method {
         if (method == null) {
             method = Program.importST.getMethod(methodName);
             if (method == null) {
-                Er.errNotDefined(t, methodName);
+                Err.errNotDefined(t, methodName);
                 return null;
             }
             methodType = VarType.WILDCARD;
@@ -84,17 +84,17 @@ class Method {
             AST c = t.getFirstChild();
             List<VarType> params = Program.methodMap.get(method.getText());
             if (params == null) {
-                Er.errNotDefined(c, method.getText());
+                Err.errNotDefined(c, method.getText());
                 return VarType.WILDCARD;
             }
             if (params.size() != t.getNumberOfChildren()) {
-                Er.errArrayArgsMismatch(t);
+                Err.errArrayArgsMismatch(t);
                 return method.getType().plain();
             }
             for (int i = 0; c != null; c = c.getNextSibling(), i++) {
                 VarType cType = Structure.expr(c, ActionType.LOAD, codes);
                 if (!params.get(i).equals(cType)) {
-                    Er.errType(c, params.get(i), cType);
+                    Err.errType(c, params.get(i), cType);
                 }
                 CompileMethod.callParseArgs(argsList, codes);
             }

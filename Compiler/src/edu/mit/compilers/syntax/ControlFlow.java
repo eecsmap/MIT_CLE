@@ -8,7 +8,7 @@ import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileControlFlow;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 
 public class ControlFlow {
     static void ifFlow(AST t, List<String> codes) {
@@ -18,8 +18,8 @@ public class ControlFlow {
         List<String> codesCondition = new ArrayList<>();
         VarType type = Structure.expr(c, ActionType.LOAD, codesCondition);
         Boolean hasElse = false;
-        if (type != null && !VarType.BOOL.equals(type)) {
-            Er.errType(c, VarType.BOOL, type);
+        if (type != null && !type.isBool()) {
+            Err.errType(c, VarType.BOOL, type);
         }
         // if block
         List<String> codesIfExecution = new ArrayList<>();
@@ -45,8 +45,8 @@ public class ControlFlow {
         // condition expr
         List<String> codesCondition = new ArrayList<>();
         VarType conditionExprType = Structure.expr(c, ActionType.LOAD, codesCondition);
-        if (!VarType.BOOL.equals(conditionExprType)) {
-            Er.errType(c, VarType.BOOL, conditionExprType);
+        if (!conditionExprType.isBool()) {
+            Err.errType(c, VarType.BOOL, conditionExprType);
         }
         c = c.getNextSibling();
         // more assign
@@ -66,8 +66,8 @@ public class ControlFlow {
         AST c = t.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
         VarType type = Structure.expr(c, ActionType.LOAD, codesCondition);
-        if (type != null && !VarType.BOOL.equals(type)) {
-            Er.errType(c, VarType.BOOL, type);
+        if (type != null && !type.isBool()) {
+            Err.errType(c, VarType.BOOL, type);
         }
         // execution block
         c = c.getNextSibling();
