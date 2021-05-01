@@ -7,6 +7,10 @@ import edu.mit.compilers.asm.Label;
 public class Defs {
     private Defs() {}
 
+    // didnt differentiate variable size between int and bool
+    public static Integer varSize = 8;
+    public static Integer callRegCount = 6;
+
     public static Map<String, VarType> stringToVarType = new HashMap<>(){{
         put("void", VarType.VOID);
         put("bool", VarType.BOOL);

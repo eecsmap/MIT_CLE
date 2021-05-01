@@ -11,6 +11,7 @@ import edu.mit.compilers.asm.Constants;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
+import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.defs.VarType;
 
 // field symbol table -> field desc []
@@ -68,23 +69,23 @@ public class Manager {
     }
 
     private static void argumentOffsetIncrement() {
-        if (varOffset > -48 && varOffset <= 0) {
+        if (varOffset > - Defs.callRegCount * Defs.varSize && varOffset <= 0) {
             // first six
-            varOffset -= 8;
-        } else if (varOffset <= -48) {
+            varOffset -= Defs.varSize;
+        } else if (varOffset <= - Defs.callRegCount * Defs.varSize) {
             // the seventh (return address and saved rbp)
             varOffset = 16;
         } else {
             // and after
-            varOffset += 8;
+            varOffset += Defs.varSize;
         }
     }
 
     private static void localOffsetIncrement() {
         if (varOffset > 0) {
-            varOffset = -56;
+            varOffset = -7 * Defs.varSize;
         }
-        varOffset -= 8;
+        varOffset -= Defs.varSize;
     }
 
     public static final Descriptor getDesc(String text) {
@@ -170,7 +171,7 @@ public class Manager {
     }
 
     public static final Integer bytesToAllocate() {
-        Integer bytes = (varOffset > 0) ? 48 : -varOffset;
+        Integer bytes = (varOffset > 0) ? Defs.callRegCount * Defs.varSize : -varOffset;
         return (bytes + 15) / 16 * 16;
     }
 

@@ -8,23 +8,11 @@ import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileField;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.tools.Err;
-import edu.mit.compilers.grammar.*;
 
 class Field {
     static final AST declare(AST t, List<String> codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             VarType type = null;
-            Integer size = 0;
-            switch (t.getType()) {
-                case DecafScannerTokenTypes.TK_bool:
-                    type = VarType.BOOL;
-                    size = 8;
-                    break;
-                case DecafScannerTokenTypes.TK_int:
-                    type = VarType.INT;
-                    size = 8;
-                    break;
-            }
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 AST cc = c.getFirstChild();
                 if (cc != null) {
@@ -41,7 +29,7 @@ class Field {
                     if (!Manager.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
                         Err.errDuplicatedDeclaration(c, c.getText());
                     }
-                    CompileField.declareArray(c.getText(), size, cap, codes);
+                    CompileField.declareArray(c.getText(), cap, codes);
                     continue;
                 }
                 if (Program.importST.getMethod(c.getText()) != null) {
@@ -52,7 +40,7 @@ class Field {
                 if (!Manager.push(new VarDesc(type, c.getText()), false)) {
                     Err.errDuplicatedDeclaration(c, c.getText());
                 }
-                CompileField.declareVariable(c.getText(), size, codes);
+                CompileField.declareVariable(c.getText(), codes);
             }
         }
         return t;
