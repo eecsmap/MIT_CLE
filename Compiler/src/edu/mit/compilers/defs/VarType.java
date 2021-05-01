@@ -20,31 +20,21 @@ public class VarType {
     private Boolean isMethod = false;
 
     private VarType(Type type) { this.type = type; }
+    public VarType plain() { return new VarType(this.type); }
 
-    public Boolean isArray() {
-        return this.isArray;
-    }
-
-    public Boolean isMethod() {
-        return this.isMethod;
-    }
+    public Boolean isArray() { return this.isArray; }
+    public Boolean isMethod() { return this.isMethod; }
 
     public VarType makeArray() {
-        assert !this.isMethod;
         VarType res = new VarType(this.type);
         res.isArray = true;
         return res;
     }
 
     public VarType makeMethod() { 
-        assert !this.isArray;
         VarType res = new VarType(this.type);
         res.isMethod = true;
         return res;
-    }
-
-    public VarType plain() {
-        return new VarType(this.type);
     }
 
     public Boolean isBool() {
