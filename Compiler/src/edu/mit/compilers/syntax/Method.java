@@ -18,14 +18,14 @@ class Method {
             // parse method type
             AST c = t.getFirstChild();
             String returnType = c.getText();
-            if (Program.importST.getMethod(t.getText()) != null || !MethodUtils.push(new MethodDesc(returnType, t.getText()), false)) {
+            if (Program.importST.getMethod(t.getText()) != null || !Manager.push(new MethodDesc(returnType, t.getText()), false)) {
                 Er.errDuplicatedDeclaration(t, t.getText());
             }
             boolean isMain = t.getText().equals("main");
             if (isMain) {
                 Program.mainDeclared = true;
             }
-            MethodUtils.enterScope(returnType);
+            Manager.enterScope(returnType);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -33,7 +33,7 @@ class Method {
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
                 Descriptor desc = new VarDesc(c.getFirstChild().getText(), c.getText());
                 paramsDesc.add(desc);
-                if (!MethodUtils.push(desc, true)) {
+                if (!Manager.push(desc, true)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
@@ -47,7 +47,7 @@ class Method {
             List<String> codesMethod = new ArrayList<>();
             Structure.block(c, codesMethod);
             CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codes);
-            MethodUtils.leaveScope();
+            Manager.leaveScope();
         }
         return t;
     }
@@ -55,11 +55,11 @@ class Method {
     // return method type
     static String call(AST t, List<String> codes, boolean needReturnValue) {
         String methodName = t.getText();
-        Descriptor desc = MethodUtils.getDesc(methodName);
+        Descriptor desc = Manager.getDesc(methodName);
         if (desc != null && !Defs.isMethodType(desc.getType())) {
             Er.errDuplicatedDeclaration(t, methodName);
         }
-        Descriptor method = MethodUtils.getMethod(methodName);
+        Descriptor method = Manager.getMethod(methodName);
         List<Oprand> argsList = new ArrayList<>();
         String methodType;
         if (method == null) {

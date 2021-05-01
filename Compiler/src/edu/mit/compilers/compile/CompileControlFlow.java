@@ -8,7 +8,7 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileControlFlow {
@@ -16,12 +16,12 @@ public class CompileControlFlow {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
-        Oprand conditionOp = MethodUtils.tmpPop();
+        Oprand conditionOp = Manager.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
         } else {
-            condition = MethodUtils.newTmpReg();
+            condition = Manager.newTmpReg();
             codesCondition.add(
                 asm.bin("movq", conditionOp, condition)    
             );
@@ -53,12 +53,12 @@ public class CompileControlFlow {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
-        Oprand conditionOp = MethodUtils.tmpPop();
+        Oprand conditionOp = Manager.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
         } else {
-            condition = MethodUtils.newTmpReg();
+            condition = Manager.newTmpReg();
             codesCondition.add(
                 asm.bin("movq", conditionOp, condition)    
             );
@@ -77,24 +77,24 @@ public class CompileControlFlow {
         codes.add(asm.label(executionBeginLabel));
         codes.addAll(codesExecution);
         codes.add(asm.cmt("for loop - increment"));
-        codes.add(asm.label(MethodUtils.getContinueLabel()));
+        codes.add(asm.label(Manager.getContinueLabel()));
         codes.addAll(codesIncrement);
         codes.add(asm.label(conditionBeginLabel));
         codes.add(asm.cmt("for loop - condition"));
         codes.addAll(codesCondition);
-        codes.add(asm.label(MethodUtils.getBreakLabel()));
+        codes.add(asm.label(Manager.getBreakLabel()));
         codes.add(asm.cmt("for loop - end"));
     }
 
     public static final void whileFlow(List<String> codesCondition, List<String> codesExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
-        Oprand conditionOp = MethodUtils.tmpPop();
+        Oprand conditionOp = Manager.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
         } else {
-            condition = MethodUtils.newTmpReg();
+            condition = Manager.newTmpReg();
             codesCondition.add(
                 asm.bin("movq", conditionOp, condition)    
             );
@@ -104,14 +104,14 @@ public class CompileControlFlow {
             asm.jmp("jne", executionBeginLabel)
         );
         codes.add(asm.cmt("while - start"));
-        codes.add(asm.jmp("jmp", MethodUtils.getContinueLabel()));
+        codes.add(asm.jmp("jmp", Manager.getContinueLabel()));
         codes.add(asm.cmt("while - codesExecution "));
         codes.add(asm.label(executionBeginLabel));
         codes.addAll(codesExecution);
         codes.add(asm.cmt("while - codesCondition "));
-        codes.add(asm.label(MethodUtils.getContinueLabel()));
+        codes.add(asm.label(Manager.getContinueLabel()));
         codes.addAll(codesCondition);
-        codes.add(asm.label(MethodUtils.getBreakLabel()));
+        codes.add(asm.label(Manager.getBreakLabel()));
         codes.add(asm.cmt("while - end"));
     }
 }

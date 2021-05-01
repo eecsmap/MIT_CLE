@@ -7,12 +7,12 @@ import antlr.collections.AST;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileControlFlow;
 import edu.mit.compilers.defs.Defs;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Er;
 
 public class ControlFlow {
     static void ifFlow(AST t, List<String> codes) {
-        MethodUtils.enterScope(false);
+        Manager.enterScope(false);
         AST c = t.getFirstChild();
         // condition
         List<String> codesCondition = new ArrayList<>();
@@ -31,12 +31,12 @@ public class ControlFlow {
             Structure.block(c.getFirstChild(), codesElseExecution);
         }
         CompileControlFlow.ifFlow(hasElse, codesCondition, codesIfExecution, codesElseExecution, codes);
-        MethodUtils.leaveScope();
+        Manager.leaveScope();
     }
 
     // doesn't suppeort declaration in for loop
     static void forFlow(AST t, List<String> codes) {
-        MethodUtils.enterScope(true);
+        Manager.enterScope(true);
         AST c = t.getFirstChild();
         // simple assign
         List<String> codesInit = new ArrayList<>();
@@ -57,11 +57,11 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, codesExecution);
         CompileControlFlow.forFlow(codesInit, codesCondition, codesIncrement, codesExecution, codes);
-        MethodUtils.leaveScope();
+        Manager.leaveScope();
     }
 
     static void whileFlow(AST t, List<String> codes) {
-        MethodUtils.enterScope(true);
+        Manager.enterScope(true);
         // condition
         AST c = t.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
@@ -74,6 +74,6 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, codesExecution);
         CompileControlFlow.whileFlow(codesCondition, codesExecution, codes);
-        MethodUtils.leaveScope();
+        Manager.leaveScope();
     }
 }

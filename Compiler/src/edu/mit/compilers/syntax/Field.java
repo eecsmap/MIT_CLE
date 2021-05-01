@@ -34,11 +34,11 @@ class Field {
                         Er.errBadArrayCap(cc);
                         cap = 1000000000;
                     }
-                    if (MethodUtils.isGlobal() && Program.importST.getMethod(c.getText()) != null) {
+                    if (Manager.isGlobal() && Program.importST.getMethod(c.getText()) != null) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
-                    if (!MethodUtils.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
+                    if (!Manager.push(new ArrayDesc(type, c.getText(), Long.valueOf(cap)), false)) {
                         Er.errDuplicatedDeclaration(c, c.getText());
                     }
                     CompileField.declareArray(c.getText(), size, cap, codes);
@@ -49,7 +49,7 @@ class Field {
                     continue;
                 }
                 // cc is null -> it's single Variable
-                if (!MethodUtils.push(new VarDesc(type, c.getText()), false)) {
+                if (!Manager.push(new VarDesc(type, c.getText()), false)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                 }
                 CompileField.declareVariable(c.getText(), size, codes);

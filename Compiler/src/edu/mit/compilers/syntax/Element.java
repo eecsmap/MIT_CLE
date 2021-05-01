@@ -8,12 +8,12 @@ import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileElement;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Er;
 
 public class Element {
     static String arrayElement(AST t, ActionType action, List<String> codes) {
-        Descriptor desc = MethodUtils.getArray(t.getText());
+        Descriptor desc = Manager.getArray(t.getText());
         if (desc == null) {
             Er.errNotDefined(t, t.getText());
             return null;
@@ -51,7 +51,7 @@ public class Element {
                 Er.errIntegerTooLarge(t, number);
             }
         }
-        MethodUtils.tmpPush(new Num(result));
+        Manager.tmpPush(new Num(result));
         return Defs.DESC_TYPE_INT;
     }
 }

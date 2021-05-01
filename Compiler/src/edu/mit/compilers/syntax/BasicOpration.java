@@ -9,7 +9,7 @@ import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Er;
 
 public class BasicOpration {
@@ -17,7 +17,7 @@ public class BasicOpration {
     private static String leftValue(AST t, List<String> codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
-        Descriptor lDesc = MethodUtils.getDesc(lID);
+        Descriptor lDesc = Manager.getDesc(lID);
         String lType = lDesc.getType();
         if (lType == null) {
             Er.errNotDefined(c, c.getText());
@@ -26,7 +26,7 @@ public class BasicOpration {
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
         } else {
-            MethodUtils.tmpPush(lDesc.getAddr());
+            Manager.tmpPush(lDesc.getAddr());
         }
         return lType;
     }

@@ -13,7 +13,7 @@ import edu.mit.compilers.compile.CompileStructure;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
@@ -70,7 +70,7 @@ public class Structure {
     }
 
     private static String idExpr(AST t, ActionType action, List<String> codes) {
-        Descriptor desc = MethodUtils.getDesc(t.getText());
+        Descriptor desc = Manager.getDesc(t.getText());
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
             if (desc == null) {
@@ -91,7 +91,7 @@ public class Structure {
             return Method.call(t, codes, true);
         }
         // var
-        MethodUtils.tmpPush(desc.getAddr());
+        Manager.tmpPush(desc.getAddr());
         return type;
     }
 
@@ -125,7 +125,7 @@ public class Structure {
     // | ! expr
     static String expr(AST t, ActionType action, List<String> codes) {
         if (t == null) {
-            MethodUtils.tmpPush(null);
+            Manager.tmpPush(null);
             return null;
         }
         if (isBinaryAnyOp(t) && t.getNumberOfChildren() == 2) {
@@ -137,10 +137,10 @@ public class Structure {
             case DecafScannerTokenTypes.INTLITERAL:
                 return Element.intLiteral(t, false);
             case DecafScannerTokenTypes.TK_true:
-                MethodUtils.tmpPush(new Bool(true));
+                Manager.tmpPush(new Bool(true));
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_false:
-                MethodUtils.tmpPush(new Bool(false));
+                Manager.tmpPush(new Bool(false));
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
                 return minusExpr(t, codes);
@@ -148,17 +148,17 @@ public class Structure {
                 return exclamExpr(t, codes);
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
-                Descriptor desc = MethodUtils.getDesc(c.getText());
+                Descriptor desc = Manager.getDesc(c.getText());
                 String subType = desc.getType();
                 if (subType == null || !Defs.isArrayType(subType)) {
                     Er.errNotDefined(c, c.getText());
                 }
-                MethodUtils.tmpPush(new Num(((ArrayDesc)desc).getCap()));
+                Manager.tmpPush(new Num(((ArrayDesc)desc).getCap()));
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
                     Addr stringAddr = Program.addStringLiteral(t.getText());
-                    MethodUtils.tmpPush(stringAddr);
+                    Manager.tmpPush(stringAddr);
                 }
                 return Defs.TYPE_STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
@@ -208,19 +208,19 @@ public class Structure {
                 ControlFlow.whileFlow(t, codes);
                 return;
             case DecafScannerTokenTypes.TK_break:
-                if (!MethodUtils.isInLoop()) {
+                if (!Manager.isInLoop()) {
                     Er.errBreak(t);
                 }
                 CompileStructure.tkBreak(codes);
                 return;
             case DecafScannerTokenTypes.TK_continue:
-                if (!MethodUtils.isInLoop()) {
+                if (!Manager.isInLoop()) {
                     Er.errContinue(t);
                 }
                 CompileStructure.tkContinue(codes);
                 return;
             case DecafScannerTokenTypes.TK_return:
-                String expectedReturnType = MethodUtils.getReturnType();
+                String expectedReturnType = Manager.getReturnType();
                 if (expectedReturnType == null) {
                     Er.report(t, "null return");
                     return;

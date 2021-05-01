@@ -1,6 +1,6 @@
 package edu.mit.compilers.asm;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -172,14 +172,14 @@ public class asm {
 
     public static final List<String> saveRegs(List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
-        List<Reg> regsToSave = MethodUtils.getUsedCallerSavedRegs();
+        List<Reg> regsToSave = Manager.getUsedCallerSavedRegs();
         if (regsToSave.size() > 0) {
             codes.add(
                 asm.cmt("save - start")
             );
         }
         for (Reg reg: regsToSave) {
-            Addr addr = MethodUtils.newTmpAddr();
+            Addr addr = Manager.newTmpAddr();
             codes.add(
                 asm.bin("movq", reg, addr)
             );
@@ -195,7 +195,7 @@ public class asm {
 
     public static final List<String> recoverRegs(List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
-        List<Reg> regsToRecover = MethodUtils.getUsedCallerSavedRegs();
+        List<Reg> regsToRecover = Manager.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(
                 asm.cmt("recover - start")

@@ -12,16 +12,16 @@ import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileElement {
     public static void arrayElement(ActionType action, Descriptor desc, List<String> codes) {
         if (!Program.shouldCompile()) return;
         String varName = String.format("%s[]", desc.getText());
-        Oprand index = MethodUtils.tmpPop();
-        Reg resReg = MethodUtils.newTmpReg();
-        Reg indexReg = MethodUtils.newTmpReg(resReg);
+        Oprand index = Manager.tmpPop();
+        Reg resReg = Manager.newTmpReg();
+        Reg indexReg = Manager.newTmpReg(resReg);
         Integer offset = desc.getAddr().getOffset();
         Collections.addAll(codes,
             asm.bin("movq", index, indexReg),
@@ -36,21 +36,21 @@ public class CompileElement {
                 asm.bin("leaq", desc.getAddr(), resReg)
             );
             if (action == ActionType.STORE) {
-                MethodUtils.tmpPush(new Addr(indexReg, resReg));
+                Manager.tmpPush(new Addr(indexReg, resReg));
             } else {
                 codes.add(
                     asm.bin("movq", new Addr(indexReg, resReg), resReg)
                 );
-                MethodUtils.tmpPush(resReg);
+                Manager.tmpPush(resReg);
             }
         } else {
             if (action == ActionType.STORE) {
-                MethodUtils.tmpPush(new Addr(offset, indexReg, varName));
+                Manager.tmpPush(new Addr(offset, indexReg, varName));
             } else {
                 codes.add(
                     asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
                 );
-                MethodUtils.tmpPush(resReg);
+                Manager.tmpPush(resReg);
             }
         }
     }

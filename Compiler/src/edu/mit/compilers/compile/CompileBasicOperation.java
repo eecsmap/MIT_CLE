@@ -9,16 +9,16 @@ import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
-import edu.mit.compilers.st.MethodUtils;
+import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileBasicOperation {
     public static void binaryAssign(String op, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (op.equals("=")) {
-            Reg tmpReg = MethodUtils.newTmpReg();
-            Oprand rAddr = MethodUtils.tmpPop();
-            Oprand lAddr = MethodUtils.tmpPop();
+            Reg tmpReg = Manager.newTmpReg();
+            Oprand rAddr = Manager.tmpPop();
+            Oprand lAddr = Manager.tmpPop();
             if (rAddr instanceof Num) {
                 codes.add(
                     asm.bin("movq", rAddr, lAddr)  
@@ -31,9 +31,9 @@ public class CompileBasicOperation {
             }
         } else {
             String asmOp = op.equals("+=") ? "addq" : "subq";
-            Reg tmpReg = MethodUtils.newTmpReg();
-            Oprand rAddr = MethodUtils.tmpPop();
-            Oprand lAddr = MethodUtils.tmpPop();
+            Reg tmpReg = Manager.newTmpReg();
+            Oprand rAddr = Manager.tmpPop();
+            Oprand lAddr = Manager.tmpPop();
             if (rAddr instanceof Num) {
                 codes.add(
                     asm.bin(asmOp, rAddr, lAddr)
@@ -50,7 +50,7 @@ public class CompileBasicOperation {
 
     public static void unaryAssign(Integer operator, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Oprand lAddr = MethodUtils.tmpPop();
+        Oprand lAddr = Manager.tmpPop();
         String op = operator == DecafParserTokenTypes.INCRE ? "addq" : "subq";
         codes.add(
             asm.bin(op, new Num(1L), lAddr)  
@@ -61,15 +61,15 @@ public class CompileBasicOperation {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
-        Reg resultReg = MethodUtils.newTmpReg();
-        Oprand elseOp = MethodUtils.tmpPop();
-        Oprand ifOp = MethodUtils.tmpPop();
-        Oprand conditionOp = MethodUtils.tmpPop();
+        Reg resultReg = Manager.newTmpReg();
+        Oprand elseOp = Manager.tmpPop();
+        Oprand ifOp = Manager.tmpPop();
+        Oprand conditionOp = Manager.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
         } else {
-            condition = MethodUtils.newTmpReg();
+            condition = Manager.newTmpReg();
             codesCondition.add(
                 asm.bin("movq", conditionOp, condition)    
             );
@@ -95,6 +95,6 @@ public class CompileBasicOperation {
         codes.addAll(codesElseExecution);
         codes.add(asm.label(ifElseEndLabel));
         codes.add(asm.cmt("ternary - end"));
-        MethodUtils.tmpPush(resultReg);
+        Manager.tmpPush(resultReg);
     }
 }
