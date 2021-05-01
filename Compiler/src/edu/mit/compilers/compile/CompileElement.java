@@ -16,12 +16,12 @@ import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileElement {
-    public static void arrayElement(MethodUtils st, ActionType action, Descriptor desc, List<String> codes) {
+    public static void arrayElement(ActionType action, Descriptor desc, List<String> codes) {
         if (!Program.shouldCompile()) return;
         String varName = String.format("%s[]", desc.getText());
-        Oprand index = st.tmpPop();
-        Reg resReg = st.newTmpReg();
-        Reg indexReg = st.newTmpReg(resReg);
+        Oprand index = MethodUtils.tmpPop();
+        Reg resReg = MethodUtils.newTmpReg();
+        Reg indexReg = MethodUtils.newTmpReg(resReg);
         Integer offset = desc.getAddr().getOffset();
         Collections.addAll(codes,
             asm.bin("movq", index, indexReg),
@@ -36,21 +36,21 @@ public class CompileElement {
                 asm.bin("leaq", desc.getAddr(), resReg)
             );
             if (action == ActionType.STORE) {
-                st.tmpPush(new Addr(indexReg, resReg));
+                MethodUtils.tmpPush(new Addr(indexReg, resReg));
             } else {
                 codes.add(
                     asm.bin("movq", new Addr(indexReg, resReg), resReg)
                 );
-                st.tmpPush(resReg);
+                MethodUtils.tmpPush(resReg);
             }
         } else {
             if (action == ActionType.STORE) {
-                st.tmpPush(new Addr(offset, indexReg, varName));
+                MethodUtils.tmpPush(new Addr(offset, indexReg, varName));
             } else {
                 codes.add(
                     asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
                 );
-                st.tmpPush(resReg);
+                MethodUtils.tmpPush(resReg);
             }
         }
     }

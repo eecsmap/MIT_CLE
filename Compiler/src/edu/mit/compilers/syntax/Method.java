@@ -13,19 +13,19 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
 class Method {
-    static AST declare(AST t, MethodUtils globalST, List<String> codes) {
+    static AST declare(AST t, List<String> codes) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
             String returnType = c.getText();
-            if (Program.importST.getMethod(t.getText()) != null || !globalST.push(new MethodDesc(returnType, t.getText()), false)) {
+            if (Program.importST.getMethod(t.getText()) != null || !MethodUtils.push(new MethodDesc(returnType, t.getText()), false)) {
                 Er.errDuplicatedDeclaration(t, t.getText());
             }
             boolean isMain = t.getText().equals("main");
             if (isMain) {
                 Program.mainDeclared = true;
             }
-            globalST.enterScope(returnType);
+            MethodUtils.enterScope(returnType);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -33,7 +33,7 @@ class Method {
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
                 Descriptor desc = new VarDesc(c.getFirstChild().getText(), c.getText());
                 paramsDesc.add(desc);
-                if (!globalST.push(desc, true)) {
+                if (!MethodUtils.push(desc, true)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
@@ -45,21 +45,21 @@ class Method {
             Program.methodMap.put(t.getText(), params);
             // parse block
             List<String> codesMethod = new ArrayList<>();
-            Structure.block(c, globalST, codesMethod);
-            CompileMethod.declare(globalST, t.getText(), returnType, paramsDesc, codesMethod, codes);
-            globalST.leaveScope();
+            Structure.block(c, codesMethod);
+            CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codes);
+            MethodUtils.leaveScope();
         }
         return t;
     }
 
     // return method type
-    static String call(AST t, MethodUtils st, List<String> codes, boolean needReturnValue) {
+    static String call(AST t, List<String> codes, boolean needReturnValue) {
         String methodName = t.getText();
-        Descriptor desc = st.getDesc(methodName);
+        Descriptor desc = MethodUtils.getDesc(methodName);
         if (desc != null && !Defs.isMethodType(desc.getType())) {
             Er.errDuplicatedDeclaration(t, methodName);
         }
-        Descriptor method = st.getMethod(methodName);
+        Descriptor method = MethodUtils.getMethod(methodName);
         List<Oprand> argsList = new ArrayList<>();
         String methodType;
         if (method == null) {
@@ -70,8 +70,8 @@ class Method {
             }
             methodType = Defs.DESC_TYPE_WILDCARD;
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
-                Structure.expr(c, st, ActionType.LOAD, codes);
-                CompileMethod.callParseArgs(st, argsList, codes);
+                Structure.expr(c, ActionType.LOAD, codes);
+                CompileMethod.callParseArgs(argsList, codes);
             }
         } else {
             AST c = t.getFirstChild();
@@ -85,15 +85,15 @@ class Method {
                 return Defs.getMethodType(method.getType());
             }
             for (int i = 0; c != null; c = c.getNextSibling(), i++) {
-                String cType = Structure.expr(c, st, ActionType.LOAD, codes);
+                String cType = Structure.expr(c, ActionType.LOAD, codes);
                 if (!Defs.equals(params.get(i), cType)) {
                     Er.errType(c, params.get(i), cType);
                 }
-                CompileMethod.callParseArgs(st, argsList, codes);
+                CompileMethod.callParseArgs(argsList, codes);
             }
             methodType = Defs.getMethodType(method.getType());
         }
-        CompileMethod.call(st, argsList, needReturnValue, methodName, codes);
+        CompileMethod.call(argsList, needReturnValue, methodName, codes);
         return methodType;
     }
 }

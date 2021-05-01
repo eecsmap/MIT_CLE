@@ -18,15 +18,15 @@ import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
-    public static final void binaryOpExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryOpExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Reg resReg = st.newTmpReg();
-        Oprand rOp = st.tmpPop();
-        Oprand lOp = st.tmpPop();
+        Reg resReg = MethodUtils.newTmpReg();
+        Oprand rOp = MethodUtils.tmpPop();
+        Oprand lOp = MethodUtils.tmpPop();
         List<String> glueCodes = new ArrayList<>();
         if (operator == DecafParserTokenTypes.SLASH || operator == DecafParserTokenTypes.PERCENT) {
             Reg resultReg = operator == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
-            Reg divisor = st.newTmpReg();
+            Reg divisor = MethodUtils.newTmpReg();
             Collections.addAll(glueCodes,
                 asm.bin("movq", lOp, Reg.rax),
                 asm.bin("movq", rOp, divisor),
@@ -43,14 +43,14 @@ public class CompileStructure {
         codes.addAll(leftCodes);
         codes.addAll(rightCodes);
         codes.addAll(glueCodes);
-        st.tmpPush(resReg);
+        MethodUtils.tmpPush(resReg);
     }
 
-    public static final void binaryBoolExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryBoolExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Reg resReg = st.newTmpReg();
-        Oprand rOp = st.tmpPop();
-        Oprand lOp = st.tmpPop();
+        Reg resReg = MethodUtils.newTmpReg();
+        Oprand rOp = MethodUtils.tmpPop();
+        Oprand lOp = MethodUtils.tmpPop();
         List<String> glueCodes = new ArrayList<>();
         String jmpOp = operator == DecafScannerTokenTypes.AND ? "je" : "jne";
         Label endLabel = new Label();
@@ -83,15 +83,15 @@ public class CompileStructure {
         codes.addAll(leftCodes);
         codes.addAll(rightCodes);
         codes.addAll(glueCodes);
-        st.tmpPush(resReg);
+        MethodUtils.tmpPush(resReg);
     }
 
 
-    public static final void binaryCompExpr(MethodUtils st, Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryCompExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Reg resReg = st.newTmpReg();
-        Oprand rOp = st.tmpPop();
-        Oprand lOp = st.tmpPop();
+        Reg resReg = MethodUtils.newTmpReg();
+        Oprand rOp = MethodUtils.tmpPop();
+        Oprand lOp = MethodUtils.tmpPop();
         List<String> glueCodes = new ArrayList<>();
         Collections.addAll(glueCodes,
             asm.bin("movq", lOp, resReg),
@@ -102,76 +102,76 @@ public class CompileStructure {
         codes.addAll(leftCodes);
         codes.addAll(rightCodes);
         codes.addAll(glueCodes);
-        st.tmpPush(resReg);
+        MethodUtils.tmpPush(resReg);
     }
 
-    public static final void minusExpr(MethodUtils st, List<String> codes) {
+    public static final void minusExpr(List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Reg tmpReg = st.newTmpReg();
-        Oprand op = st.tmpPop();
+        Reg tmpReg = MethodUtils.newTmpReg();
+        Oprand op = MethodUtils.tmpPop();
         if (op instanceof Num) {
-            st.tmpPush(((Num)op).neg());
+            MethodUtils.tmpPush(((Num)op).neg());
         } else {
             Collections.addAll(codes,
                 asm.bin("movq", op, tmpReg),
                 asm.uni("negq", tmpReg)
             );
-            st.tmpPush(tmpReg);
+            MethodUtils.tmpPush(tmpReg);
         }
     }
 
-    public static final void exclamExpr(MethodUtils st, List<String> codes) {
+    public static final void exclamExpr(List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Reg tmpReg = st.newTmpReg();
-        Oprand op = st.tmpPop();
+        Reg tmpReg = MethodUtils.newTmpReg();
+        Oprand op = MethodUtils.tmpPop();
         if (op instanceof Bool) {
-            st.tmpPush(((Bool)op).exclam());
+            MethodUtils.tmpPush(((Bool)op).exclam());
         } else {
             Collections.addAll(codes,
                 asm.bin("cmp", new Bool(false), op),
                 asm.uni("sete", tmpReg.bite()),
                 asm.bin("movzbq", tmpReg.bite(), tmpReg)
             );
-            st.tmpPush(tmpReg);
+            MethodUtils.tmpPush(tmpReg);
         }
     }
 
-    public static final void charLiteral(MethodUtils st, char theChar, List<String> codes) {
+    public static final void charLiteral(char theChar, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Reg tmpReg = st.newTmpReg();
+        Reg tmpReg = MethodUtils.newTmpReg();
         int ascii = theChar;
         codes.add(
             asm.bin("movq", new Num(Long.valueOf(ascii)), tmpReg)
         );
-        st.tmpPush(tmpReg);
+        MethodUtils.tmpPush(tmpReg);
     }
 
-    public static final void tkBreak(MethodUtils st, List<String> codes) {
+    public static final void tkBreak(List<String> codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
-            asm.jmp("jmp", st.getBreakLabel())
+            asm.jmp("jmp", MethodUtils.getBreakLabel())
         );
     }
 
-    public static final void tkContinue(MethodUtils st, List<String> codes) {
+    public static final void tkContinue(List<String> codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
-            asm.jmp("jmp", st.getContinueLabel())
+            asm.jmp("jmp", MethodUtils.getContinueLabel())
         );
     }
 
-    public static final void tkReturn(MethodUtils st, String expectedReturnType, List<String> codes) {
+    public static final void tkReturn(String expectedReturnType, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (Defs.DESC_TYPE_VOID.equals(expectedReturnType)) {
-            st.tmpPop();
+            MethodUtils.tmpPop();
             codes.add(
-                asm.jmp("jmp", st.getReturnLabel())
+                asm.jmp("jmp", MethodUtils.getReturnLabel())
             );
         } else {
-            Oprand returnVar = st.tmpPop();
+            Oprand returnVar = MethodUtils.tmpPop();
             Collections.addAll(codes, 
                 asm.bin("movq", returnVar, Reg.rax),
-                asm.jmp("jmp", st.getReturnLabel())
+                asm.jmp("jmp", MethodUtils.getReturnLabel())
             );
         }
     }

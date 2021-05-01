@@ -13,12 +13,12 @@ import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileBasicOperation {
-    public static void binaryAssign(MethodUtils st, String op, List<String> codes) {
+    public static void binaryAssign(String op, List<String> codes) {
         if (!Program.shouldCompile()) return;
         if (op.equals("=")) {
-            Reg tmpReg = st.newTmpReg();
-            Oprand rAddr = st.tmpPop();
-            Oprand lAddr = st.tmpPop();
+            Reg tmpReg = MethodUtils.newTmpReg();
+            Oprand rAddr = MethodUtils.tmpPop();
+            Oprand lAddr = MethodUtils.tmpPop();
             if (rAddr instanceof Num) {
                 codes.add(
                     asm.bin("movq", rAddr, lAddr)  
@@ -31,9 +31,9 @@ public class CompileBasicOperation {
             }
         } else {
             String asmOp = op.equals("+=") ? "addq" : "subq";
-            Reg tmpReg = st.newTmpReg();
-            Oprand rAddr = st.tmpPop();
-            Oprand lAddr = st.tmpPop();
+            Reg tmpReg = MethodUtils.newTmpReg();
+            Oprand rAddr = MethodUtils.tmpPop();
+            Oprand lAddr = MethodUtils.tmpPop();
             if (rAddr instanceof Num) {
                 codes.add(
                     asm.bin(asmOp, rAddr, lAddr)
@@ -48,28 +48,28 @@ public class CompileBasicOperation {
         }
     }
 
-    public static void unaryAssign(MethodUtils st, Integer operator, List<String> codes) {
+    public static void unaryAssign(Integer operator, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        Oprand lAddr = st.tmpPop();
+        Oprand lAddr = MethodUtils.tmpPop();
         String op = operator == DecafParserTokenTypes.INCRE ? "addq" : "subq";
         codes.add(
             asm.bin(op, new Num(1L), lAddr)  
         );
     }
 
-    public static void relOps(MethodUtils st, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
+    public static void relOps(List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
-        Reg resultReg = st.newTmpReg();
-        Oprand elseOp = st.tmpPop();
-        Oprand ifOp = st.tmpPop();
-        Oprand conditionOp = st.tmpPop();
+        Reg resultReg = MethodUtils.newTmpReg();
+        Oprand elseOp = MethodUtils.tmpPop();
+        Oprand ifOp = MethodUtils.tmpPop();
+        Oprand conditionOp = MethodUtils.tmpPop();
         Reg condition;
         if (conditionOp instanceof Reg) {
             condition = (Reg)conditionOp;
         } else {
-            condition = st.newTmpReg();
+            condition = MethodUtils.newTmpReg();
             codesCondition.add(
                 asm.bin("movq", conditionOp, condition)    
             );
@@ -95,6 +95,6 @@ public class CompileBasicOperation {
         codes.addAll(codesElseExecution);
         codes.add(asm.label(ifElseEndLabel));
         codes.add(asm.cmt("ternary - end"));
-        st.tmpPush(resultReg);
+        MethodUtils.tmpPush(resultReg);
     }
 }

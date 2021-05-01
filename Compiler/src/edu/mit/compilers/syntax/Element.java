@@ -12,15 +12,15 @@ import edu.mit.compilers.st.MethodUtils;
 import edu.mit.compilers.tools.Er;
 
 public class Element {
-    static String arrayElement(AST t, MethodUtils st, ActionType action, List<String> codes) {
-        Descriptor desc = st.getArray(t.getText());
+    static String arrayElement(AST t, ActionType action, List<String> codes) {
+        Descriptor desc = MethodUtils.getArray(t.getText());
         if (desc == null) {
             Er.errNotDefined(t, t.getText());
             return null;
         }
         String type = desc.getType();
         AST c = t.getFirstChild();
-        String indexType = Structure.expr(c, st, ActionType.LOAD, codes);
+        String indexType = Structure.expr(c, ActionType.LOAD, codes);
         if (indexType == null) {
             Er.errType(t, Defs.getArrayType(type), type);
             return Defs.getArrayType(type);
@@ -29,12 +29,12 @@ public class Element {
             Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, indexType);
             return Defs.getArrayType(type);
         }
-        CompileElement.arrayElement(st, action, desc, codes);
+        CompileElement.arrayElement(action, desc, codes);
         return Defs.getArrayType(type);
 
     }
 
-    static String intLiteral(AST t, MethodUtils st, boolean isNegative) {
+    static String intLiteral(AST t, boolean isNegative) {
         String number;
         Long result = null;
         if (isNegative) {
@@ -51,7 +51,7 @@ public class Element {
                 Er.errIntegerTooLarge(t, number);
             }
         }
-        st.tmpPush(new Num(result));
+        MethodUtils.tmpPush(new Num(result));
         return Defs.DESC_TYPE_INT;
     }
 }

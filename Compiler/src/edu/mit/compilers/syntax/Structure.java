@@ -27,26 +27,26 @@ public class Structure {
         || AstUtils.isBinaryIntCompOp(t);
     }
 
-    private static String binaryExpr(AST t, MethodUtils st, List<String> codes) {
+    private static String binaryExpr(AST t, List<String> codes) {
         AST l = t.getFirstChild();
         AST r = l.getNextSibling();
         List<String> leftCodes = new ArrayList<>();
         List<String> rightCodes = new ArrayList<>();
-        String lType = expr(l, st, ActionType.STORE, leftCodes);
-        String rType = expr(r, st, ActionType.LOAD, rightCodes);
+        String lType = expr(l, ActionType.STORE, leftCodes);
+        String rType = expr(r, ActionType.LOAD, rightCodes);
         String returnType = null;
         if (AstUtils.isBinaryOp(t)) {
             if (!Defs.equals(lType, rType)) {
                 Er.errType(l, lType, rType);
             }
             returnType = lType;
-            CompileStructure.binaryOpExpr(st, t.getType(), leftCodes, rightCodes, codes);
+            CompileStructure.binaryOpExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryCompOp(t)) {
             if ((!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
                 Er.errType(r, lType, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
-            CompileStructure.binaryCompExpr(st, t.getType(), leftCodes, rightCodes, codes);
+            CompileStructure.binaryCompExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryBoolOp(t)) {
             if (!Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
                 Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
@@ -55,7 +55,7 @@ public class Structure {
                 Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
-            CompileStructure.binaryBoolExpr(st, t.getType(), leftCodes, rightCodes, codes);
+            CompileStructure.binaryBoolExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryIntCompOp(t)) {
             if (!Defs.equals(Defs.DESC_TYPE_INT, lType)) {
                 Er.errType(l, Defs.DESC_TYPE_INT, lType);
@@ -64,13 +64,13 @@ public class Structure {
                 Er.errType(r, Defs.DESC_TYPE_INT, rType);
             }
             returnType = Defs.DESC_TYPE_BOOL;
-            CompileStructure.binaryCompExpr(st, t.getType(), leftCodes, rightCodes, codes); 
+            CompileStructure.binaryCompExpr(t.getType(), leftCodes, rightCodes, codes); 
         }
         return returnType;
     }
 
-    private static String idExpr(AST t, MethodUtils st, ActionType action, List<String> codes) {
-        Descriptor desc = st.getDesc(t.getText());
+    private static String idExpr(AST t, ActionType action, List<String> codes) {
+        Descriptor desc = MethodUtils.getDesc(t.getText());
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
             if (desc == null) {
@@ -84,35 +84,35 @@ public class Structure {
             if (t.getNumberOfChildren() == 0) {
                 return type;
             }
-            return Element.arrayElement(t, st, action, codes);
+            return Element.arrayElement(t, action, codes);
         }
         // method
         if (Defs.isMethodType(type)) {
-            return Method.call(t, st, codes, true);
+            return Method.call(t, codes, true);
         }
         // var
-        st.tmpPush(desc.getAddr());
+        MethodUtils.tmpPush(desc.getAddr());
         return type;
     }
 
-    private static String minusExpr(AST t, MethodUtils st, List<String> codes) {
+    private static String minusExpr(AST t, List<String> codes) {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
-            return Element.intLiteral(t.getFirstChild(), st, true);
+            return Element.intLiteral(t.getFirstChild(), true);
         }
-        String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
+        String subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
             Er.errType(t, Defs.DESC_TYPE_INT, subType);
         }
-        CompileStructure.minusExpr(st, codes);
+        CompileStructure.minusExpr(codes);
         return Defs.DESC_TYPE_INT;
     }
 
-    private static String exclamExpr(AST t, MethodUtils st, List<String> codes) {
-        String subType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
+    private static String exclamExpr(AST t, List<String> codes) {
+        String subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
         if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
             Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
         }
-        CompileStructure.exclamExpr(st, codes);
+        CompileStructure.exclamExpr(codes);
         return Defs.DESC_TYPE_BOOL;
     }
 
@@ -123,116 +123,116 @@ public class Structure {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    static String expr(AST t, MethodUtils st, ActionType action, List<String> codes) {
+    static String expr(AST t, ActionType action, List<String> codes) {
         if (t == null) {
-            st.tmpPush(null);
+            MethodUtils.tmpPush(null);
             return null;
         }
         if (isBinaryAnyOp(t) && t.getNumberOfChildren() == 2) {
-            return binaryExpr(t, st, codes);
+            return binaryExpr(t, codes);
         }
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                return idExpr(t, st, action, codes);
+                return idExpr(t, action, codes);
             case DecafScannerTokenTypes.INTLITERAL:
-                return Element.intLiteral(t, st, false);
+                return Element.intLiteral(t, false);
             case DecafScannerTokenTypes.TK_true:
-                st.tmpPush(new Bool(true));
+                MethodUtils.tmpPush(new Bool(true));
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.TK_false:
-                st.tmpPush(new Bool(false));
+                MethodUtils.tmpPush(new Bool(false));
                 return Defs.DESC_TYPE_BOOL;
             case DecafScannerTokenTypes.MINUS:
-                return minusExpr(t, st, codes);
+                return minusExpr(t, codes);
             case DecafScannerTokenTypes.EXCLAM:
-                return exclamExpr(t, st, codes);
+                return exclamExpr(t, codes);
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
-                Descriptor desc = st.getDesc(c.getText());
+                Descriptor desc = MethodUtils.getDesc(c.getText());
                 String subType = desc.getType();
                 if (subType == null || !Defs.isArrayType(subType)) {
                     Er.errNotDefined(c, c.getText());
                 }
-                st.tmpPush(new Num(((ArrayDesc)desc).getCap()));
+                MethodUtils.tmpPush(new Num(((ArrayDesc)desc).getCap()));
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
                     Addr stringAddr = Program.addStringLiteral(t.getText());
-                    st.tmpPush(stringAddr);
+                    MethodUtils.tmpPush(stringAddr);
                 }
                 return Defs.TYPE_STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
-                CompileStructure.charLiteral(st, t.getText().charAt(1), codes);
+                CompileStructure.charLiteral(t.getText().charAt(1), codes);
                 return Defs.DESC_TYPE_INT;
             case DecafScannerTokenTypes.COLON:
-                return BasicOpration.relOps(t, st, codes);
+                return BasicOpration.relOps(t, codes);
             default:
                 return null;
         }
     }
 
     // if null -> return; if TK_else -> return current AST
-    static AST block(AST t, MethodUtils st, List<String> codes) {
+    static AST block(AST t, List<String> codes) {
         // parse fields
-        t = Field.declare(t, st, codes);
+        t = Field.declare(t, codes);
         // parse statements
         for (; t != null; t = t.getNextSibling()) {
             if (t.getType() == DecafScannerTokenTypes.TK_else) {
                 return t;
             }
-            parseStmt(t, st, codes);
+            parseStmt(t, codes);
         }
         return null;
     }
 
-    static void parseStmt(AST t, MethodUtils st, List<String> codes) {
+    static void parseStmt(AST t, List<String> codes) {
         codes.add("");
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
-                Method.call(t, st, codes, false);
+                Method.call(t, codes, false);
                 return;
             case DecafScannerTokenTypes.ASSIGN:
             case DecafScannerTokenTypes.PLUSASSIGN:
             case DecafScannerTokenTypes.MINUSASSIGN:
             case DecafScannerTokenTypes.INCRE:
             case DecafScannerTokenTypes.DECRE:
-                BasicOpration.moreAssign(t, st, codes);
+                BasicOpration.moreAssign(t, codes);
                 return;
             case DecafScannerTokenTypes.TK_if:
-                ControlFlow.ifFlow(t, st, codes);
+                ControlFlow.ifFlow(t, codes);
                 return;
             case DecafScannerTokenTypes.TK_for:
-                ControlFlow.forFlow(t, st, codes);
+                ControlFlow.forFlow(t, codes);
                 return;
             case DecafScannerTokenTypes.TK_while:
-                ControlFlow.whileFlow(t, st, codes);
+                ControlFlow.whileFlow(t, codes);
                 return;
             case DecafScannerTokenTypes.TK_break:
-                if (!st.isInLoop()) {
+                if (!MethodUtils.isInLoop()) {
                     Er.errBreak(t);
                 }
-                CompileStructure.tkBreak(st, codes);
+                CompileStructure.tkBreak(codes);
                 return;
             case DecafScannerTokenTypes.TK_continue:
-                if (!st.isInLoop()) {
+                if (!MethodUtils.isInLoop()) {
                     Er.errContinue(t);
                 }
-                CompileStructure.tkContinue(st, codes);
+                CompileStructure.tkContinue(codes);
                 return;
             case DecafScannerTokenTypes.TK_return:
-                String expectedReturnType = st.getReturnType();
+                String expectedReturnType = MethodUtils.getReturnType();
                 if (expectedReturnType == null) {
                     Er.report(t, "null return");
                     return;
                 }
-                String actualReturnType = expr(t.getFirstChild(), st, ActionType.LOAD, codes);
+                String actualReturnType = expr(t.getFirstChild(), ActionType.LOAD, codes);
                 if (actualReturnType == null) {
                     actualReturnType = Defs.DESC_TYPE_VOID;
                 }
                 if (!Defs.equals(expectedReturnType, actualReturnType)) {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
-                CompileStructure.tkReturn(st, expectedReturnType, codes);
+                CompileStructure.tkReturn(expectedReturnType, codes);
                 return;
             default:
                 return;

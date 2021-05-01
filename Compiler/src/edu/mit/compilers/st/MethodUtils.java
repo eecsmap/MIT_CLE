@@ -19,142 +19,132 @@ import edu.mit.compilers.defs.Defs;
 // method symbol table -> method desc []
 // type symbol table -> type desc []
 public class MethodUtils {
-    private SymbolTable symbolTable;
-    private String returnType;
-    private Label returnLabel;
+    private static SymbolTable symbolTable = new SymbolTable();
+    private static String returnType;
+    private static Label returnLabel;
 
     // for / while
-    private Stack<Boolean> contextStack = new Stack<>();
-    private Stack<Label> continueLabelStack = new Stack<>();
-    private Stack<Label> breakLabelStack = new Stack<>();
+    private static Stack<Boolean> contextStack = new Stack<>();
+    private static Stack<Label> continueLabelStack = new Stack<>();
+    private static Stack<Label> breakLabelStack = new Stack<>();
     // only for non-global ST
-    private Integer varOffset = 0;
-    private Integer tmpCounter = 0;
+    private static Integer varOffset = 0;
+    private static Integer tmpCounter = 0;
 
-    private Stack<Oprand> tmpStack = new Stack<>();
-    private Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
-
-    public MethodUtils() {
-        this.symbolTable = new SymbolTable();
-    }
-
-    public MethodUtils(MethodUtils global, String returnType) {
-        this.returnType = returnType;
-        this.returnLabel = new Label();
-        this.symbolTable = new SymbolTable(global.symbolTable);
-    }
+    private static Stack<Oprand> tmpStack = new Stack<>();
+    private static Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
     // enter a method
-    public void enterScope(String returnType) {
-        this.returnType = returnType;
-        this.returnLabel = new Label();
-        this.symbolTable = new SymbolTable(this.symbolTable);
+    public static void enterScope(String methodReturnType) {
+        returnType = methodReturnType;
+        returnLabel = new Label();
+        symbolTable = new SymbolTable(symbolTable);
     }
 
-    public void enterScope(boolean isLoop) {
+    public static void enterScope(boolean isLoop) {
         if (isLoop) {
             continueLabelStack.push(new Label());
             breakLabelStack.push(new Label());
         }
-        this.contextStack.push(isLoop);
-        this.symbolTable = new SymbolTable(this.symbolTable);
+        contextStack.push(isLoop);
+        symbolTable = new SymbolTable(symbolTable);
     }
 
-    public void leaveScope() {
-        if (!this.contextStack.empty()) {
-            if (this.contextStack.pop()) {
+    public static void leaveScope() {
+        if (!contextStack.empty()) {
+            if (contextStack.pop()) {
                 continueLabelStack.pop();
                 breakLabelStack.pop();
             }
         } else {
-            this.varOffset = 0;
-            this.tmpCounter = 0;
-            this.tmpStack.clear();
-            assert this.breakLabelStack.empty();
-            assert this.callerSavedRegsUsage.isEmpty();
+            varOffset = 0;
+            tmpCounter = 0;
+            tmpStack.clear();
+            assert breakLabelStack.empty();
+            assert callerSavedRegsUsage.isEmpty();
         }
-        this.symbolTable = this.symbolTable.getParent();
+        symbolTable = symbolTable.getParent();
     }
 
-    private void argumentOffsetIncrement() {
-        if (this.varOffset > -48 && this.varOffset <= 0) {
+    private static void argumentOffsetIncrement() {
+        if (varOffset > -48 && varOffset <= 0) {
             // first six
-            this.varOffset -= 8;
-        } else if (this.varOffset <= -48) {
+            varOffset -= 8;
+        } else if (varOffset <= -48) {
             // the seventh (return address and saved rbp)
-            this.varOffset = 16;
+            varOffset = 16;
         } else {
             // and after
-            this.varOffset += 8;
+            varOffset += 8;
         }
     }
 
-    private void localOffsetIncrement() {
-        if (this.varOffset > 0) {
-            this.varOffset = -56;
+    private static void localOffsetIncrement() {
+        if (varOffset > 0) {
+            varOffset = -56;
         }
-        this.varOffset -= 8;
+        varOffset -= 8;
     }
 
-    public final Descriptor getDesc(String text) {
-        return this.symbolTable.getDesc(text);
+    public static final Descriptor getDesc(String text) {
+        return symbolTable.getDesc(text);
     }
 
-    public final Descriptor getMethod(String text) {
-        return this.symbolTable.getMethod(text);
+    public static final Descriptor getMethod(String text) {
+        return symbolTable.getMethod(text);
     }
 
-    public final Descriptor getArray(String text) {
-        return this.symbolTable.getArray(text);
+    public static final Descriptor getArray(String text) {
+        return symbolTable.getArray(text);
     }
 
-    public final Boolean push(Descriptor desc, boolean isArgument) {
-        Long sizeToAlloc = this.symbolTable.push(desc, isArgument);
+    public static final Boolean push(Descriptor desc, boolean isArgument) {
+        Long sizeToAlloc = symbolTable.push(desc, isArgument);
         if (sizeToAlloc == 0L)
             return false;
-        if (this.isGlobal() && !Defs.isMethodType(desc.getType())) {
+        if (isGlobal() && !Defs.isMethodType(desc.getType())) {
             desc.setAddr(new Addr(desc.getText(), false));
         } else {
             for (int i = 0; i < sizeToAlloc; i++) {
                 if (isArgument)
-                    this.argumentOffsetIncrement();
+                    argumentOffsetIncrement();
                 else
-                    this.localOffsetIncrement();
+                    localOffsetIncrement();
             }
-            desc.setAddr(new Addr(this.varOffset, desc.getText()));
+            desc.setAddr(new Addr(varOffset, desc.getText()));
         }
         return true;
     }
 
-    public final Boolean isInLoop() {
-        return !this.breakLabelStack.empty();
+    public static final Boolean isInLoop() {
+        return !breakLabelStack.empty();
     }
 
-    public final String getReturnType() {
-        return this.returnType;
+    public static final String getReturnType() {
+        return returnType;
     }
 
-    public final Label getContinueLabel() {
-        return this.continueLabelStack.peek();
+    public static final Label getContinueLabel() {
+        return continueLabelStack.peek();
     }
 
-    public final Label getBreakLabel() {
-        return this.breakLabelStack.peek();
+    public static final Label getBreakLabel() {
+        return breakLabelStack.peek();
     }
 
-    public final Boolean isGlobal() {
-        return this.symbolTable.getParent() == null;
+    public static final Boolean isGlobal() {
+        return symbolTable.getParent() == null;
     }
 
-    public final Label getReturnLabel() {
-        return this.returnLabel;
+    public static final Label getReturnLabel() {
+        return returnLabel;
     }
 
     // 1, 2, 4 bytes
-    public final Reg newTmpReg() {
+    public static final Reg newTmpReg() {
         for(Reg reg: Constants.callerSavedReg) {
-            if (!this.callerSavedRegsUsage.containsKey(reg.getRegName())) {
-                String name = String.format("tmp%d", this.tmpCounter++);
+            if (!callerSavedRegsUsage.containsKey(reg.getRegName())) {
+                String name = String.format("tmp%d", tmpCounter++);
                 return new Reg(reg, name);
             }
         }
@@ -162,57 +152,57 @@ public class MethodUtils {
     }
 
     // 1, 2, 4 bytes
-    public final Reg newTmpReg(Reg exclude) {
+    public static final Reg newTmpReg(Reg exclude) {
         for(Reg reg: Constants.callerSavedReg) {
-            if (!this.callerSavedRegsUsage.containsKey(reg.getRegName()) && exclude.getRegName() != reg.getRegName()) {
-                String name = String.format("tmp%d", this.tmpCounter++);
+            if (!callerSavedRegsUsage.containsKey(reg.getRegName()) && exclude.getRegName() != reg.getRegName()) {
+                String name = String.format("tmp%d", tmpCounter++);
                 return new Reg(reg, name);
             }
         }
         return null;
     }
 
-    public final Addr newTmpAddr() {
-        this.localOffsetIncrement();
-        String name = String.format("tmp%d", this.tmpCounter++);
-        return new Addr(this.varOffset, name);
+    public static final Addr newTmpAddr() {
+        localOffsetIncrement();
+        String name = String.format("tmp%d", tmpCounter++);
+        return new Addr(varOffset, name);
     }
 
-    public final Integer bytesToAllocate() {
-        Integer bytes = (this.varOffset > 0) ? 48 : -this.varOffset;
+    public static final Integer bytesToAllocate() {
+        Integer bytes = (varOffset > 0) ? 48 : -varOffset;
         return (bytes + 15) / 16 * 16;
     }
 
-    public final Integer getOffset() {
-        return this.varOffset;
+    public static final Integer getOffset() {
+        return varOffset;
     }
 
-    public final void tmpPush(Oprand tmp) {
+    public static final void tmpPush(Oprand tmp) {
         if (tmp instanceof Reg) {
-            this.callerSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
+            callerSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
         } else if (tmp instanceof Addr) {
-            ((Addr)tmp).getReservedRegs().forEach(e -> this.callerSavedRegsUsage.put(e.getRegName(), e));
+            ((Addr)tmp).getReservedRegs().forEach(e -> callerSavedRegsUsage.put(e.getRegName(), e));
         }
-        this.tmpStack.push(tmp);
+        tmpStack.push(tmp);
     }
 
-    public final Oprand tmpPop() {
-        Oprand returnOp = this.tmpStack.pop();
+    public static final Oprand tmpPop() {
+        Oprand returnOp = tmpStack.pop();
         if (returnOp instanceof Reg) {
-            this.callerSavedRegsUsage.remove(((Reg)returnOp).getRegName());
+            callerSavedRegsUsage.remove(((Reg)returnOp).getRegName());
         } else if (returnOp instanceof Addr) {
-            ((Addr)returnOp).getReservedRegs().forEach(e -> this.callerSavedRegsUsage.remove(e.getRegName()));
+            ((Addr)returnOp).getReservedRegs().forEach(e -> callerSavedRegsUsage.remove(e.getRegName()));
         }
         return returnOp;
     }
 
-    public final Oprand tmpPeek() {
-        return this.tmpStack.peek();
+    public static final Oprand tmpPeek() {
+        return tmpStack.peek();
     }
 
-    public final List<Reg> getUsedCallerSavedRegs() {
+    public static final List<Reg> getUsedCallerSavedRegs() {
         List<Reg> res = new ArrayList<>();
-        this.callerSavedRegsUsage.forEach((k, v) -> res.add(v));
+        callerSavedRegsUsage.forEach((k, v) -> res.add(v));
         return res;
     }
 }

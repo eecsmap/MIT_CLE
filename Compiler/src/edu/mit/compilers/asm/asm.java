@@ -170,16 +170,16 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> saveRegs(MethodUtils st, List<Addr> addrs) {
+    public static final List<String> saveRegs(List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
-        List<Reg> regsToSave = st.getUsedCallerSavedRegs();
+        List<Reg> regsToSave = MethodUtils.getUsedCallerSavedRegs();
         if (regsToSave.size() > 0) {
             codes.add(
                 asm.cmt("save - start")
             );
         }
         for (Reg reg: regsToSave) {
-            Addr addr = st.newTmpAddr();
+            Addr addr = MethodUtils.newTmpAddr();
             codes.add(
                 asm.bin("movq", reg, addr)
             );
@@ -193,9 +193,9 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> recoverRegs(MethodUtils st, List<Addr> addrs) {
+    public static final List<String> recoverRegs(List<Addr> addrs) {
         List<String> codes = new ArrayList<>();
-        List<Reg> regsToRecover = st.getUsedCallerSavedRegs();
+        List<Reg> regsToRecover = MethodUtils.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(
                 asm.cmt("recover - start")

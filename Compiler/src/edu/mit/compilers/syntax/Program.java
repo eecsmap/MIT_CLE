@@ -17,8 +17,7 @@ import edu.mit.compilers.tools.Er;
 
 public class Program {
     private Program() {}
-    static final MethodUtils importST = new MethodUtils();
-    static final MethodUtils globalST = new MethodUtils();
+    static final SymbolTable importST = new SymbolTable();
     static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
@@ -40,8 +39,8 @@ public class Program {
         // treat import Symbol Table as special one
         compile = (codes != null);
         t = importDecl(t, importST);
-        t = Field.declare(t, globalST, codes);
-        t = Method.declare(t, globalST, codes);
+        t = Field.declare(t, codes);
+        t = Method.declare(t, codes);
         if (!mainDeclared) {
             Er.errMainNotDefined(t);
         }
@@ -50,7 +49,7 @@ public class Program {
     }
 
     // return the next AST to parse
-    static AST importDecl(AST t, MethodUtils importST) {
+    static AST importDecl(AST t, SymbolTable importST) {
         for (; t != null && AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
             String methodName = t.getFirstChild().getText();
@@ -59,7 +58,7 @@ public class Program {
                 continue;
             }
             MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, methodName);
-            if (!importST.push(desc, false)) {
+            if (importST.push(desc, false) != -1L) {
                 Er.errDuplicatedDeclaration(t, methodName);
             }
         }
