@@ -49,26 +49,13 @@ public class VarType {
         return this.type == Type.WILDCARD || this.type == Type.VOID;
     }
 
-    public Boolean isStringLiteral() {
-        return this.type == Type.WILDCARD || this.type == Type.STRING_LITERAL;
-    }
-
-    public Boolean isWildcard() {
-        return this.type == Type.WILDCARD;
-    }
-
     public String toString() {
-        String trailing = "";
-        if (this.isArray) {
-            trailing = "[]";
-        } else if (this.isMethod) {
-            trailing = "()";
-        }
+        String trailing = (this.isArray) ? "[]" : (this.isMethod) ? "()" : "";
         return this.type.toString() + trailing;
     }
 
     public Boolean equals(VarType rhs) {
-        return (this.isWildcard() || rhs.isWildcard() || this.type == rhs.type) 
+        return (this.type == Type.WILDCARD || rhs.type == Type.WILDCARD || this.type == rhs.type) 
         && this.isArray == rhs.isArray && this.isMethod == rhs.isMethod;
     }
 }
