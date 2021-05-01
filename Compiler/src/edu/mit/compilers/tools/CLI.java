@@ -122,6 +122,7 @@ public class CLI {
    *   function.
    * @param optnames Ordered array of recognized optimization names.  */
   public static void parse(String args[], String optnames[]) {
+    String ext = ".out";
     String targetStr = "";
 
     opts = new boolean[optnames.length];

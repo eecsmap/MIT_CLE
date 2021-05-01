@@ -7,12 +7,13 @@ import edu.mit.compilers.st.*;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileField;
 import edu.mit.compilers.defs.VarType;
+import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.tools.Err;
 
 class Field {
     static final AST declare(AST t, List<String> codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
-            VarType type = null;
+            VarType type = (t.getType() == DecafParserTokenTypes.TK_int) ? VarType.INT : VarType.BOOL;
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 AST cc = c.getFirstChild();
                 if (cc != null) {
