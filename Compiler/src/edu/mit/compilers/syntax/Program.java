@@ -18,7 +18,7 @@ import edu.mit.compilers.tools.Er;
 public class Program {
     private Program() {}
     static final SymbolTable importST = new SymbolTable();
-    static final Map<String, ArrayList<String>> methodMap = new HashMap<>();
+    static final Map<String, List<String>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
     public static boolean shouldCompile() {

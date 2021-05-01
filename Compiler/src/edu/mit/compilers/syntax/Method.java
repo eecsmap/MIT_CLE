@@ -28,8 +28,8 @@ class Method {
             Manager.enterScope(returnType);
             c = c.getNextSibling();
             // parse parameters
-            ArrayList<String> params = new ArrayList<>();
-            ArrayList<Descriptor> paramsDesc = new ArrayList<>();
+            List<String> params = new ArrayList<>();
+            List<Descriptor> paramsDesc = new ArrayList<>();
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
                 Descriptor desc = new VarDesc(c.getFirstChild().getText(), c.getText());
                 paramsDesc.add(desc);
@@ -75,7 +75,7 @@ class Method {
             }
         } else {
             AST c = t.getFirstChild();
-            ArrayList<String> params = Program.methodMap.get(method.getText());
+            List<String> params = Program.methodMap.get(method.getText());
             if (params == null) {
                 Er.errNotDefined(c, method.getText());
                 return Defs.DESC_TYPE_WILDCARD;

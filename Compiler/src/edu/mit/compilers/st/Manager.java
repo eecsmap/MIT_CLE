@@ -19,6 +19,7 @@ import edu.mit.compilers.defs.Defs;
 // method symbol table -> method desc []
 // type symbol table -> type desc []
 public class Manager {
+    private Manager(){}
     private static SymbolTable symbolTable = new SymbolTable();
     private static String returnType;
     private static Label returnLabel;
