@@ -15,7 +15,6 @@ import edu.mit.compilers.tools.Err;
 
 public class Program {
     private Program() {}
-    static final SymbolTable importST = new SymbolTable();
     static boolean compile;
     public static boolean shouldCompile() {
         return !Err.hasError() && compile;
@@ -34,7 +33,7 @@ public class Program {
     public static void irParse(AST t, List<String> codes) {
         // treat import Symbol Table as special one
         compile = (codes != null);
-        t = importDecl(t, importST);
+        t = importDecl(t);
         t = Field.declare(t, codes);
         t = Method.declare(t, codes);
         if (Manager.getMethod("main") == null) {
@@ -45,7 +44,7 @@ public class Program {
     }
 
     // return the next AST to parse
-    static AST importDecl(AST t, SymbolTable importST) {
+    static AST importDecl(AST t) {
         for (; t != null && AstUtils.isImport(t); t = t.getNextSibling()) {
             // parse single import statement
             String methodName = t.getFirstChild().getText();
@@ -53,7 +52,7 @@ public class Program {
                 Err.errBadImport(t.getFirstChild(), methodName);
                 continue;
             }
-            if (importST.push(new MethodDesc(VarType.WILDCARD, methodName), false) != -1L) {
+            if (!Manager.push(new MethodDesc(VarType.WILDCARD, methodName), false)) {
                 Err.errDuplicatedDeclaration(t, methodName);
             }
         }

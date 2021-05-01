@@ -72,11 +72,8 @@ public class Structure {
     private static VarType idExpr(AST t, ActionType action, List<String> codes) {
         Descriptor desc = Manager.getDesc(t.getText());
         if (desc == null) {
-            desc = Program.importST.getDesc(t.getText());
-            if (desc == null) {
-                Err.errNotDefined(t, t.getText());
-                return VarType.WILDCARD;
-            }
+            Err.errNotDefined(t, t.getText());
+            return VarType.WILDCARD;
         }
         VarType type = desc.getType();
         // array

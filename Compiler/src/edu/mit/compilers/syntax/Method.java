@@ -20,7 +20,7 @@ class Method {
             AST c = t.getFirstChild();
             VarType returnType = Defs.stringToVarType.get(c.getText());
             MethodDesc methodDesc = new MethodDesc(returnType, t.getText());
-            if (Program.importST.getMethod(t.getText()) != null || !Manager.push(methodDesc, false)) {
+            if (!Manager.push(methodDesc, false)) {
                 Err.errDuplicatedDeclaration(t, t.getText());
             }
             Manager.enterScope(returnType);
@@ -61,11 +61,10 @@ class Method {
         List<Oprand> argsList = new ArrayList<>();
         VarType methodType;
         if (methodDesc == null) {
-            methodDesc = Program.importST.getMethod(methodName);
-            if (methodDesc == null) {
-                Err.errNotDefined(t, methodName);
-                return null;
-            }
+            Err.errNotDefined(t, methodName);
+            return null;
+        }
+        if (methodDesc.getType().isWildcard()) {
             methodType = VarType.WILDCARD;
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {
                 Structure.expr(c, ActionType.LOAD, codes);

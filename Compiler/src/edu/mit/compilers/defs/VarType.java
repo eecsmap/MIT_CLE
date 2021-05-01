@@ -49,6 +49,10 @@ public class VarType {
         return this.type == Type.WILDCARD || this.type == Type.VOID;
     }
 
+    public Boolean isWildcard() {
+        return this.type == Type.WILDCARD;
+    }
+
     public String toString() {
         String trailing = (this.isArray) ? "[]" : (this.isMethod) ? "()" : "";
         return this.type.toString() + trailing;

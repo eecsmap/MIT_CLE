@@ -23,7 +23,7 @@ class Field {
                         Err.errBadArrayCap(cc);
                         cap = 1000000000;
                     }
-                    if (Manager.isGlobal() && Program.importST.getMethod(c.getText()) != null) {
+                    if (Manager.isGlobal() && Manager.getMethod(c.getText()) != null) {
                         Err.errDuplicatedDeclaration(c, c.getText());
                         continue;
                     }
@@ -31,10 +31,6 @@ class Field {
                         Err.errDuplicatedDeclaration(c, c.getText());
                     }
                     CompileField.declareArray(c.getText(), cap, codes);
-                    continue;
-                }
-                if (Program.importST.getMethod(c.getText()) != null) {
-                    Err.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
                 // cc is null -> it's single Variable
