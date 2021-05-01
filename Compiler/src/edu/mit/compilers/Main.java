@@ -10,7 +10,7 @@ import antlr.RecognitionException;
 import antlr.Token;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
-import edu.mit.compilers.ast.myAST;
+import edu.mit.compilers.ast.AstWithPosition;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.syntax.Program;
@@ -93,7 +93,7 @@ class Main {
         DecafScanner scanner = new DecafScanner(new DataInputStream(inputStream));
         DecafParser parser = new DecafParser(scanner);
         ASTFactory factory = new ASTFactory();                         
-        factory.setASTNodeClass(myAST.class);
+        factory.setASTNodeClass(AstWithPosition.class);
         parser.setASTFactory(factory);
         parser.program();
         if(parser.getError()) {
