@@ -23,10 +23,6 @@ class Method {
             if (Program.importST.getMethod(t.getText()) != null || !Manager.push(methodDesc, false)) {
                 Err.errDuplicatedDeclaration(t, t.getText());
             }
-            boolean isMain = t.getText().equals("main");
-            if (isMain) {
-                Program.mainDeclared = true;
-            }
             Manager.enterScope(returnType);
             c = c.getNextSibling();
             // parse parameters
@@ -41,7 +37,7 @@ class Method {
                 }
                 params.add(Defs.stringToVarType.get(c.getFirstChild().getText()));
             }
-            if (isMain && (params.size() > 0 || !returnType.isVoid())) {
+            if (t.getText().equals("main") && (params.size() > 0 || !returnType.isVoid())) {
                 Err.errMalformedMain(t, returnType, params.size());
             }
             methodDesc.setParamsList(params);

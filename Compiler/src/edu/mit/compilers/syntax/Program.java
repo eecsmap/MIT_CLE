@@ -16,7 +16,6 @@ import edu.mit.compilers.tools.Err;
 public class Program {
     private Program() {}
     static final SymbolTable importST = new SymbolTable();
-    static boolean mainDeclared = false;
     static boolean compile;
     public static boolean shouldCompile() {
         return !Err.hasError() && compile;
@@ -38,7 +37,7 @@ public class Program {
         t = importDecl(t, importST);
         t = Field.declare(t, codes);
         t = Method.declare(t, codes);
-        if (!mainDeclared) {
+        if (Manager.getMethod("main") == null) {
             Err.errMainNotDefined(t);
         }
         CompileProgram.addROData(stringLiteralList, stringLiteralLabelList, codes);
