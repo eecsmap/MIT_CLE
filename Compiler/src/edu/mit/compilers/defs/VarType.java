@@ -33,7 +33,6 @@ public class VarType {
         assert !this.isMethod;
         VarType res = new VarType(this.type);
         res.isArray = true;
-        res.isMethod = false;
         return res;
     }
 
@@ -41,7 +40,6 @@ public class VarType {
         assert !this.isArray;
         VarType res = new VarType(this.type);
         res.isMethod = true;
-        res.isArray = false;
         return res;
     }
 
