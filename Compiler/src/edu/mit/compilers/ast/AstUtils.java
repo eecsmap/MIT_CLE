@@ -13,8 +13,6 @@ import edu.mit.compilers.grammar.*;
 public class AstUtils {
     // num to strignn
     public static final Map<Integer, String> t0;
-    // type (method)
-    public static final Map<Integer, String> t1;
     // binary ops (int -> int)
     public static final Set<Integer> s0 = new HashSet<>();
     // binary ops (int -> bool)
@@ -30,7 +28,6 @@ public class AstUtils {
 
     static {
         Map<Integer, String> m1 = new HashMap<>();
-        Map<Integer, String> m2 = new HashMap<>();
         m1.put(4, "TK_bool");
         m1.put(5, "TK_break");
         m1.put(6, "TK_import");
@@ -91,10 +88,6 @@ public class AstUtils {
         m1.put(61, "INCRE");
         m1.put(62, "DECRE");
         t0 = Collections.unmodifiableMap(m1);
-        m2.put(4, "bool");
-        m2.put(13, "int");
-        m2.put(16, "void");
-        t1 = Collections.unmodifiableMap(m2);
         s0.add(DecafParserTokenTypes.MINUS);
         s0.add(DecafParserTokenTypes.PLUS);
         s0.add(DecafParserTokenTypes.TIMES);
@@ -134,10 +127,6 @@ public class AstUtils {
     public static final boolean isType(AST t) {
         int type = t.getType();
         return type == DecafParserTokenTypes.TK_int || type == DecafParserTokenTypes.TK_bool;
-    }
-
-    public static final boolean isReturnType(AST t) {
-        return isType(t) || t.getType() == DecafParserTokenTypes.TK_void;
     }
 
     public static final boolean isID(AST t) {
