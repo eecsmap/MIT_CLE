@@ -54,8 +54,7 @@ public class Program {
                 Err.errBadImport(t.getFirstChild(), methodName);
                 continue;
             }
-            MethodDesc desc = new MethodDesc(VarType.WILDCARD, methodName);
-            if (importST.push(desc, false) != -1L) {
+            if (importST.push(new MethodDesc(VarType.WILDCARD, methodName), false) != -1L) {
                 Err.errDuplicatedDeclaration(t, methodName);
             }
         }
