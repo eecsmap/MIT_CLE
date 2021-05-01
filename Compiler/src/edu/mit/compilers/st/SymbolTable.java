@@ -22,13 +22,7 @@ public class SymbolTable {
 
     public final Descriptor getDesc(String text) {
         Descriptor desc = this.table.get(text);
-        if (desc != null) {
-            return desc;
-        }
-        if (this.parent != null) {
-            return this.parent.getDesc(text);
-        }
-        return null;
+        return (desc != null) ? desc : (this.parent != null) ? this.parent.getDesc(text) : null;
     }
 
     public final MethodDesc getMethod(String text) {
@@ -36,10 +30,7 @@ public class SymbolTable {
         if(desc != null && desc.getText().equals(text) && desc.getType().isMethod()) {
             return (MethodDesc)desc;
         }
-        if (this.parent != null) {
-            return this.parent.getMethod(text);
-        }
-        return null;
+        return (this.parent != null) ? this.parent.getMethod(text) : null;
     }
 
     public final ArrayDesc getArray(String text) {
@@ -47,17 +38,15 @@ public class SymbolTable {
         if(desc != null && desc.getText().equals(text) && desc.getType().isArray()) {
             return (ArrayDesc)desc;
         }
-        if (this.parent != null) {
-            return this.parent.getArray(text);
-        }
-        return null;
+        return (this.parent != null) ? this.parent.getArray(text) : null;
+
     }
 
     // return the number of new variable
     public final Long push(Descriptor desc, boolean isArgument) {
         Long size = 0L;
         if (!Err.hasError() && !desc.getType().isMethod()) {
-            if (desc instanceof ArrayDesc) {
+            if (desc.getType().isArray()) {
                 size = ((ArrayDesc)desc).getCap();
             } else {
                 size = 1L;
