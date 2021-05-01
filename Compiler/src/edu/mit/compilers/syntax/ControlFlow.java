@@ -6,8 +6,8 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileControlFlow;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Manager;
+import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.tools.Er;
 
 public class ControlFlow {
@@ -16,10 +16,10 @@ public class ControlFlow {
         AST c = t.getFirstChild();
         // condition
         List<String> codesCondition = new ArrayList<>();
-        String type = Structure.expr(c, ActionType.LOAD, codesCondition);
+        VarType type = Structure.expr(c, ActionType.LOAD, codesCondition);
         Boolean hasElse = false;
-        if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
-            Er.errType(c, Defs.DESC_TYPE_BOOL, type);
+        if (type != null && !VarType.BOOL.equals(type)) {
+            Er.errType(c, VarType.BOOL, type);
         }
         // if block
         List<String> codesIfExecution = new ArrayList<>();
@@ -44,9 +44,9 @@ public class ControlFlow {
         c = c.getNextSibling();
         // condition expr
         List<String> codesCondition = new ArrayList<>();
-        String conditionExprType = Structure.expr(c, ActionType.LOAD, codesCondition);
-        if (!Defs.equals(Defs.DESC_TYPE_BOOL, conditionExprType)) {
-            Er.errType(c, Defs.DESC_TYPE_BOOL, conditionExprType);
+        VarType conditionExprType = Structure.expr(c, ActionType.LOAD, codesCondition);
+        if (!VarType.BOOL.equals(conditionExprType)) {
+            Er.errType(c, VarType.BOOL, conditionExprType);
         }
         c = c.getNextSibling();
         // more assign
@@ -65,9 +65,9 @@ public class ControlFlow {
         // condition
         AST c = t.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
-        String type = Structure.expr(c, ActionType.LOAD, codesCondition);
-        if (type != null && !Defs.equals(Defs.DESC_TYPE_BOOL, type)) {
-            Er.errType(c, Defs.DESC_TYPE_BOOL, type);
+        VarType type = Structure.expr(c, ActionType.LOAD, codesCondition);
+        if (type != null && !VarType.BOOL.equals(type)) {
+            Er.errType(c, VarType.BOOL, type);
         }
         // execution block
         c = c.getNextSibling();

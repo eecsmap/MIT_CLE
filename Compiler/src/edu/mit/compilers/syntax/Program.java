@@ -11,14 +11,13 @@ import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 
 
 public class Program {
     private Program() {}
     static final SymbolTable importST = new SymbolTable();
-    static final Map<String, List<String>> methodMap = new HashMap<>();
+    static final Map<String, List<VarType>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
     public static boolean shouldCompile() {
@@ -57,7 +56,7 @@ public class Program {
                 Er.errBadImport(t.getFirstChild(), methodName);
                 continue;
             }
-            MethodDesc desc = new MethodDesc(Defs.DESC_METHOD_WILDCARD, methodName);
+            MethodDesc desc = new MethodDesc(VarType.WILDCARD, methodName);
             if (importST.push(desc, false) != -1L) {
                 Er.errDuplicatedDeclaration(t, methodName);
             }

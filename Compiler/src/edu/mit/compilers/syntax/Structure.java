@@ -10,10 +10,10 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileStructure;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
+import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
@@ -27,67 +27,67 @@ public class Structure {
         || AstUtils.isBinaryIntCompOp(t);
     }
 
-    private static String binaryExpr(AST t, List<String> codes) {
+    private static VarType binaryExpr(AST t, List<String> codes) {
         AST l = t.getFirstChild();
         AST r = l.getNextSibling();
         List<String> leftCodes = new ArrayList<>();
         List<String> rightCodes = new ArrayList<>();
-        String lType = expr(l, ActionType.STORE, leftCodes);
-        String rType = expr(r, ActionType.LOAD, rightCodes);
-        String returnType = null;
+        VarType lType = expr(l, ActionType.STORE, leftCodes);
+        VarType rType = expr(r, ActionType.LOAD, rightCodes);
+        VarType returnType = null;
         if (AstUtils.isBinaryOp(t)) {
-            if (!Defs.equals(lType, rType)) {
+            if (!lType.equals(rType)) {
                 Er.errType(l, lType, rType);
             }
             returnType = lType;
             CompileStructure.binaryOpExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryCompOp(t)) {
-            if ((!Defs.equals(lType, rType) || Defs.equals(Defs.DESC_TYPE_VOID, lType))) {
+            if (!lType.equals(rType) || lType.isVoid()) {
                 Er.errType(r, lType, rType);
             }
-            returnType = Defs.DESC_TYPE_BOOL;
+            returnType = VarType.BOOL;
             CompileStructure.binaryCompExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryBoolOp(t)) {
-            if (!Defs.equals(Defs.DESC_TYPE_BOOL, lType)) {
-                Er.errType(l, Defs.DESC_TYPE_BOOL, lType);
+            if (!lType.isBool()) {
+                Er.errType(l, VarType.BOOL, lType);
             }
-            if (rType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, rType)) {
-                Er.errType(r, Defs.DESC_TYPE_BOOL, rType);
+            if (rType != null && !VarType.BOOL.equals(rType)) {
+                Er.errType(r, VarType.BOOL, rType);
             }
-            returnType = Defs.DESC_TYPE_BOOL;
+            returnType = VarType.BOOL;
             CompileStructure.binaryBoolExpr(t.getType(), leftCodes, rightCodes, codes);
         } else if (AstUtils.isBinaryIntCompOp(t)) {
-            if (!Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-                Er.errType(l, Defs.DESC_TYPE_INT, lType);
+            if (!lType.isInt()) {
+                Er.errType(l, VarType.INT, lType);
             }
-            if (rType != null && !Defs.equals(Defs.DESC_TYPE_INT, rType)) {
-                Er.errType(r, Defs.DESC_TYPE_INT, rType);
+            if (rType != null && !rType.isInt()) {
+                Er.errType(r, VarType.INT, rType);
             }
-            returnType = Defs.DESC_TYPE_BOOL;
+            returnType = VarType.BOOL;
             CompileStructure.binaryCompExpr(t.getType(), leftCodes, rightCodes, codes); 
         }
         return returnType;
     }
 
-    private static String idExpr(AST t, ActionType action, List<String> codes) {
+    private static VarType idExpr(AST t, ActionType action, List<String> codes) {
         Descriptor desc = Manager.getDesc(t.getText());
         if (desc == null) {
             desc = Program.importST.getDesc(t.getText());
             if (desc == null) {
                 Er.errNotDefined(t, t.getText());
-                return Defs.DESC_TYPE_WILDCARD;
+                return VarType.WILDCARD;
             }
         }
-        String type = desc.getType();
+        VarType type = desc.getType();
         // array
-        if (Defs.isArrayType(type)) {
+        if (type.isArray()) {
             if (t.getNumberOfChildren() == 0) {
                 return type;
             }
             return Element.arrayElement(t, action, codes);
         }
         // method
-        if (Defs.isMethodType(type)) {
+        if (type.isMethod()) {
             return Method.call(t, codes, true);
         }
         // var
@@ -95,25 +95,25 @@ public class Structure {
         return type;
     }
 
-    private static String minusExpr(AST t, List<String> codes) {
+    private static VarType minusExpr(AST t, List<String> codes) {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
             return Element.intLiteral(t.getFirstChild(), true);
         }
-        String subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
-        if (subType != null && !Defs.equals(Defs.DESC_TYPE_INT, subType)) {
-            Er.errType(t, Defs.DESC_TYPE_INT, subType);
+        VarType subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
+        if (subType != null && !subType.isInt()) {
+            Er.errType(t, VarType.INT, subType);
         }
         CompileStructure.minusExpr(codes);
-        return Defs.DESC_TYPE_INT;
+        return VarType.INT;
     }
 
-    private static String exclamExpr(AST t, List<String> codes) {
-        String subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
-        if (subType != null && !Defs.equals(Defs.DESC_TYPE_BOOL, subType)) {
-            Er.errType(t, Defs.DESC_TYPE_BOOL, subType); 
+    private static VarType exclamExpr(AST t, List<String> codes) {
+        VarType subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
+        if (subType != null && !subType.isBool()) {
+            Er.errType(t, VarType.BOOL, subType); 
         }
         CompileStructure.exclamExpr(codes);
-        return Defs.DESC_TYPE_BOOL;
+        return VarType.BOOL;
     }
 
     // <expr>  => location
@@ -123,7 +123,7 @@ public class Structure {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    static String expr(AST t, ActionType action, List<String> codes) {
+    static VarType expr(AST t, ActionType action, List<String> codes) {
         if (t == null) {
             Manager.tmpPush(null);
             return null;
@@ -138,10 +138,10 @@ public class Structure {
                 return Element.intLiteral(t, false);
             case DecafScannerTokenTypes.TK_true:
                 Manager.tmpPush(new Bool(true));
-                return Defs.DESC_TYPE_BOOL;
+                return VarType.BOOL;
             case DecafScannerTokenTypes.TK_false:
                 Manager.tmpPush(new Bool(false));
-                return Defs.DESC_TYPE_BOOL;
+                return VarType.BOOL;
             case DecafScannerTokenTypes.MINUS:
                 return minusExpr(t, codes);
             case DecafScannerTokenTypes.EXCLAM:
@@ -149,21 +149,21 @@ public class Structure {
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
                 Descriptor desc = Manager.getDesc(c.getText());
-                String subType = desc.getType();
-                if (subType == null || !Defs.isArrayType(subType)) {
+                VarType subType = desc.getType();
+                if (subType == null || !subType.isArray()) {
                     Er.errNotDefined(c, c.getText());
                 }
                 Manager.tmpPush(new Num(((ArrayDesc)desc).getCap()));
-                return Defs.DESC_TYPE_INT;
+                return VarType.INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
                     Addr stringAddr = Program.addStringLiteral(t.getText());
                     Manager.tmpPush(stringAddr);
                 }
-                return Defs.TYPE_STRING_LITERAL;
+                return VarType.STRING_LITERAL;
             case DecafScannerTokenTypes.CHARLITERAL:
                 CompileStructure.charLiteral(t.getText().charAt(1), codes);
-                return Defs.DESC_TYPE_INT;
+                return VarType.INT;
             case DecafScannerTokenTypes.COLON:
                 return BasicOpration.relOps(t, codes);
             default:
@@ -220,16 +220,16 @@ public class Structure {
                 CompileStructure.tkContinue(codes);
                 return;
             case DecafScannerTokenTypes.TK_return:
-                String expectedReturnType = Manager.getReturnType();
+                VarType expectedReturnType = Manager.getReturnType();
                 if (expectedReturnType == null) {
                     Er.report(t, "null return");
                     return;
                 }
-                String actualReturnType = expr(t.getFirstChild(), ActionType.LOAD, codes);
+                VarType actualReturnType = expr(t.getFirstChild(), ActionType.LOAD, codes);
                 if (actualReturnType == null) {
-                    actualReturnType = Defs.DESC_TYPE_VOID;
+                    actualReturnType = VarType.VOID;
                 }
-                if (!Defs.equals(expectedReturnType, actualReturnType)) {
+                if (!expectedReturnType.equals(actualReturnType)) {
                     Er.errType(t, expectedReturnType, actualReturnType);
                 }
                 CompileStructure.tkReturn(expectedReturnType, codes);

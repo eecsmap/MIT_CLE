@@ -1,12 +1,10 @@
 package edu.mit.compilers.st;
 
-import edu.mit.compilers.defs.Defs;
-
 public class ArrayDesc extends Descriptor {
     private Long cap;
 
-    public ArrayDesc(String type, String text, Long cap) {
-        super(Defs.makeArrayType(type), text);
+    public ArrayDesc(VarType type, String text, Long cap) {
+        super(type.makeArray(), text);
         this.cap = cap;
     }
 

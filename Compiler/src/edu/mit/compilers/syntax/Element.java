@@ -6,35 +6,34 @@ import antlr.collections.AST;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileElement;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
+import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.tools.Er;
 
 public class Element {
-    static String arrayElement(AST t, ActionType action, List<String> codes) {
+    static VarType arrayElement(AST t, ActionType action, List<String> codes) {
         Descriptor desc = Manager.getArray(t.getText());
         if (desc == null) {
             Er.errNotDefined(t, t.getText());
             return null;
         }
-        String type = desc.getType();
+        VarType type = desc.getType();
         AST c = t.getFirstChild();
-        String indexType = Structure.expr(c, ActionType.LOAD, codes);
-        if (indexType == null) {
-            Er.errType(t, Defs.getArrayType(type), type);
-            return Defs.getArrayType(type);
+        if (!type.isArray()) {
+            Er.errNotArrayType(t, type);
+            return type;
         }
-        if (!Defs.equals(Defs.DESC_TYPE_INT, indexType)) {
-            Er.errArrayIndexNotInt(t, Defs.DESC_TYPE_INT, indexType);
-            return Defs.getArrayType(type);
+        VarType indexType = Structure.expr(c, ActionType.LOAD, codes);
+        if (!indexType.isInt()) {
+            Er.errArrayIndexNotInt(t, desc.getText(), indexType);
+            return type.plain();
         }
         CompileElement.arrayElement(action, desc, codes);
-        return Defs.getArrayType(type);
-
+        return type.plain();
     }
 
-    static String intLiteral(AST t, boolean isNegative) {
+    static VarType intLiteral(AST t, boolean isNegative) {
         String number;
         Long result = null;
         if (isNegative) {
@@ -52,6 +51,6 @@ public class Element {
             }
         }
         Manager.tmpPush(new Num(result));
-        return Defs.DESC_TYPE_INT;
+        return VarType.INT;
     }
 }

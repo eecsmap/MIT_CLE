@@ -11,10 +11,10 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.grammar.DecafScannerTokenTypes;
 import edu.mit.compilers.st.Manager;
+import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
@@ -160,9 +160,9 @@ public class CompileStructure {
         );
     }
 
-    public static final void tkReturn(String expectedReturnType, List<String> codes) {
+    public static final void tkReturn(VarType expectedReturnType, List<String> codes) {
         if (!Program.shouldCompile()) return;
-        if (Defs.DESC_TYPE_VOID.equals(expectedReturnType)) {
+        if (expectedReturnType.isVoid()) {
             Manager.tmpPop();
             codes.add(
                 asm.jmp("jmp", Manager.getReturnLabel())

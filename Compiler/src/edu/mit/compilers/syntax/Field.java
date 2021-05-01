@@ -6,22 +6,21 @@ import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileField;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 
 class Field {
     static final AST declare(AST t, List<String> codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
-            String type = null;
+            VarType type = null;
             Integer size = 0;
             switch (t.getType()) {
                 case DecafScannerTokenTypes.TK_bool:
-                    type = Defs.DESC_TYPE_BOOL;
+                    type = VarType.BOOL;
                     size = 8;
                     break;
                 case DecafScannerTokenTypes.TK_int:
-                    type = Defs.DESC_TYPE_INT;
+                    type = VarType.INT;
                     size = 8;
                     break;
             }

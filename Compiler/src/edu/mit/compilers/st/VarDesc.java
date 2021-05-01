@@ -5,7 +5,7 @@ package edu.mit.compilers.st;
 // ParamDesc -> "int" "name"
 // LocalDesc -> "int" "name"
 public class VarDesc extends Descriptor {
-    public VarDesc(String type, String text) {
+    public VarDesc(VarType type, String text) {
         super(type, text);
     }
 
@@ -15,7 +15,5 @@ public class VarDesc extends Descriptor {
     }
 
     @Override
-    public final String findMethod(String text) {
-        return null;
-    }
+    public final String findMethod(String text) { return null; }
 }

@@ -7,21 +7,21 @@ import antlr.collections.AST;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
+import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.tools.Er;
 
 public class BasicOpration {
     // return lType
-    private static String leftValue(AST t, List<String> codes) {
+    private static VarType leftValue(AST t, List<String> codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         Descriptor lDesc = Manager.getDesc(lID);
-        String lType = lDesc.getType();
+        VarType lType = lDesc.getType();
         if (lType == null) {
             Er.errNotDefined(c, c.getText());
-        } else if (Defs.isArrayType(lType)) {
+        } else if (lDesc.getType().isArray()) {
             lType = Element.arrayElement(c, ActionType.STORE, codes);
         } else if (c.getNumberOfChildren() > 0) {
             Er.errVarIsNotArray(c, lID);
@@ -33,11 +33,11 @@ public class BasicOpration {
 
     // =, +=, -=
     private static void binaryAssign(AST t, String op, List<String> codes) {
-        String lType = leftValue(t, codes);
+        VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
-        String rType = Structure.expr(c, ActionType.LOAD, codes);
-        if (lType != null && (!Defs.equals(lType, rType) || (!op.equals("=") && !Defs.equals(Defs.DESC_TYPE_INT, lType)))) {
+        VarType rType = Structure.expr(c, ActionType.LOAD, codes);
+        if (lType != null && (!lType.equals(rType) || (!op.equals("=") && !lType.isInt()))) {
             Er.errType(c, lType, rType);
         }
         CompileBasicOperation.binaryAssign(op, codes);
@@ -45,10 +45,10 @@ public class BasicOpration {
 
     // ++, --
     private static void unaryAssign(AST t, List<String> codes) {
-        String lType = leftValue(t, codes);
+        VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
-        if (lType != null && !Defs.equals(Defs.DESC_TYPE_INT, lType)) {
-            Er.errType(c, Defs.DESC_TYPE_INT, lType);
+        if (lType != null && !lType.isInt()) {
+            Er.errType(c, VarType.INT, lType);
         }
         CompileBasicOperation.unaryAssign(t.getType(), codes);
     }
@@ -68,21 +68,21 @@ public class BasicOpration {
         }
     }
 
-    static String relOps(AST t, List<String> codes) {
+    static VarType relOps(AST t, List<String> codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
         List<String> codesCondition = new ArrayList<>();
         List<String> codesIfExecution = new ArrayList<>();
         List<String> codesElseExecution = new ArrayList<>();
-        String cond = Structure.expr(cc, ActionType.LOAD, codesCondition);
-        if (!Defs.equals(Defs.DESC_TYPE_BOOL, cond)) {
-            Er.errType(t, Defs.DESC_TYPE_BOOL, cond);
+        VarType cond = Structure.expr(cc, ActionType.LOAD, codesCondition);
+        if (!VarType.BOOL.equals(cond)) {
+            Er.errType(t, VarType.BOOL, cond);
         }
         cc = cc.getNextSibling();
-        String ifType = Structure.expr(cc, ActionType.LOAD, codesIfExecution);
+        VarType ifType = Structure.expr(cc, ActionType.LOAD, codesIfExecution);
         c = c.getNextSibling();
-        String elseType = Structure.expr(c, ActionType.LOAD, codesElseExecution);
-        if (!Defs.equals(ifType, elseType)) {
+        VarType elseType = Structure.expr(c, ActionType.LOAD, codesElseExecution);
+        if (!ifType.equals(elseType)) {
             Er.errType(t, ifType, elseType);
         }
         CompileBasicOperation.relOps(codesCondition, codesIfExecution, codesElseExecution, codes);

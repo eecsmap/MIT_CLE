@@ -1,10 +1,8 @@
 package edu.mit.compilers.st;
 
-import edu.mit.compilers.defs.Defs;
-
 public class MethodDesc extends Descriptor{
-    public MethodDesc(String type, String text) {
-        super(Defs.makeMethodType(type), text);
+    public MethodDesc(VarType type, String text) {
+        super(type.makeMethod(), text);
     }
 
     @Override

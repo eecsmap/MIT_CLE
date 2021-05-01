@@ -10,31 +10,19 @@ import edu.mit.compilers.asm.Addr;
 // LocalDesc -> "int" "name"
 // ThisDesc -> "this" "classdesc name", ""
 public abstract class Descriptor {
-    private String type;
+    private VarType type;
     private String text;
     private Addr addr;
 
-    Descriptor(String type, String text) {
+    Descriptor(VarType type, String text) {
         this.type = type;
         this.text = text;
     }
+    public VarType getType() { return this.type; }
+    public String getText() { return this.text; }
+    public void setAddr(Addr addr) { this.addr = addr; }
+    public Addr getAddr() { return this.addr; }
 
     public abstract String findVar(String text);
     public abstract String findMethod(String text);
-
-    public void setAddr(Addr addr) {
-        this.addr = addr;
-    }
-
-    public String getType() {
-        return this.type;
-    }
-    
-    public String getText() {
-        return this.text;
-    }
-
-    public Addr getAddr() {
-        return this.addr;
-    }
 }

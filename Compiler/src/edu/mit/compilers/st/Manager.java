@@ -11,7 +11,6 @@ import edu.mit.compilers.asm.Constants;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
-import edu.mit.compilers.defs.Defs;
 
 // field symbol table -> field desc []
 // param symbol table -> param desc [], last local ST (if have) used in for loop 
@@ -21,7 +20,7 @@ import edu.mit.compilers.defs.Defs;
 public class Manager {
     private Manager(){}
     private static SymbolTable symbolTable = new SymbolTable();
-    private static String returnType;
+    private static VarType returnType;
     private static Label returnLabel;
 
     // for / while
@@ -36,7 +35,7 @@ public class Manager {
     private static Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
     // enter a method
-    public static void enterScope(String methodReturnType) {
+    public static void enterScope(VarType methodReturnType) {
         returnType = methodReturnType;
         returnLabel = new Label();
         symbolTable = new SymbolTable(symbolTable);
@@ -103,7 +102,7 @@ public class Manager {
         Long sizeToAlloc = symbolTable.push(desc, isArgument);
         if (sizeToAlloc == 0L)
             return false;
-        if (isGlobal() && !Defs.isMethodType(desc.getType())) {
+        if (isGlobal() && !desc.getType().isMethod()) {
             desc.setAddr(new Addr(desc.getText(), false));
         } else {
             for (int i = 0; i < sizeToAlloc; i++) {
@@ -121,7 +120,7 @@ public class Manager {
         return !breakLabelStack.empty();
     }
 
-    public static final String getReturnType() {
+    public static final VarType getReturnType() {
         return returnType;
     }
 

@@ -1,6 +1,7 @@
 package edu.mit.compilers.tools;
 
 import antlr.collections.AST;
+import edu.mit.compilers.st.VarType;
 
 // Error Reporter
 public class Er {
@@ -44,12 +45,16 @@ public class Er {
         report(t, "$%s is already defined\n", var);
     }
 
-    public static final void errArrayIndexNotInt(AST t, String arrayID, String type) {
+    public static final void errArrayIndexNotInt(AST t, String arrayID, VarType type) {
         report(t, "array $%s index is not <int>, given <%s>\n", arrayID, type);
     }
 
-    public static final void errType(AST t, String expectedType, String givenType) {
+    public static final void errType(AST t, VarType expectedType, VarType givenType) {
         report(t, "expect type <%s>, given <%s>\n", expectedType, givenType);
+    }
+
+    public static final void errNotArrayType(AST t, VarType givenType) {
+        report(t, "expect <%s[]>, given <%s>\n", givenType, givenType);
     }
 
     public static final void errBreak(AST t) {
@@ -80,7 +85,7 @@ public class Er {
         report(t, "int literal '%s' is too large\n", intLiteral);
     }
 
-    public static final void errMalformedMain(AST t, String returnType, int paramCount) {
+    public static final void errMalformedMain(AST t, VarType returnType, int paramCount) {
         report(t, "main returns %s and has %d params\n", returnType, paramCount);
     }
 }

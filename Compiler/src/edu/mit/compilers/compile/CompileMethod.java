@@ -7,17 +7,17 @@ import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
-import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
+import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileMethod {
-    public static final void declare(String name, String returnType, List<Descriptor> paramsDesc, List<String> codesMethod, List<String> codes) {
+    public static final void declare(String name, VarType returnType, List<Descriptor> paramsDesc, List<String> codesMethod, List<String> codes) {
         if (!Program.shouldCompile()) return;
         codes.addAll(asm.methodDeclStart(name, paramsDesc, Manager.bytesToAllocate()));
         codes.addAll(codesMethod);
-        codes.addAll(asm.methodDeclEnd(Manager.getReturnLabel(), Defs.DESC_TYPE_VOID.equals(returnType)));
+        codes.addAll(asm.methodDeclEnd(Manager.getReturnLabel(), returnType.isVoid()));
     }
 
     public static final void callParseArgs(List<Oprand> argsList, List<String> codes) {
