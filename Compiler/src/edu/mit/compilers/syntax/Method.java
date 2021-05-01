@@ -25,7 +25,7 @@ class Method {
             if (isMain) {
                 Program.mainDeclared = true;
             }
-            MethodUtils localST = new MethodUtils(globalST, returnType);
+            globalST.enterScope(returnType);
             c = c.getNextSibling();
             // parse parameters
             ArrayList<String> params = new ArrayList<>();
@@ -33,7 +33,7 @@ class Method {
             for (; c != null && c.getNumberOfChildren() == 1 && AstUtils.isType(c.getFirstChild()) && AstUtils.isID(c); c = c.getNextSibling()) {
                 Descriptor desc = new VarDesc(c.getFirstChild().getText(), c.getText());
                 paramsDesc.add(desc);
-                if (!localST.push(desc, true)) {
+                if (!globalST.push(desc, true)) {
                     Er.errDuplicatedDeclaration(c, c.getText());
                     continue;
                 }
@@ -45,8 +45,9 @@ class Method {
             Program.methodMap.put(t.getText(), params);
             // parse block
             List<String> codesMethod = new ArrayList<>();
-            Structure.block(c, localST, codesMethod);
-            CompileMethod.declare(localST, t.getText(), returnType, paramsDesc, codesMethod, codes);
+            Structure.block(c, globalST, codesMethod);
+            CompileMethod.declare(globalST, t.getText(), returnType, paramsDesc, codesMethod, codes);
+            globalST.leaveScope();
         }
         return t;
     }

@@ -31,7 +31,7 @@ public class ControlFlow {
             Structure.block(c.getFirstChild(), st, codesElseExecution);
         }
         CompileControlFlow.ifFlow(st, hasElse, codesCondition, codesIfExecution, codesElseExecution, codes);
-        st.leaveScope(false);
+        st.leaveScope();
     }
 
     // doesn't suppeort declaration in for loop
@@ -57,7 +57,7 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, st, codesExecution);
         CompileControlFlow.forFlow(st, codesInit, codesCondition, codesIncrement, codesExecution, codes);
-        st.leaveScope(true);
+        st.leaveScope();
     }
 
     static void whileFlow(AST t, MethodUtils st, List<String> codes) {
@@ -74,6 +74,6 @@ public class ControlFlow {
         List<String> codesExecution = new ArrayList<>();
         Structure.block(c, st, codesExecution);
         CompileControlFlow.whileFlow(st, codesCondition, codesExecution, codes);
-        st.leaveScope(true);
+        st.leaveScope();
     }
 }

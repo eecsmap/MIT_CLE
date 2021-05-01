@@ -24,6 +24,7 @@ public class MethodUtils {
     private Label returnLabel;
 
     // for / while
+    private Stack<Boolean> contextStack = new Stack<>();
     private Stack<Label> continueLabelStack = new Stack<>();
     private Stack<Label> breakLabelStack = new Stack<>();
     // only for non-global ST
@@ -43,18 +44,34 @@ public class MethodUtils {
         this.symbolTable = new SymbolTable(global.symbolTable);
     }
 
+    // enter a method
+    public void enterScope(String returnType) {
+        this.returnType = returnType;
+        this.returnLabel = new Label();
+        this.symbolTable = new SymbolTable(this.symbolTable);
+    }
+
     public void enterScope(boolean isLoop) {
         if (isLoop) {
             continueLabelStack.push(new Label());
             breakLabelStack.push(new Label());
         }
+        this.contextStack.push(isLoop);
         this.symbolTable = new SymbolTable(this.symbolTable);
     }
 
-    public void leaveScope(boolean isLoop) {
-        if (isLoop) {
-            continueLabelStack.pop();
-            breakLabelStack.pop();
+    public void leaveScope() {
+        if (!this.contextStack.empty()) {
+            if (this.contextStack.pop()) {
+                continueLabelStack.pop();
+                breakLabelStack.pop();
+            }
+        } else {
+            this.varOffset = 0;
+            this.tmpCounter = 0;
+            this.tmpStack.clear();
+            assert this.breakLabelStack.empty();
+            assert this.callerSavedRegsUsage.isEmpty();
         }
         this.symbolTable = this.symbolTable.getParent();
     }
