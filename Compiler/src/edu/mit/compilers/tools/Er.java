@@ -1,7 +1,7 @@
 package edu.mit.compilers.tools;
 
 import antlr.collections.AST;
-import edu.mit.compilers.st.VarType;
+import edu.mit.compilers.defs.VarType;
 
 // Error Reporter
 public class Er {

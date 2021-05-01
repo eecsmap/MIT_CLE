@@ -11,6 +11,7 @@ import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileMethod;
+import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.tools.Er;
 
 class Method {

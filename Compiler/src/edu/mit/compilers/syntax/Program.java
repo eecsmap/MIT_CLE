@@ -11,6 +11,7 @@ import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
+import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.tools.Er;
 
 

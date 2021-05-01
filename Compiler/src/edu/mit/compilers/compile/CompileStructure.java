@@ -11,10 +11,10 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.grammar.DecafScannerTokenTypes;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {

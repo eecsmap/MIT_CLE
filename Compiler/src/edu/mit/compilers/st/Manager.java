@@ -11,6 +11,7 @@ import edu.mit.compilers.asm.Constants;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
+import edu.mit.compilers.defs.VarType;
 
 // field symbol table -> field desc []
 // param symbol table -> param desc [], last local ST (if have) used in for loop 

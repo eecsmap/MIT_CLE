@@ -1,5 +1,7 @@
 package edu.mit.compilers.st;
 
+import edu.mit.compilers.defs.VarType;
+
 // TypeDesc -> "type" "int" | "bool" | "$class"
 // ArrayDesc -> "array" "int"
 // ParamDesc -> "int" "name"

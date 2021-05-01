@@ -1,4 +1,4 @@
-package edu.mit.compilers.st;
+package edu.mit.compilers.defs;
 
 public class VarType {
     private static enum Type {
@@ -29,7 +29,7 @@ public class VarType {
         return this.isMethod;
     }
 
-    VarType makeArray() {
+    public VarType makeArray() {
         assert !this.isMethod;
         VarType res = new VarType(this.type);
         res.isArray = true;
@@ -37,7 +37,7 @@ public class VarType {
         return res;
     }
 
-    VarType makeMethod() { 
+    public VarType makeMethod() { 
         assert !this.isArray;
         VarType res = new VarType(this.type);
         res.isMethod = true;

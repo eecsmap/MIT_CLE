@@ -10,10 +10,10 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileStructure;
+import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.tools.Er;
 import edu.mit.compilers.grammar.*;
 

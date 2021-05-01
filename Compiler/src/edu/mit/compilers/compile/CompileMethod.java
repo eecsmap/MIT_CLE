@@ -7,9 +7,9 @@ import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
-import edu.mit.compilers.st.VarType;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileMethod {
