@@ -7,23 +7,19 @@ import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.compile.CompileElement;
 import edu.mit.compilers.defs.VarType;
-import edu.mit.compilers.st.Descriptor;
+import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Err;
 
 public class Element {
     static VarType arrayElement(AST t, ActionType action, List<String> codes) {
-        Descriptor desc = Manager.getArray(t.getText());
+        ArrayDesc desc = Manager.getArray(t.getText());
         if (desc == null) {
             Err.errNotDefined(t, t.getText());
             return null;
         }
         VarType type = desc.getType();
         AST c = t.getFirstChild();
-        if (!type.isArray()) {
-            Err.errNotArrayType(t, type);
-            return type;
-        }
         VarType indexType = Structure.expr(c, ActionType.LOAD, codes);
         if (!indexType.isInt()) {
             Err.errArrayIndexNotInt(t, desc.getText(), indexType);
