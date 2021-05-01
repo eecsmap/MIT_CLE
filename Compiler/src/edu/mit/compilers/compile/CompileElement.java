@@ -11,12 +11,11 @@ import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.ArrayDesc;
-import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileElement {
-    public static void arrayElement(ActionType action, Descriptor desc, List<String> codes) {
+    public static void arrayElement(ActionType action, ArrayDesc desc, List<String> codes) {
         if (!Program.shouldCompile()) return;
         String varName = String.format("%s[]", desc.getText());
         Oprand index = Manager.tmpPop();
@@ -25,7 +24,7 @@ public class CompileElement {
         Integer offset = desc.getAddr().getOffset();
         Collections.addAll(codes,
             asm.bin("movq", index, indexReg),
-            asm.bin("cmpq", new Num(((ArrayDesc)desc).getCap()), indexReg),
+            asm.bin("cmpq", new Num(desc.getCap()), indexReg),
             asm.jmp("jge", Defs.EXIT_ARRAY_OUTBOUND_LABEL),
             asm.bin("cmpq", new Num(0L), indexReg),
             asm.jmp("jl", Defs.EXIT_ARRAY_OUTBOUND_LABEL)

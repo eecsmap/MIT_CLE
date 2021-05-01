@@ -145,12 +145,11 @@ public class Structure {
                 return exclamExpr(t, codes);
             case DecafScannerTokenTypes.TK_len:
                 AST c = t.getFirstChild();
-                Descriptor desc = Manager.getDesc(c.getText());
-                VarType subType = desc.getType();
-                if (subType == null || !subType.isArray()) {
+                ArrayDesc desc = Manager.getArray(c.getText());
+                if (desc == null) {
                     Err.errNotDefined(c, c.getText());
                 }
-                Manager.tmpPush(new Num(((ArrayDesc)desc).getCap()));
+                Manager.tmpPush(new Num(desc.getCap()));
                 return VarType.INT;
             case DecafScannerTokenTypes.STRINGLITERAL:
                 if (Program.shouldCompile()) {
