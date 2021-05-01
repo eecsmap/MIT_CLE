@@ -8,6 +8,6 @@ fi
 for l in $c; do
     k=$(echo $l | rev | cut -d = -f 1 | rev)
     v=$(echo $l | cut -d = -f 1)
-    echo "m1.put($k, \"$v\");"
+    echo "put($k, \"$v\");"
 done
 
