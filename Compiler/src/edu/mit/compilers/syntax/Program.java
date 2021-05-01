@@ -1,9 +1,7 @@
 package edu.mit.compilers.syntax;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
@@ -18,7 +16,6 @@ import edu.mit.compilers.tools.Err;
 public class Program {
     private Program() {}
     static final SymbolTable importST = new SymbolTable();
-    static final Map<String, List<VarType>> methodMap = new HashMap<>();
     static boolean mainDeclared = false;
     static boolean compile;
     public static boolean shouldCompile() {

@@ -31,10 +31,10 @@ public class SymbolTable {
         return null;
     }
 
-    public final Descriptor getMethod(String text) {
+    public final MethodDesc getMethod(String text) {
         Descriptor desc = this.table.get(text);
         if(desc != null && desc.getText().equals(text) && desc.getType().isMethod()) {
-            return desc;
+            return (MethodDesc)desc;
         }
         if (this.parent != null) {
             return this.parent.getMethod(text);
@@ -42,10 +42,10 @@ public class SymbolTable {
         return null;
     }
 
-    public final Descriptor getArray(String text) {
+    public final ArrayDesc getArray(String text) {
         Descriptor desc = this.table.get(text);
         if(desc != null && desc.getText().equals(text) && desc.getType().isArray()) {
-            return desc;
+            return (ArrayDesc)desc;
         }
         if (this.parent != null) {
             return this.parent.getArray(text);

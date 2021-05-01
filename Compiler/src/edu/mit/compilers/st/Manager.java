@@ -91,11 +91,11 @@ public class Manager {
         return symbolTable.getDesc(text);
     }
 
-    public static final Descriptor getMethod(String text) {
+    public static final MethodDesc getMethod(String text) {
         return symbolTable.getMethod(text);
     }
 
-    public static final Descriptor getArray(String text) {
+    public static final ArrayDesc getArray(String text) {
         return symbolTable.getArray(text);
     }
 

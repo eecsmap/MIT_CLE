@@ -25,7 +25,8 @@ class Method {
             // parse method type
             AST c = t.getFirstChild();
             VarType returnType = stringToVarType.get(c.getText());
-            if (Program.importST.getMethod(t.getText()) != null || !Manager.push(new MethodDesc(returnType, t.getText()), false)) {
+            MethodDesc methodDesc = new MethodDesc(returnType, t.getText());
+            if (Program.importST.getMethod(t.getText()) != null || !Manager.push(methodDesc, false)) {
                 Err.errDuplicatedDeclaration(t, t.getText());
             }
             boolean isMain = t.getText().equals("main");
@@ -49,7 +50,7 @@ class Method {
             if (isMain && (params.size() > 0 || !returnType.isVoid())) {
                 Err.errMalformedMain(t, returnType, params.size());
             }
-            Program.methodMap.put(t.getText(), params);
+            methodDesc.setParamsList(params);
             // parse block
             List<String> codesMethod = new ArrayList<>();
             Structure.block(c, codesMethod);
@@ -66,12 +67,12 @@ class Method {
         if (desc != null && !desc.getType().isMethod()) {
             Err.errDuplicatedDeclaration(t, methodName);
         }
-        Descriptor method = Manager.getMethod(methodName);
+        MethodDesc methodDesc = Manager.getMethod(methodName);
         List<Oprand> argsList = new ArrayList<>();
         VarType methodType;
-        if (method == null) {
-            method = Program.importST.getMethod(methodName);
-            if (method == null) {
+        if (methodDesc == null) {
+            methodDesc = Program.importST.getMethod(methodName);
+            if (methodDesc == null) {
                 Err.errNotDefined(t, methodName);
                 return null;
             }
@@ -82,14 +83,14 @@ class Method {
             }
         } else {
             AST c = t.getFirstChild();
-            List<VarType> params = Program.methodMap.get(method.getText());
+            List<VarType> params = methodDesc.getParamsList();
             if (params == null) {
-                Err.errNotDefined(c, method.getText());
+                Err.errNotDefined(c, methodDesc.getText());
                 return VarType.WILDCARD;
             }
             if (params.size() != t.getNumberOfChildren()) {
                 Err.errArrayArgsMismatch(t);
-                return method.getType().plain();
+                return methodDesc.getType().plain();
             }
             for (int i = 0; c != null; c = c.getNextSibling(), i++) {
                 VarType cType = Structure.expr(c, ActionType.LOAD, codes);
@@ -98,7 +99,7 @@ class Method {
                 }
                 CompileMethod.callParseArgs(argsList, codes);
             }
-            methodType = method.getType();
+            methodType = methodDesc.getType();
         }
         CompileMethod.call(argsList, needReturnValue, methodName, codes);
         return methodType.plain();
