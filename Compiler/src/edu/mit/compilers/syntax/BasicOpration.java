@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.basic.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.VarType;
+import edu.mit.compilers.defs.Action.ActionType;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Err;

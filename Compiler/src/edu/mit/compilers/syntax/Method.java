@@ -6,11 +6,11 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.basic.Oprand;
-import edu.mit.compilers.asm.basic.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileMethod;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.defs.VarType;
+import edu.mit.compilers.defs.Action.ActionType;
 import edu.mit.compilers.tools.Err;
 
 class Method {
