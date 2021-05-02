@@ -9,7 +9,7 @@ import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.asm.basic.RegAddr;
 import edu.mit.compilers.defs.Defs;
-import edu.mit.compilers.defs.Action.ActionType;
+import edu.mit.compilers.defs.Defs.ActionType;
 import edu.mit.compilers.st.ArrayDesc;
 import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;

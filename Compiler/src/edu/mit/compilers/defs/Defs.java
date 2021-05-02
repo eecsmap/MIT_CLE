@@ -18,4 +18,9 @@ public class Defs {
     }};
 
     public static final Label EXIT_ARRAY_OUTBOUND_LABEL = new Label(".ExitArrayOutBound");
+
+    public static enum ActionType {
+        LOAD,
+        STORE
+    }
 }
