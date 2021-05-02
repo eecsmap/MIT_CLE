@@ -3,10 +3,10 @@ package edu.mit.compilers.compile;
 import java.util.Collections;
 import java.util.List;
 
-import edu.mit.compilers.asm.Addr;
 import edu.mit.compilers.asm.Num;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
+import edu.mit.compilers.asm.RegAddr;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.Action.ActionType;
 import edu.mit.compilers.defs.Defs;
@@ -31,23 +31,23 @@ public class CompileElement {
         );
         if (desc.getAddr().isGlobal()) {
             Collections.addAll(codes,
-                asm.bin("leaq", new Addr(indexReg, varName), indexReg),
+                asm.bin("leaq", new RegAddr(indexReg, varName), indexReg),
                 asm.bin("leaq", desc.getAddr(), resReg)
             );
             if (action == ActionType.STORE) {
-                Manager.tmpPush(new Addr(indexReg, resReg));
+                Manager.tmpPush(new RegAddr(indexReg, resReg));
             } else {
                 codes.add(
-                    asm.bin("movq", new Addr(indexReg, resReg), resReg)
+                    asm.bin("movq", new RegAddr(indexReg, resReg), resReg)
                 );
                 Manager.tmpPush(resReg);
             }
         } else {
             if (action == ActionType.STORE) {
-                Manager.tmpPush(new Addr(offset, indexReg, varName));
+                Manager.tmpPush(new RegAddr(offset, indexReg, varName));
             } else {
                 codes.add(
-                    asm.bin("movq", new Addr(offset, indexReg, varName), resReg)
+                    asm.bin("movq", new RegAddr(offset, indexReg, varName), resReg)
                 );
                 Manager.tmpPush(resReg);
             }

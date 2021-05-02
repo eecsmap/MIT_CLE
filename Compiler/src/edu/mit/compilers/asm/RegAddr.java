@@ -5,20 +5,19 @@ import java.util.List;
 
 public class RegAddr extends Oprand {
     private String str;
-    private Reg index;
     private String varName = "";
     private List<Reg> reservedRegs = new ArrayList<>();
 
     // local array
     public RegAddr(Integer offset, Reg index, String varName) {
-        this.str = String.format("%d(%%rbp, %s, 8)", this.offset, this.index);
+        this.str = String.format("%d(%%rbp, %s, 8)", offset, index);
         this.varName = varName;
         this.reservedRegs.add(index);
     }
 
     // global array index
     public RegAddr(Reg index, String varName) {
-        this.str = String.format("0(, %s, 8)", this.index);
+        this.str = String.format("0(, %s, 8)", index);
         this.varName = varName;
         this.reservedRegs.add(index);
     }

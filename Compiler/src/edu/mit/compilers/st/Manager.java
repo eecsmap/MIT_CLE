@@ -11,6 +11,7 @@ import edu.mit.compilers.asm.Constants;
 import edu.mit.compilers.asm.Label;
 import edu.mit.compilers.asm.Oprand;
 import edu.mit.compilers.asm.Reg;
+import edu.mit.compilers.asm.RegAddr;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.defs.VarType;
 
@@ -183,7 +184,7 @@ public class Manager {
         if (tmp instanceof Reg) {
             callerSavedRegsUsage.put(((Reg)tmp).getRegName(), ((Reg)tmp));
         } else if (tmp instanceof RegAddr) {
-            ((Addr)tmp).getReservedRegs().forEach(e -> callerSavedRegsUsage.put(e.getRegName(), e));
+            ((RegAddr)tmp).getReservedRegs().forEach(e -> callerSavedRegsUsage.put(e.getRegName(), e));
         }
         tmpStack.push(tmp);
     }
@@ -193,7 +194,7 @@ public class Manager {
         if (returnOp instanceof Reg) {
             callerSavedRegsUsage.remove(((Reg)returnOp).getRegName());
         } else if (returnOp instanceof RegAddr) {
-            ((Addr)returnOp).getReservedRegs().forEach(e -> callerSavedRegsUsage.remove(e.getRegName()));
+            ((RegAddr)returnOp).getReservedRegs().forEach(e -> callerSavedRegsUsage.remove(e.getRegName()));
         }
         return returnOp;
     }
