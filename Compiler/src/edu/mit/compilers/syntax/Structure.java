@@ -20,8 +20,7 @@ import edu.mit.compilers.grammar.*;
 public class Structure {
     private Structure() {}
     private static boolean isBinaryAnyOp(AST t) {
-        return 
-        AstUtils.isBinaryOp(t)
+        return AstUtils.isBinaryOp(t)
         || AstUtils.isBinaryCompOp(t)
         || AstUtils.isBinaryBoolOp(t)
         || AstUtils.isBinaryIntCompOp(t);
