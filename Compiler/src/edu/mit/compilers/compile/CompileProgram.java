@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
@@ -12,7 +13,7 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileProgram {
-    public static void addROData(List<String> stringLiteralList, List<Label> stringLiteralLabelList, List<String> codes) {
+    public static void addROData(List<String> stringLiteralList, List<Label> stringLiteralLabelList, ABlock codes) {
         if (!Program.shouldCompile() || stringLiteralList.isEmpty()) return;
         List<String> rodata = new ArrayList<>();
         Collections.addAll(rodata,
@@ -28,7 +29,7 @@ public class CompileProgram {
         codes.addAll(0, rodata);
     }
 
-    public static void addArrayOutBoundReturn(List<String> codes) {
+    public static void addArrayOutBoundReturn(ABlock codes) {
         if (!Program.shouldCompile()) return;
         Collections.addAll(codes,
             asm.label(Defs.EXIT_ARRAY_OUTBOUND_LABEL),

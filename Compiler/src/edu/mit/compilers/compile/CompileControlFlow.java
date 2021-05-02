@@ -3,6 +3,7 @@ package edu.mit.compilers.compile;
 import java.util.Collections;
 import java.util.List;
 
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
@@ -12,7 +13,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileControlFlow {
-    public static final void ifFlow(Boolean hasElse, List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
+    public static final void ifFlow(Boolean hasElse, ABlock codesCondition, ABlock codesIfExecution, ABlock codesElseExecution, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
@@ -49,7 +50,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("if - end"));
     }
 
-    public static final void forFlow(List<String> codesInit, List<String> codesCondition, List<String> codesIncrement, List<String> codesExecution, List<String> codes) {
+    public static final void forFlow(ABlock codesInit, ABlock codesCondition, ABlock codesIncrement, ABlock codesExecution, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
@@ -86,7 +87,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("for loop - end"));
     }
 
-    public static final void whileFlow(List<String> codesCondition, List<String> codesExecution, List<String> codes) {
+    public static final void whileFlow(ABlock codesCondition, ABlock codesExecution, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Oprand conditionOp = Manager.tmpPop();

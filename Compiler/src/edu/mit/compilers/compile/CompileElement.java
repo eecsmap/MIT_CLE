@@ -3,6 +3,7 @@ package edu.mit.compilers.compile;
 import java.util.Collections;
 import java.util.List;
 
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Num;
 import edu.mit.compilers.asm.basic.Oprand;
@@ -15,7 +16,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileElement {
-    public static void arrayElement(ActionType action, ArrayDesc desc, List<String> codes) {
+    public static void arrayElement(ActionType action, ArrayDesc desc, ABlock codes) {
         if (!Program.shouldCompile()) return;
         String varName = String.format("%s[]", desc.getText());
         Oprand index = Manager.tmpPop();

@@ -2,6 +2,7 @@ package edu.mit.compilers.compile;
 
 import java.util.List;
 
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Num;
@@ -10,7 +11,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileField {
-    public static final void declareArray(String name, Integer cap, List<String> codes) {
+    public static final void declareArray(String name, Integer cap, ABlock codes) {
         if (!Program.shouldCompile()) return;
         if (Manager.isGlobal()) {
             codes.addAll(
@@ -26,7 +27,7 @@ public class CompileField {
         }
     }
 
-    public static final void declareVariable(String name, List<String> codes) {
+    public static final void declareVariable(String name, ABlock codes) {
         if (!Program.shouldCompile()) return;
         if (Manager.isGlobal()) {
             codes.addAll(

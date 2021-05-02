@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Bool;
 import edu.mit.compilers.asm.basic.Label;
@@ -18,7 +19,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
-    public static final void binaryOpExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryOpExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
@@ -46,7 +47,7 @@ public class CompileStructure {
         Manager.tmpPush(resReg);
     }
 
-    public static final void binaryBoolExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryBoolExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
@@ -87,7 +88,7 @@ public class CompileStructure {
     }
 
 
-    public static final void binaryCompExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, List<String> codes) {
+    public static final void binaryCompExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
@@ -105,7 +106,7 @@ public class CompileStructure {
         Manager.tmpPush(resReg);
     }
 
-    public static final void minusExpr(List<String> codes) {
+    public static final void minusExpr(ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = Manager.newTmpReg();
         Oprand op = Manager.tmpPop();
@@ -120,7 +121,7 @@ public class CompileStructure {
         }
     }
 
-    public static final void exclamExpr(List<String> codes) {
+    public static final void exclamExpr(ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = Manager.newTmpReg();
         Oprand op = Manager.tmpPop();
@@ -136,7 +137,7 @@ public class CompileStructure {
         }
     }
 
-    public static final void charLiteral(char theChar, List<String> codes) {
+    public static final void charLiteral(char theChar, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = Manager.newTmpReg();
         int ascii = theChar;
@@ -146,21 +147,21 @@ public class CompileStructure {
         Manager.tmpPush(tmpReg);
     }
 
-    public static final void tkBreak(List<String> codes) {
+    public static final void tkBreak(ABlock codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.jmp("jmp", Manager.getBreakLabel())
         );
     }
 
-    public static final void tkContinue(List<String> codes) {
+    public static final void tkContinue(ABlock codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.jmp("jmp", Manager.getContinueLabel())
         );
     }
 
-    public static final void tkReturn(VarType expectedReturnType, List<String> codes) {
+    public static final void tkReturn(VarType expectedReturnType, ABlock codes) {
         if (!Program.shouldCompile()) return;
         if (expectedReturnType.isVoid()) {
             Manager.tmpPop();

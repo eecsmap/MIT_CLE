@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.VarType;
@@ -14,7 +15,7 @@ import edu.mit.compilers.tools.Err;
 
 public class BasicOpration {
     // return lType
-    private static VarType leftValue(AST t, List<String> codes) {
+    private static VarType leftValue(AST t, ABlock codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         Descriptor lDesc = Manager.getDesc(lID);
@@ -32,7 +33,7 @@ public class BasicOpration {
     }
 
     // =, +=, -=
-    private static void binaryAssign(AST t, String op, List<String> codes) {
+    private static void binaryAssign(AST t, String op, ABlock codes) {
         VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
@@ -44,7 +45,7 @@ public class BasicOpration {
     }
 
     // ++, --
-    private static void unaryAssign(AST t, List<String> codes) {
+    private static void unaryAssign(AST t, ABlock codes) {
         VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
         if (lType != null && !lType.isInt()) {
@@ -54,12 +55,12 @@ public class BasicOpration {
     }
 
     // only =, forwarder
-    static void simpleAssign(AST t, List<String> codes) {
+    static void simpleAssign(AST t, ABlock codes) {
         binaryAssign(t, "=", codes);
     }
 
     // +=, -=, =, ++, --, forwarder
-    static void moreAssign(AST t, List<String> codes) {
+    static void moreAssign(AST t, ABlock codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
             binaryAssign(t, op, codes);
@@ -68,12 +69,12 @@ public class BasicOpration {
         }
     }
 
-    static VarType relOps(AST t, List<String> codes) {
+    static VarType relOps(AST t, ABlock codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
-        List<String> codesCondition = new ArrayList<>();
-        List<String> codesIfExecution = new ArrayList<>();
-        List<String> codesElseExecution = new ArrayList<>();
+        ABlock codesCondition = new ArrayList<>();
+        ABlock codesIfExecution = new ArrayList<>();
+        ABlock codesElseExecution = new ArrayList<>();
         VarType cond = Structure.expr(cc, ActionType.LOAD, codesCondition);
         if (!cond.isBool()) {
             Err.errType(t, VarType.BOOL, cond);

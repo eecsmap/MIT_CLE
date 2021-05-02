@@ -81,7 +81,7 @@ public class asm {
     }
 
     public static final List<String> globalDecl(String func, Integer size) {
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         String sizeStr = Integer.toString(size);
         String alignStr = Integer.toString(calculateAlign(size));
         Collections.addAll(codes,
@@ -106,7 +106,7 @@ public class asm {
 
     public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
         // call stack initialization
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         if (isFirstFunction) {
             codes.add(
                 nonDir(".text")
@@ -131,7 +131,7 @@ public class asm {
     }
 
     public static final List<String> methodDeclEnd(Label returnLabel, boolean returnIsVoid) {
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         if (!returnIsVoid)
         Collections.addAll(codes,
             asm.bin("movq", new Num(1L), Reg.rax),
@@ -149,7 +149,7 @@ public class asm {
     }
 
     public static final List<String> methodCall(String name, List<Oprand> argsList) {
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         Integer argsCount = argsList.size();
         for (int i = 0; i < argsCount; i++) {
             Oprand oprand = argsList.get(i);
@@ -177,7 +177,7 @@ public class asm {
     }
 
     public static final List<String> saveRegs(List<Addr> addrs) {
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         List<Reg> regsToSave = Manager.getUsedCallerSavedRegs();
         if (regsToSave.size() > 0) {
             codes.add(
@@ -200,7 +200,7 @@ public class asm {
     }
 
     public static final List<String> recoverRegs(List<Addr> addrs) {
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         List<Reg> regsToRecover = Manager.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(

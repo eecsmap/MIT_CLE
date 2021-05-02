@@ -5,6 +5,7 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.ast.AstUtils;
@@ -30,7 +31,7 @@ public class Program {
     }
 
     // parse an AST to IRTree with the help of Symbol Tree
-    public static void irParse(AST t, List<String> codes) {
+    public static void irParse(AST t, ABlock codes) {
         // treat import Symbol Table as special one
         compile = (codes != null);
         t = importDecl(t);

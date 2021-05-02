@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Bool;
 import edu.mit.compilers.asm.basic.Num;
@@ -26,7 +27,7 @@ public class Structure {
         || AstUtils.isBinaryIntCompOp(t);
     }
 
-    private static VarType binaryExpr(AST t, List<String> codes) {
+    private static VarType binaryExpr(AST t, ABlock codes) {
         AST l = t.getFirstChild();
         AST r = l.getNextSibling();
         List<String> leftCodes = new ArrayList<>();
@@ -68,7 +69,7 @@ public class Structure {
         return returnType;
     }
 
-    private static VarType idExpr(AST t, ActionType action, List<String> codes) {
+    private static VarType idExpr(AST t, ActionType action, ABlock codes) {
         Descriptor desc = Manager.getDesc(t.getText());
         if (desc == null) {
             Err.errNotDefined(t, t.getText());
@@ -91,7 +92,7 @@ public class Structure {
         return type;
     }
 
-    private static VarType minusExpr(AST t, List<String> codes) {
+    private static VarType minusExpr(AST t, ABlock codes) {
         if (t.getNumberOfChildren() == 1 && t.getFirstChild().getType() == DecafScannerTokenTypes.INTLITERAL) {
             return Element.intLiteral(t.getFirstChild(), true);
         }
@@ -103,7 +104,7 @@ public class Structure {
         return VarType.INT;
     }
 
-    private static VarType exclamExpr(AST t, List<String> codes) {
+    private static VarType exclamExpr(AST t, ABlock codes) {
         VarType subType = expr(t.getFirstChild(), ActionType.LOAD, codes);
         if (subType != null && !subType.isBool()) {
             Err.errType(t, VarType.BOOL, subType); 
@@ -119,7 +120,7 @@ public class Structure {
     // | expr bin_op expr
     // | - expr
     // | ! expr
-    static VarType expr(AST t, ActionType action, List<String> codes) {
+    static VarType expr(AST t, ActionType action, ABlock codes) {
         if (t == null) {
             Manager.tmpPush(null);
             return null;
@@ -167,7 +168,7 @@ public class Structure {
     }
 
     // if null -> return; if TK_else -> return current AST
-    static AST block(AST t, List<String> codes) {
+    static AST block(AST t, ABlock codes) {
         // parse fields
         t = Field.declare(t, codes);
         // parse statements
@@ -180,7 +181,7 @@ public class Structure {
         return null;
     }
 
-    static void parseStmt(AST t, List<String> codes) {
+    static void parseStmt(AST t, ABlock codes) {
         codes.add("");
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:

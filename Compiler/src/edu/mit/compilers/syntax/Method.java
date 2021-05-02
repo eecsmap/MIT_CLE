@@ -5,6 +5,7 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileMethod;
@@ -14,7 +15,7 @@ import edu.mit.compilers.defs.Defs.ActionType;
 import edu.mit.compilers.tools.Err;
 
 class Method {
-    static AST declare(AST t, List<String> codes) {
+    static AST declare(AST t, ABlock codes) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
@@ -42,7 +43,7 @@ class Method {
             }
             methodDesc.setParamsList(params);
             // parse block
-            List<String> codesMethod = new ArrayList<>();
+            ABlock codesMethod = new ArrayList<>();
             Structure.block(c, codesMethod);
             CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codes);
             Manager.leaveScope();
@@ -51,7 +52,7 @@ class Method {
     }
 
     // return method type
-    static VarType call(AST t, List<String> codes, boolean needReturnValue) {
+    static VarType call(AST t, ABlock codes, boolean needReturnValue) {
         String methodName = t.getText();
         Descriptor desc = Manager.getDesc(methodName);
         if (desc != null && !desc.getType().isMethod()) {

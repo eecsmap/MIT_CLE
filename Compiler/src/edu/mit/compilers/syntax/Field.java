@@ -4,6 +4,7 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileField;
 import edu.mit.compilers.defs.VarType;
@@ -11,7 +12,7 @@ import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.tools.Err;
 
 class Field {
-    static final AST declare(AST t, List<String> codes) {
+    static final AST declare(AST t, ABlock codes) {
         for (; t != null && AstUtils.isType(t); t = t.getNextSibling()) {
             VarType type = (t.getType() == DecafParserTokenTypes.TK_int) ? VarType.INT : VarType.BOOL;
             for (AST c = t.getFirstChild(); c != null; c = c.getNextSibling()) {

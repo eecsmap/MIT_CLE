@@ -3,6 +3,7 @@ package edu.mit.compilers.compile;
 import java.util.Collections;
 import java.util.List;
 
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
@@ -13,7 +14,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileBasicOperation {
-    public static void binaryAssign(String op, List<String> codes) {
+    public static void binaryAssign(String op, ABlock codes) {
         if (!Program.shouldCompile()) return;
         if (op.equals("=")) {
             Reg tmpReg = Manager.newTmpReg();
@@ -48,7 +49,7 @@ public class CompileBasicOperation {
         }
     }
 
-    public static void unaryAssign(Integer operator, List<String> codes) {
+    public static void unaryAssign(Integer operator, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Oprand lAddr = Manager.tmpPop();
         String op = operator == DecafParserTokenTypes.INCRE ? "addq" : "subq";
@@ -57,7 +58,7 @@ public class CompileBasicOperation {
         );
     }
 
-    public static void relOps(List<String> codesCondition, List<String> codesIfExecution, List<String> codesElseExecution, List<String> codes) {
+    public static void relOps(ABlock codesCondition, ABlock codesIfExecution, ABlock codesElseExecution, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
