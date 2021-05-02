@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.mit.compilers.asm.AsmConstants;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Bool;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
 import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.asm.basic.Reg;
+import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
 import edu.mit.compilers.grammar.DecafScannerTokenTypes;
@@ -37,7 +37,7 @@ public class CompileStructure {
         } else {
             Collections.addAll(glueCodes,
                 asm.bin("movq", lOp, resReg),
-                asm.bin(AsmConstants.binaryOpToken2Inst.get(operator), rOp, resReg)
+                asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, resReg)
             );
         }
         codes.addAll(leftCodes);
@@ -96,7 +96,7 @@ public class CompileStructure {
         Collections.addAll(glueCodes,
             asm.bin("movq", lOp, resReg),
             asm.bin("cmpq", rOp, resReg),
-            asm.uni(AsmConstants.setOnCondition.get(operator), resReg.bite()),
+            asm.uni(Defs.setOnCondition.get(operator), resReg.bite()),
             asm.bin("movzbq", resReg.bite(), resReg)
         );
         codes.addAll(leftCodes);
