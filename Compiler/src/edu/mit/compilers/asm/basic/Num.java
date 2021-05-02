@@ -1,4 +1,4 @@
-package edu.mit.compilers.asm;
+package edu.mit.compilers.asm.basic;
 
 // Number
 public class Num extends Oprand {

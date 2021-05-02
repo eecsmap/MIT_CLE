@@ -3,10 +3,10 @@ package edu.mit.compilers.compile;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mit.compilers.asm.Addr;
-import edu.mit.compilers.asm.Oprand;
-import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Oprand;
+import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;

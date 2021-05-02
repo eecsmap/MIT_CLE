@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.Action.ActionType;
+import edu.mit.compilers.asm.basic.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.VarType;

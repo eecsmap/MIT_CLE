@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.Addr;
-import edu.mit.compilers.asm.Bool;
-import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.Action.ActionType;
+import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Bool;
+import edu.mit.compilers.asm.basic.Num;
+import edu.mit.compilers.asm.basic.Action.ActionType;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileStructure;
 import edu.mit.compilers.defs.VarType;

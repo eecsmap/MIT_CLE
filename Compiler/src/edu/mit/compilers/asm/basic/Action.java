@@ -1,4 +1,4 @@
-package edu.mit.compilers.asm;
+package edu.mit.compilers.asm.basic;
 
 public class Action {
     public static enum ActionType {

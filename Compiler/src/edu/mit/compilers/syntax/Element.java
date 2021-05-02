@@ -3,8 +3,8 @@ package edu.mit.compilers.syntax;
 import java.util.List;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.Action.ActionType;
+import edu.mit.compilers.asm.basic.Num;
+import edu.mit.compilers.asm.basic.Action.ActionType;
 import edu.mit.compilers.compile.CompileElement;
 import edu.mit.compilers.defs.VarType;
 import edu.mit.compilers.st.ArrayDesc;

@@ -1,6 +1,6 @@
 package edu.mit.compilers.st;
 
-import edu.mit.compilers.asm.Addr;
+import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.defs.VarType;
 
 public abstract class Descriptor {

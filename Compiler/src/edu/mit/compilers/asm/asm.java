@@ -1,4 +1,9 @@
 package edu.mit.compilers.asm;
+import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Label;
+import edu.mit.compilers.asm.basic.Num;
+import edu.mit.compilers.asm.basic.Oprand;
+import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.st.Descriptor;
 import edu.mit.compilers.st.Manager;
 
@@ -116,9 +121,9 @@ public class asm {
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
         );
         // move arguments to memory
-        for (int i = 0; i < Math.min(argsDesc.size(), Constants.argRegMap.size()) ; i++) {
+        for (int i = 0; i < Math.min(argsDesc.size(), AsmConstants.argRegMap.size()) ; i++) {
             codes.add(
-                bin("movq", Constants.argRegMap.get(i), argsDesc.get(i).getAddr())
+                bin("movq", AsmConstants.argRegMap.get(i), argsDesc.get(i).getAddr())
             );
         }
         return codes;
@@ -155,7 +160,7 @@ public class asm {
                     op = "movq";
                 }
                 codes.add(
-                    bin(op, oprand, Constants.argRegMap.get(i))
+                    bin(op, oprand, AsmConstants.argRegMap.get(i))
                 );
             } else {
                 codes.add(6,

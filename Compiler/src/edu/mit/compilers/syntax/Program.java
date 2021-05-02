@@ -5,8 +5,8 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
-import edu.mit.compilers.asm.Addr;
-import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
 import edu.mit.compilers.defs.VarType;

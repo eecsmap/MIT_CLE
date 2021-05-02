@@ -1,4 +1,4 @@
-package edu.mit.compilers.asm;
+package edu.mit.compilers.asm.basic;
 
 // Register
 public class Reg extends Oprand {

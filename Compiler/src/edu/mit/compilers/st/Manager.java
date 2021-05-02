@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 
-import edu.mit.compilers.asm.Addr;
-import edu.mit.compilers.asm.Constants;
-import edu.mit.compilers.asm.Label;
-import edu.mit.compilers.asm.Oprand;
-import edu.mit.compilers.asm.Reg;
-import edu.mit.compilers.asm.RegAddr;
+import edu.mit.compilers.asm.AsmConstants;
+import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Label;
+import edu.mit.compilers.asm.basic.Oprand;
+import edu.mit.compilers.asm.basic.Reg;
+import edu.mit.compilers.asm.basic.RegAddr;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.defs.VarType;
 
@@ -145,7 +145,7 @@ public class Manager {
 
     // 1, 2, 4 bytes
     public static final Reg newTmpReg() {
-        for(Reg reg: Constants.callerSavedReg) {
+        for(Reg reg: AsmConstants.callerSavedReg) {
             if (!callerSavedRegsUsage.containsKey(reg.getRegName())) {
                 String name = String.format("tmp%d", tmpCounter++);
                 return new Reg(reg, name);
@@ -156,7 +156,7 @@ public class Manager {
 
     // 1, 2, 4 bytes
     public static final Reg newTmpReg(Reg exclude) {
-        for(Reg reg: Constants.callerSavedReg) {
+        for(Reg reg: AsmConstants.callerSavedReg) {
             if (!callerSavedRegsUsage.containsKey(reg.getRegName()) && exclude.getRegName() != reg.getRegName()) {
                 String name = String.format("tmp%d", tmpCounter++);
                 return new Reg(reg, name);

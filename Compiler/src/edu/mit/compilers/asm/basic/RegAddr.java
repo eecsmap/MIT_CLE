@@ -1,4 +1,4 @@
-package edu.mit.compilers.asm;
+package edu.mit.compilers.asm.basic;
 
 import java.util.ArrayList;
 import java.util.List;

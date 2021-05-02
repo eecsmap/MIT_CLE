@@ -2,7 +2,7 @@ package edu.mit.compilers.defs;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.mit.compilers.asm.Label;
+import edu.mit.compilers.asm.basic.Label;
 
 public class Defs {
     private Defs() {}

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import edu.mit.compilers.asm.Label;
-import edu.mit.compilers.asm.Num;
-import edu.mit.compilers.asm.Reg;
 import edu.mit.compilers.asm.asm;
+import edu.mit.compilers.asm.basic.Label;
+import edu.mit.compilers.asm.basic.Num;
+import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.syntax.Program;
 

@@ -1,4 +1,4 @@
-package edu.mit.compilers.asm;
+package edu.mit.compilers.asm.basic;
 
 public abstract class Oprand {
     public abstract String toString();
