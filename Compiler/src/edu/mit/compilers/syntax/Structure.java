@@ -51,7 +51,7 @@ public class Structure {
             if (!lType.isBool()) {
                 Err.errType(l, VarType.BOOL, lType);
             }
-            if (rType != null && !rType.isBool()) {
+            if (!rType.isBool()) {
                 Err.errType(r, VarType.BOOL, rType);
             }
             returnType = VarType.BOOL;
@@ -60,7 +60,7 @@ public class Structure {
             if (!lType.isInt()) {
                 Err.errType(l, VarType.INT, lType);
             }
-            if (rType != null && !rType.isInt()) {
+            if (!rType.isInt()) {
                 Err.errType(r, VarType.INT, rType);
             }
             returnType = VarType.BOOL;
@@ -217,10 +217,6 @@ public class Structure {
                 return;
             case DecafScannerTokenTypes.TK_return:
                 VarType expectedReturnType = Manager.getReturnType();
-                if (expectedReturnType == null) {
-                    Err.report(t, "null return");
-                    return;
-                }
                 VarType actualReturnType = expr(t.getFirstChild(), ActionType.LOAD, codes);
                 if (actualReturnType == null) {
                     actualReturnType = VarType.VOID;
