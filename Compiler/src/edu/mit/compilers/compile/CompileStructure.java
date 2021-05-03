@@ -32,15 +32,25 @@ public class CompileStructure {
                 asm.bin("movq", resultReg, resReg)
             );     
         } else {
-            glueCodes.add(
-                asm.bin("movq", lOp, resReg),
-                asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, resReg)
-            );
+            if (lOp instanceof Reg) {
+                glueCodes.add(
+                    asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, lOp)
+                );
+            } else {
+                glueCodes.add(
+                    asm.bin("movq", lOp, resReg),
+                    asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, resReg)
+                );
+            }
         }
         codes.addAll(leftCodes);
         codes.addAll(rightCodes);
         codes.addAll(glueCodes);
-        Manager.tmpPush(resReg);
+        if (lOp instanceof Reg) {
+            Manager.tmpPush(lOp);
+        } else {
+            Manager.tmpPush(resReg);
+        }
     }
 
     public static final void binaryBoolExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
