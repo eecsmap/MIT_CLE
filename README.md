@@ -43,7 +43,7 @@ bash test_all.sh scanner # run tests for scanner only
 ```
 
 ## Note
-Didn't find test cases on 6.035 git repo, downloaded from https://github.com/JasonQSY/6.035-compiler and modified some by myself
+Didn't find test cases on 6.035 git repo, downloaded from https://github.com/mayasankar/6035-compiler and modified some by myself
 
 ## Learn
 `Compiler` => lab source code\
