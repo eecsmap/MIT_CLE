@@ -1,24 +1,9 @@
 # Lecture 9: Introduction to Dataflow Analysis
 ## Reaching Definitions
-### I. overview
-- A definition reaches a use if
-    - value written by definition
-    - may be read by use
-- Is a use of a variable a constant?
-    - Check all reaching definitions
-    - If all assign variable to same constant
-    - Then use is in fact a constant
-- Can replace variable with constant
-### II. Computing Reaching Definitions
-- Compute with sets of definitions
-    - represent sets using bit vectors
-    - each definition has a position in bit vector
-- At each basic block, compute
-    - definitions that reach start of block
-    - definitions that reach end of block
-- Do computation by simulating execution of
-program until reach fixed point
-### III. Formalizing Analysis
+### I. Computing Reaching Definitions
+- represent sets using bit vectors, each definition has a position in bit vector
+- At each basic block, compute start vector and end vector
+### II. Formalizing Analysis
 - Each basic block has
     - IN - set of definitions that reach beginning of block
     - OUT - set of definitions that reach end of block
@@ -27,22 +12,15 @@ program until reach fixed point
 - GEN[s = s + a*b; i = i + 1;] = 0000011
 - KILL[s = s + a*b; i = i + 1;] = 1010000
 - Compiler scans each basic block to derive GEN and KILL sets
-### IV. Dataflow Equations
+### III. Dataflow Equations
+#### A. initial conditions
+- IN[entry] = 0000000
+#### B. deriving executions
 - IN[b] = OUT[b1] U ... U OUT[bn]
     - where b1, ..., bn are predecessors of b in CFG
 - OUT[b] = (IN[b] - KILL[b]) U GEN[b]
-- IN[entry] = 0000000
-- Result: system of equations
-### V. Solving Equations
-- Use fixed point algorithm
-- Initialize with solution of OUT[b] = 0000000
-- Repeatedly apply equations
-    - IN[b] = OUT[b1] U ... U OUT[bn]
-    - OUT[b] = (IN[b] - KILL[b]) U GEN[b]
-- Until reach fixed point
-- Until equation application has no further effect
-- Use a worklist to track which equation applications may have a further effect
-### VI. Algorithm
+- Until reached fixed point
+### IV. Algorithm
 ```
 for all nodes n in N
     OUT[n] = emptyset; // OUT[n] = GEN[n];
@@ -64,7 +42,7 @@ while (Changed != emptyset)
         for all nodes s in successors(n)
             Changed = Changed U { s };
 ```
-### VII. Questions
+### V. Questions
 - Does the algorithm halt?
     - yes, because transfer function is monotonic
     - if increase IN, increase OUT
@@ -73,42 +51,15 @@ while (Changed != emptyset)
 - If bit is 1, is does the corresponding definition always reach the basic block?
 ## Available Expressions
 ### I. overview
-- An expression x+y is available at a point p if
-    - every path from the initial node to p must evaluate x+y before reaching p,
-    - and there are no assignments to x or y after the evaluation but before p.
-- Available Expression information can be used t do global (across basic blocks) CSE
-- If expression is available at use, no need to reevaluate it
-### II. computing available expressions
-- Represent sets of expressions using bit vectors
-- Each expression corresponds to a bit
-- Run dataflow algorithm similar to reaching definitions
-- Big difference
-    - definition reaches a basic block if it comes from ANY predecessor in CFG
-    - expression is available at a basic block only if it is available from ALL predecessors in CFG
-### III. Formalizing Analysis
-- Each basic block has
-    - IN - set of expressions available at start of block
-    - OUT - set of expressions available at end of block
-    - GEN - set of expressions computed in block
-    - KILL - set of expressions killed in in block
-- GEN[x = z; b = x+y] = 1000
-- KILL[x = z; b = x+y] = 1001
-- Compiler scans each basic block to derive GEN and KILL sets
-### IV. Dataflow Equations
+- can be used for Global CSE
+- differences from Reaching Definitions: Available means available from ALL predecessors, but Reaching definitions can be reached by ANY predecessors.
+### II. Dataflow Equations
 - IN[b] = OUT[b1] ∩ ... ∩ OUT[bn]
     - where b1, ..., bn are predecessors of b in CFG
 - OUT[b] = (IN[b] - KILL[b]) U GEN[b]
 - IN[entry] = 0000
 - Result: system of equations
-### VI. Solving Equations
-- Use fixed point algorithm
-- IN[entry] = 0000
-- Initialize OUT[b] = 1111
-- Repeatedly apply equations
-    - IN[b] = OUT[b1] ∩ ... ∩ OUT[bn]
-    - OUT[b] = (IN[b] - KILL[b]) U GEN[b]
-- Use a worklist algorithm to reach fixed point
-### VII. Algorithm
+### III. Algorithm
 ```
 for all nodes n in N
     OUT[n] = E; // OUT[n] = E - KILL[n];
@@ -130,11 +81,7 @@ while (Changed != emptyset)
         for all nodes s in successors(n)
             Changed = Changed U { s };
 ```
-### VIII. Questions
-- Does algorithm always halt?
-- If expression is available in some execution, is it always marked as available in analysis?
-- If expression is not available in some execution, can it be marked as available in analysis?
-### IX. Duality in Two Algorithms
+### IV Duality in Two Algorithms
 - Reaching definitions
     - Confluence operation is set union
     - OUT[b] initialized to empty set
@@ -145,20 +92,12 @@ while (Changed != emptyset)
 - Build parameterized dataflow analyzer once, use for all dataflow problems
 ## Liveness
 ### I. overview
-- A variable v is live at point p if
-    - v is used along some path starting at p, and
-    - no definition of v along the path before the use.
-- When is a variable v dead at point p?
-    - No use of v on any path from p to exit node, or
-    - If all paths from p redefine v before using v.
+- variable is dead at some point if:
+    - No use later, or
+    - Redefined later
 ### II. What use is Liveness Information
-- Register allocation.
-    - If a variable is dead, can reassign its register
+- Register allocation. If a variable is dead, can reassign its register
 - Dead code elimination.
-    - Eliminate assignments to variables not read later.
-    - But must not eliminate last assignment to variable (such as instance variable) visible outside CFG.
-    - Can eliminate other dead assignments.
-    - Handle by making all externally visible variables live on exit from CFG
 ### III. Conceptual Idea of Analysis
 - Simulate execution
 - But start from exit and go backwards in CFG

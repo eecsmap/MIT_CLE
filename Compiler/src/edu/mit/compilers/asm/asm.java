@@ -1,9 +1,14 @@
 package edu.mit.compilers.asm;
-import edu.mit.compilers.st.Descriptor;
-import edu.mit.compilers.st.ST;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Label;
+import edu.mit.compilers.asm.basic.Num;
+import edu.mit.compilers.asm.basic.Oprand;
+import edu.mit.compilers.asm.basic.Reg;
+import edu.mit.compilers.defs.Defs;
+import edu.mit.compilers.st.Descriptor;
+import edu.mit.compilers.st.Manager;
+
 import java.util.List;
 
 // Instructions
@@ -19,66 +24,71 @@ public class asm {
         return align;
     }
 
-    public static final String non(String instruction) {
-        return String.format("\t%s", instruction);
+    public static final AInstLine non(String inst) {
+        return new AInstLine(inst);
     }
 
-    public static final String bin(String instruction, Oprand src, Oprand dst) {
+    public static final AInstLine bin(String inst, Oprand src, Oprand dst) {
         String srcName = src.getName();
         String dstName = dst.getName();
+        AInstLine cmd = new AInstLine(inst, src, dst);
         if (!srcName.isEmpty() || !dstName.isEmpty()) {
-            return String.format("\t%s\t%s, %s %s", instruction, src, dst, cmt(srcName, dstName));
-        } else {
-            return String.format("\t%s\t%s, %s", instruction, src, dst);
-        }   
-    }
-
-    public static final String uni(String instruction, Oprand dst) {
-        String dstName = dst.getName();
-        if (!dstName.isEmpty()) {
-            return String.format("\t%s\t%s %s", instruction, dst, cmt(dst.getName()));
-        } else {
-            return String.format("\t%s\t%s", instruction, dst);
+            cmd.addComment(srcName, dstName);
         }
+        return cmd;
     }
 
-    public static final String nonDir(String directive) {
-        return String.format("\t%s", directive);
+    public static final AInstLine uni(String inst, Oprand dst) {
+        String dstName = dst.getName();
+        AInstLine cmd = new AInstLine(inst, dst);
+        if (!dstName.isEmpty()) {
+            cmd.addComment(dst.getName());
+        }
+        return cmd;
     }
 
-    public static final String binDir(String directive, String fst, String scd) {
-        return String.format("\t%s\t%s, %s", directive, fst, scd);
+    public static final AJmpLine jmp(String inst, Label dst) {
+        return new AJmpLine(inst, dst);
     }
 
-    public static final String uniDir(String directive, String fst) {
-        return String.format("\t%s\t%s", directive, fst);
+    public static final AStrLine nonDir(String directive) {
+        return new AStrLine(String.format("\t%s", directive));
     }
 
-    public static final String label(Label lable) {
-        return lable.toString() + ":";
+    public static final AStrLine binDir(String directive, String fst, String scd) {
+        return new AStrLine(String.format("\t%s\t%s, %s", directive, fst, scd));
     }
 
-    public static final String label(String lableStr) {
-        return lableStr + ":";
-    }
-    
-    public static final String jmp(String instruction, Label dst) {
-        return String.format("\t%s\t%s", instruction, dst);
+    public static final AStrLine uniDir(String directive, String fst) {
+        return new AStrLine(String.format("\t%s\t%s", directive, fst));
     }
 
-    public static final String run(String instruction) {
-        return instruction;
+    public static final AStrLine label(Label lable) {
+        return new AStrLine(lable.toString() + ":");
     }
 
-    public static final String cmt(String... comments) {
-        return "\t# " + String.join(", ", comments);
+    public static final AStrLine label(String lableStr) {
+        return new AStrLine(lableStr + ":");
     }
 
-    public static final List<String> globalDecl(String func, Integer size) {
-        List<String> codes = new ArrayList<>();
+    public static final AStrLine cmt(String... comments) {
+        if (comments.length == 1 && comments[0].equals(""))
+            return new AStrLine("");
+        return new AStrLine("\t# " + String.join(", ", comments));
+    }
+
+    public static final ABlock globalDecl(String func, Integer size) {
+        ABlock codes = new ABlock();
         String sizeStr = Integer.toString(size);
         String alignStr = Integer.toString(calculateAlign(size));
-        Collections.addAll(codes,
+        if (isFirstGlobalVariable) {
+            codes.add(
+                nonDir(".data"),
+                nonDir(".bss")
+            );
+            isFirstGlobalVariable = false;
+        }
+        codes.add(
             uniDir(".globl", func),
             uniDir(".align", alignStr),
             binDir(".type", func, "@object"),
@@ -86,28 +96,20 @@ public class asm {
             label(func),
             uniDir(".zero", sizeStr)
         );
-        if (isFirstGlobalVariable) {
-            codes.add(0,
-                nonDir(".data")
-            );
-            codes.add(1,
-                nonDir(".bss")
-            );
-            isFirstGlobalVariable = false;
-        }
+
         return codes;
     }
 
-    public static final List<String> methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
+    public static final ABlock methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
         // call stack initialization
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         if (isFirstFunction) {
             codes.add(
                 nonDir(".text")
             );
             isFirstFunction = false;
         }
-        Collections.addAll(codes,
+        codes.add(
             uniDir(".globl", name),
             binDir(".type", name, "@function"),
             label(name),
@@ -116,18 +118,18 @@ public class asm {
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
         );
         // move arguments to memory
-        for (int i = 0; i < Math.min(argsDesc.size(), Constants.argRegMap.size()) ; i++) {
+        for (int i = 0; i < Math.min(argsDesc.size(), Defs.argRegMap.size()) ; i++) {
             codes.add(
-                bin("movq", Constants.argRegMap.get(i), argsDesc.get(i).getAddr())
+                bin("movq", Defs.argRegMap.get(i), argsDesc.get(i).getAddr())
             );
         }
         return codes;
     }
 
-    public static final List<String> methodDeclEnd(Label returnLabel, boolean returnIsVoid) {
-        List<String> codes = new ArrayList<>();
+    public static final ABlock methodDeclEnd(Label returnLabel, boolean returnIsVoid) {
+        ABlock codes = new ABlock();
         if (!returnIsVoid)
-        Collections.addAll(codes,
+        codes.add(
             asm.bin("movq", new Num(1L), Reg.rax),
             asm.bin("movq", new Num(254L), Reg.rbx),
             asm.uni("int", new Num(0x80L))
@@ -135,51 +137,47 @@ public class asm {
         codes.add(
             label(returnLabel)
         );
-        Collections.addAll(codes,
+        codes.add(
             non("leave"),
             non("ret")
         );
         return codes;
     }
 
-    public static final List<String> methodCall(String name, List<Oprand> argsList) {
-        List<String> codes = new ArrayList<>();
+    public static final ABlock methodCall(String name, List<Oprand> argsList) {
+        ABlock codes = new ABlock();
         Integer argsCount = argsList.size();
-        for (int i = 0; i < argsCount; i++) {
+        for (int i = argsCount - 1; i >= 0; i--) {
             Oprand oprand = argsList.get(i);
             if (i < 6) {
                 String op;
-                if (oprand instanceof Addr) {
-                    op = ((Addr)oprand).isStringLiteral() ? "leaq" : "movq";
-                } else {
-                    op = "movq";
-                }
+                op = (oprand instanceof Addr && ((Addr)oprand).isStringLiteral()) ?  "leaq" : "movq";
                 codes.add(
-                    bin(op, oprand, Constants.argRegMap.get(i))
+                    bin(op, oprand, Defs.argRegMap.get(i))
                 );
             } else {
-                codes.add(6,
+                codes.add(
                     uni("pushq", oprand)
                 );
             }
         }
-        Collections.addAll(codes,
+        codes.add(
             bin("movq", new Num(0L), Reg.rax),
             uniDir("call", name)
         );
         return codes;
     }
 
-    public static final List<String> saveRegs(ST st, List<Addr> addrs) {
-        List<String> codes = new ArrayList<>();
-        List<Reg> regsToSave = st.getUsedCalleeSavedRegs();
+    public static final ABlock saveRegs(List<Addr> addrs) {
+        ABlock codes = new ABlock();
+        List<Reg> regsToSave = Manager.getUsedCallerSavedRegs();
         if (regsToSave.size() > 0) {
             codes.add(
                 asm.cmt("save - start")
             );
         }
         for (Reg reg: regsToSave) {
-            Addr addr = st.newTmpAddr();
+            Addr addr = Manager.newTmpAddr();
             codes.add(
                 asm.bin("movq", reg, addr)
             );
@@ -193,9 +191,9 @@ public class asm {
         return codes;
     }
 
-    public static final List<String> recoverRegs(ST st, List<Addr> addrs) {
-        List<String> codes = new ArrayList<>();
-        List<Reg> regsToRecover = st.getUsedCalleeSavedRegs();
+    public static final ABlock recoverRegs(List<Addr> addrs) {
+        ABlock codes = new ABlock();
+        List<Reg> regsToRecover = Manager.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(
                 asm.cmt("recover - start")

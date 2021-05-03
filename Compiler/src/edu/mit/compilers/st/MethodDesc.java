@@ -1,19 +1,21 @@
 package edu.mit.compilers.st;
 
-import edu.mit.compilers.defs.Defs;
+import java.util.List;
+
+import edu.mit.compilers.defs.VarType;
 
 public class MethodDesc extends Descriptor{
-    public MethodDesc(String type, String text) {
-        super(Defs.makeMethodType(type), text);
+    private List<VarType> paramsList;
+
+    public MethodDesc(VarType type, String text) {
+        super(type.makeMethod(), text);
     }
 
-    @Override
-    public final String findVar(String text) {
-        return null;
+    public void setParamsList(List<VarType> paramsList) {
+        this.paramsList = paramsList;
     }
 
-    @Override
-    public final String findMethod(String text) {
-        return null;
+    public List<VarType> getParamsList() {
+        return this.paramsList;
     }
 }

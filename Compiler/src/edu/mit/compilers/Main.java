@@ -1,8 +1,6 @@
 package edu.mit.compilers;
 
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
 
 import antlr.ASTFactory;
 import antlr.CharStreamException;
@@ -10,12 +8,13 @@ import antlr.RecognitionException;
 import antlr.Token;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
-import edu.mit.compilers.ast.myAST;
-import edu.mit.compilers.compile.Program;
+import edu.mit.compilers.ast.AstWithPosition;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.grammar.*;
+import edu.mit.compilers.syntax.Program;
 import edu.mit.compilers.tools.CLI;
-import edu.mit.compilers.tools.Er;
+import edu.mit.compilers.tools.Err;
 import edu.mit.compilers.tools.CLI.Action;
 
 class Main {
@@ -93,7 +92,7 @@ class Main {
         DecafScanner scanner = new DecafScanner(new DataInputStream(inputStream));
         DecafParser parser = new DecafParser(scanner);
         ASTFactory factory = new ASTFactory();                         
-        factory.setASTNodeClass(myAST.class);
+        factory.setASTNodeClass(AstWithPosition.class);
         parser.setASTFactory(factory);
         parser.program();
         if(parser.getError()) {
@@ -109,10 +108,10 @@ class Main {
         AST t = parse(inputStream, false);
         // AstUtils.printAST(t, 0);
         if (CLI.debug) {
-            Er.setTrace();
+            Err.setTrace();
         }
         Program.irParse(t, null);
-        if(Er.hasError()) {
+        if(Err.hasError()) {
             System.exit(1);
         }
     }
@@ -122,14 +121,14 @@ class Main {
         AST t = parse(inputStream, false);
         // AstUtils.printAST(t, 0);
         if (CLI.debug) {
-            Er.setTrace();
+            Err.setTrace();
         }
-        List<String> codes = new ArrayList<>();
+        ABlock codes = new ABlock();
         Program.irParse(t, codes);
-        if(Er.hasError()) {
+        if(Err.hasError()) {
             System.exit(1);
         } else {
-            codes.forEach(outputStream::println);
+            codes.print(outputStream);
         }
     }
 }

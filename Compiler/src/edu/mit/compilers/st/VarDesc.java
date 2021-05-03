@@ -1,21 +1,9 @@
 package edu.mit.compilers.st;
 
-// TypeDesc -> "type" "int" | "bool" | "$class"
-// ArrayDesc -> "array" "int"
-// ParamDesc -> "int" "name"
-// LocalDesc -> "int" "name"
+import edu.mit.compilers.defs.VarType;
+
 public class VarDesc extends Descriptor {
-    public VarDesc(String type, String text) {
+    public VarDesc(VarType type, String text) {
         super(type, text);
-    }
-
-    @Override
-    public final String findVar(String text) {
-        return null;
-    }
-
-    @Override
-    public final String findMethod(String text) {
-        return null;
     }
 }
