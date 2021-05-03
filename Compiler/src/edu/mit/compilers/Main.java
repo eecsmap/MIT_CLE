@@ -1,8 +1,6 @@
 package edu.mit.compilers;
 
 import java.io.*;
-import java.util.List;
-import java.util.ArrayList;
 
 import antlr.ASTFactory;
 import antlr.CharStreamException;
@@ -130,7 +128,7 @@ class Main {
         if(Err.hasError()) {
             System.exit(1);
         } else {
-            codes.forEach(outputStream::println);
+            codes.print(outputStream);
         }
     }
 }

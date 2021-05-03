@@ -43,7 +43,7 @@ class Method {
             }
             methodDesc.setParamsList(params);
             // parse block
-            ABlock codesMethod = new ArrayList<>();
+            ABlock codesMethod = new ABlock();
             Structure.block(c, codesMethod);
             CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codes);
             Manager.leaveScope();

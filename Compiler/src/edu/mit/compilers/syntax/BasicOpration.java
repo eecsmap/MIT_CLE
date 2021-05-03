@@ -1,8 +1,5 @@
 package edu.mit.compilers.syntax;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import antlr.collections.AST;
 import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.ast.AstUtils;
@@ -72,9 +69,9 @@ public class BasicOpration {
     static VarType relOps(AST t, ABlock codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
-        ABlock codesCondition = new ArrayList<>();
-        ABlock codesIfExecution = new ArrayList<>();
-        ABlock codesElseExecution = new ArrayList<>();
+        ABlock codesCondition = new ABlock();
+        ABlock codesIfExecution = new ABlock();
+        ABlock codesElseExecution = new ABlock();
         VarType cond = Structure.expr(cc, ActionType.LOAD, codesCondition);
         if (!cond.isBool()) {
             Err.errType(t, VarType.BOOL, cond);

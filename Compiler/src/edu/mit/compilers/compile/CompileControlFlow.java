@@ -1,8 +1,5 @@
 package edu.mit.compilers.compile;
 
-import java.util.Collections;
-import java.util.List;
-
 import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Label;
@@ -27,7 +24,7 @@ public class CompileControlFlow {
                 asm.bin("movq", conditionOp, condition)    
             );
         }
-        Collections.addAll(codesCondition,
+        codesCondition.add(
             asm.bin("cmp", new Num(0L), condition.bite()),
             asm.jmp("je", ifExecutionEndLabel)
         );
@@ -67,7 +64,7 @@ public class CompileControlFlow {
         codesInit.add(
             asm.jmp("jmp", conditionBeginLabel)
         );
-        Collections.addAll(codesCondition,
+        codesCondition.add(
             asm.bin("cmp", new Num(0L), condition.bite()),
             asm.jmp("jne", executionBeginLabel)
         );
@@ -100,7 +97,7 @@ public class CompileControlFlow {
                 asm.bin("movq", conditionOp, condition)    
             );
         }
-        Collections.addAll(codesCondition,
+        codesCondition.add(
             asm.bin("cmp", new Num(0L), condition.bite()),
             asm.jmp("jne", executionBeginLabel)
         );

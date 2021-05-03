@@ -1,9 +1,5 @@
 package edu.mit.compilers.compile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Bool;
@@ -19,16 +15,16 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
-    public static final void binaryOpExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, ABlock codes) {
+    public static final void binaryOpExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
-        List<String> glueCodes = new ArrayList<>();
+        ABlock glueCodes = new ABlock();
         if (operator == DecafParserTokenTypes.SLASH || operator == DecafParserTokenTypes.PERCENT) {
             Reg resultReg = operator == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
             Reg divisor = Manager.newTmpReg();
-            Collections.addAll(glueCodes,
+            glueCodes.add(
                 asm.bin("movq", lOp, Reg.rax),
                 asm.bin("movq", rOp, divisor),
                 asm.non("cqto"),
@@ -36,7 +32,7 @@ public class CompileStructure {
                 asm.bin("movq", resultReg, resReg)
             );     
         } else {
-            Collections.addAll(glueCodes,
+            glueCodes.add(
                 asm.bin("movq", lOp, resReg),
                 asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, resReg)
             );
@@ -47,21 +43,21 @@ public class CompileStructure {
         Manager.tmpPush(resReg);
     }
 
-    public static final void binaryBoolExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, ABlock codes) {
+    public static final void binaryBoolExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
-        List<String> glueCodes = new ArrayList<>();
+        ABlock glueCodes = new ABlock();
         String jmpOp = operator == DecafScannerTokenTypes.AND ? "je" : "jne";
         Label endLabel = new Label();
         if (lOp instanceof Reg) {
-            Collections.addAll(leftCodes,
+            leftCodes.add(
                 asm.bin("cmp", new Num(0L), ((Reg)lOp).bite()),
                 asm.jmp(jmpOp, endLabel)
             );
         } else {
-            Collections.addAll(leftCodes,
+            leftCodes.add(
                 asm.bin("movq", lOp, resReg),
                 asm.bin("cmpq", new Num(0L), resReg),
                 asm.jmp(jmpOp, endLabel)
@@ -72,12 +68,12 @@ public class CompileStructure {
                 asm.bin("cmp", new Num(0L), ((Reg)rOp).bite())
             );
         } else {
-            Collections.addAll(rightCodes,
+            rightCodes.add(
                 asm.bin("movq", rOp, resReg),
                 asm.bin("cmpq", new Num(0L), resReg)
             );
         }
-        Collections.addAll(glueCodes,
+        glueCodes.add(
             asm.label(endLabel),
             asm.uni("setne", resReg.bite())
         );
@@ -88,13 +84,13 @@ public class CompileStructure {
     }
 
 
-    public static final void binaryCompExpr(Integer operator, List<String> leftCodes, List<String> rightCodes, ABlock codes) {
+    public static final void binaryCompExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
-        List<String> glueCodes = new ArrayList<>();
-        Collections.addAll(glueCodes,
+        ABlock glueCodes = new ABlock();
+        glueCodes.add(
             asm.bin("movq", lOp, resReg),
             asm.bin("cmpq", rOp, resReg),
             asm.uni(Defs.setOnCondition.get(operator), resReg.bite()),
@@ -113,7 +109,7 @@ public class CompileStructure {
         if (op instanceof Num) {
             Manager.tmpPush(((Num)op).neg());
         } else {
-            Collections.addAll(codes,
+            codes.add(
                 asm.bin("movq", op, tmpReg),
                 asm.uni("negq", tmpReg)
             );
@@ -128,7 +124,7 @@ public class CompileStructure {
         if (op instanceof Bool) {
             Manager.tmpPush(((Bool)op).exclam());
         } else {
-            Collections.addAll(codes,
+            codes.add(
                 asm.bin("cmp", new Bool(false), op),
                 asm.uni("sete", tmpReg.bite()),
                 asm.bin("movzbq", tmpReg.bite(), tmpReg)
@@ -170,7 +166,7 @@ public class CompileStructure {
             );
         } else {
             Oprand returnVar = Manager.tmpPop();
-            Collections.addAll(codes, 
+            codes.add( 
                 asm.bin("movq", returnVar, Reg.rax),
                 asm.jmp("jmp", Manager.getReturnLabel())
             );

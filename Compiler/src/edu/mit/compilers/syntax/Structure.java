@@ -1,10 +1,8 @@
 package edu.mit.compilers.syntax;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import antlr.collections.AST;
 import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Bool;
 import edu.mit.compilers.asm.basic.Num;
@@ -30,8 +28,8 @@ public class Structure {
     private static VarType binaryExpr(AST t, ABlock codes) {
         AST l = t.getFirstChild();
         AST r = l.getNextSibling();
-        List<String> leftCodes = new ArrayList<>();
-        List<String> rightCodes = new ArrayList<>();
+        ABlock leftCodes = new ABlock();
+        ABlock rightCodes = new ABlock();
         VarType lType = expr(l, ActionType.STORE, leftCodes);
         VarType rType = expr(r, ActionType.LOAD, rightCodes);
         VarType returnType = null;
@@ -182,7 +180,7 @@ public class Structure {
     }
 
     static void parseStmt(AST t, ABlock codes) {
-        codes.add("");
+        codes.add(asm.cmt(""));
         switch (t.getType()) {
             case DecafScannerTokenTypes.ID:
                 Method.call(t, codes, false);

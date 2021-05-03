@@ -1,8 +1,5 @@
 package edu.mit.compilers.syntax;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import antlr.collections.AST;
 import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.compile.CompileControlFlow;
@@ -16,17 +13,17 @@ public class ControlFlow {
         Manager.enterScope(false);
         AST c = t.getFirstChild();
         // condition
-        ABlock codesCondition = new ArrayList<>();
+        ABlock codesCondition = new ABlock();
         VarType type = Structure.expr(c, ActionType.LOAD, codesCondition);
         Boolean hasElse = false;
         if (type != null && !type.isBool()) {
             Err.errType(c, VarType.BOOL, type);
         }
         // if block
-        ABlock codesIfExecution = new ArrayList<>();
+        ABlock codesIfExecution = new ABlock();
         c = Structure.block(c.getNextSibling(), codesIfExecution);
         // else block
-        ABlock codesElseExecution = new ArrayList<>();
+        ABlock codesElseExecution = new ABlock();
         if (c != null) {
             hasElse = true;
             Structure.block(c.getFirstChild(), codesElseExecution);
@@ -40,22 +37,22 @@ public class ControlFlow {
         Manager.enterScope(true);
         AST c = t.getFirstChild();
         // simple assign
-        ABlock codesInit = new ArrayList<>();
+        ABlock codesInit = new ABlock();
         BasicOpration.simpleAssign(c, codesInit);
         c = c.getNextSibling();
         // condition expr
-        ABlock codesCondition = new ArrayList<>();
+        ABlock codesCondition = new ABlock();
         VarType conditionExprType = Structure.expr(c, ActionType.LOAD, codesCondition);
         if (!conditionExprType.isBool()) {
             Err.errType(c, VarType.BOOL, conditionExprType);
         }
         c = c.getNextSibling();
         // more assign
-        ABlock codesIncrement = new ArrayList<>();
+        ABlock codesIncrement = new ABlock();
         BasicOpration.moreAssign(c, codesIncrement);
         c = c.getNextSibling();
         // block
-        ABlock codesExecution = new ArrayList<>();
+        ABlock codesExecution = new ABlock();
         Structure.block(c, codesExecution);
         CompileControlFlow.forFlow(codesInit, codesCondition, codesIncrement, codesExecution, codes);
         Manager.leaveScope();
@@ -65,14 +62,14 @@ public class ControlFlow {
         Manager.enterScope(true);
         // condition
         AST c = t.getFirstChild();
-        ABlock codesCondition = new ArrayList<>();
+        ABlock codesCondition = new ABlock();
         VarType type = Structure.expr(c, ActionType.LOAD, codesCondition);
         if (type != null && !type.isBool()) {
             Err.errType(c, VarType.BOOL, type);
         }
         // execution block
         c = c.getNextSibling();
-        ABlock codesExecution = new ArrayList<>();
+        ABlock codesExecution = new ABlock();
         Structure.block(c, codesExecution);
         CompileControlFlow.whileFlow(codesCondition, codesExecution, codes);
         Manager.leaveScope();

@@ -1,8 +1,5 @@
 package edu.mit.compilers.compile;
 
-import java.util.Collections;
-import java.util.List;
-
 import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Num;
@@ -23,7 +20,7 @@ public class CompileElement {
         Reg resReg = Manager.newTmpReg();
         Reg indexReg = Manager.newTmpReg(resReg);
         Integer offset = desc.getAddr().getOffset();
-        Collections.addAll(codes,
+        codes.add(
             asm.bin("movq", index, indexReg),
             asm.bin("cmpq", new Num(desc.getCap()), indexReg),
             asm.jmp("jge", Defs.EXIT_ARRAY_OUTBOUND_LABEL),
@@ -31,7 +28,7 @@ public class CompileElement {
             asm.jmp("jl", Defs.EXIT_ARRAY_OUTBOUND_LABEL)
         );
         if (desc.getAddr().isGlobal()) {
-            Collections.addAll(codes,
+            codes.add(
                 asm.bin("leaq", new RegAddr(indexReg, varName), indexReg),
                 asm.bin("leaq", desc.getAddr(), resReg)
             );

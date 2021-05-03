@@ -1,7 +1,5 @@
 package edu.mit.compilers.syntax;
 
-import java.util.List;
-
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.ABlock;
