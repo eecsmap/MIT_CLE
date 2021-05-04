@@ -15,6 +15,7 @@ import java.util.List;
 public class asm {
     private static boolean isFirstGlobalVariable = true;
     private static boolean isFirstFunction = true;
+    public static boolean isRAXused = false;
 
     private static final Integer calculateAlign(Integer size) {
         int align = 4;
@@ -171,6 +172,7 @@ public class asm {
     public static final ABlock saveRegs(List<Addr> addrs) {
         ABlock codes = new ABlock();
         List<Reg> regsToSave = Manager.getUsedCallerSavedRegs();
+        isRAXused = false;
         if (regsToSave.size() > 0) {
             codes.add(
                 asm.cmt("save - start")
@@ -182,6 +184,9 @@ public class asm {
                 asm.bin("movq", reg, addr)
             );
             addrs.add(addr);
+            if (reg.getRegName().equals("rax")) {
+                isRAXused = true;
+            }
         }
         if (regsToSave.size() > 0) {
             codes.add(

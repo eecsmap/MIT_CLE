@@ -12,6 +12,7 @@ public class Addr extends Oprand {
         this.isVarGlobal = true;
         this.str = String.format("%s(%%rip)", str);
         this.isStringLiteral = isStringLiteral;
+        this.varName = str;
     }
 
     // local variable

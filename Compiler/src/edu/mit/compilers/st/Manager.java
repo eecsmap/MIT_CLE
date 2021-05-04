@@ -37,9 +37,9 @@ public class Manager {
     private static Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
     // enter a method
-    public static void enterScope(VarType methodReturnType) {
+    public static void enterScope(VarType methodReturnType, String methodName) {
         returnType = methodReturnType;
-        returnLabel = new Label();
+        returnLabel = new Label(".E" + methodName);
         symbolTable = new SymbolTable(symbolTable);
     }
 
@@ -54,11 +54,13 @@ public class Manager {
 
     public static void leaveScope() {
         if (!contextStack.empty()) {
+            // exit loop
             if (contextStack.pop()) {
                 continueLabelStack.pop();
                 breakLabelStack.pop();
             }
         } else {
+            // finish functin declaration
             varOffset = 0;
             tmpCounter = 0;
             tmpStack.clear();

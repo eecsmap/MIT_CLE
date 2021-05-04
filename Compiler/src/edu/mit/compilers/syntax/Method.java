@@ -24,7 +24,7 @@ class Method {
             if (!Manager.push(methodDesc, false)) {
                 Err.errDuplicatedDeclaration(t, t.getText());
             }
-            Manager.enterScope(returnType);
+            Manager.enterScope(returnType, t.getText());
             c = c.getNextSibling();
             // parse parameters
             List<VarType> params = new ArrayList<>();

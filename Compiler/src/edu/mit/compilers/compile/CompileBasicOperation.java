@@ -21,11 +21,15 @@ public class CompileBasicOperation {
                 codes.add(
                     asm.bin("movq", rAddr, lAddr)  
                 );
+            } else if (rAddr instanceof Reg){
+                codes.add(
+                    asm.bin("movq", rAddr, lAddr)
+                );
             } else {
                 codes.add(
                     asm.bin("movq", rAddr, tmpReg),
                     asm.bin("movq", tmpReg, lAddr)
-                ); 
+                );
             }
         } else {
             String asmOp = op.equals("+=") ? "addq" : "subq";
