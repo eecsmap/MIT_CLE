@@ -8,6 +8,7 @@ import java.util.Map;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.grammar.DecafParserTokenTypes;
+import edu.mit.compilers.tools.CLI;
 
 public class Defs {
     private Defs() {}
@@ -15,6 +16,9 @@ public class Defs {
     // didnt differentiate variable size between int and bool
     public static Integer varSize = 8;
     public static Integer callRegCount = 6;
+    public static Boolean isGCSEEnabled() {
+        return CLI.opts[0];
+    }
 
     public static Map<String, VarType> stringToVarType = new HashMap<>(){{
         put("void", VarType.VOID);

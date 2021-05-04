@@ -10,7 +10,9 @@ import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
+import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.defs.VarType;
+import edu.mit.compilers.optimizer.GCSE;
 import edu.mit.compilers.tools.Err;
 
 
@@ -42,6 +44,10 @@ public class Program {
         }
         CompileProgram.addROData(stringLiteralList, stringLiteralLabelList, codes);
         CompileProgram.addArrayOutBoundReturn(codes);
+
+        if (Defs.isGCSEEnabled()) {
+            codes = GCSE.globalCommonSubexpressionElimination(codes);
+        }
     }
 
     // return the next AST to parse

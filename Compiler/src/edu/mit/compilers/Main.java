@@ -18,9 +18,10 @@ import edu.mit.compilers.tools.Err;
 import edu.mit.compilers.tools.CLI.Action;
 
 class Main {
+    static String[] opts = {"cse"};
     public static void main(String[] args) {
         try {
-            CLI.parse(args, new String[0]);
+            CLI.parse(args, opts);
             InputStream inputStream = args.length == 0 ? System.in : new java.io.FileInputStream(CLI.infile);
             PrintStream outputStream = 
                 (CLI.outfile == null)

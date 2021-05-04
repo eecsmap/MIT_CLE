@@ -59,7 +59,7 @@ public class CLI {
    * named in the optnames[] parameter to parse with the same index
    * should be performed.
    */
-  public static boolean opts[];
+  public static boolean opts[] = {false};
 
   /**
    * Vector of String containing the command-line arguments which could
@@ -122,7 +122,6 @@ public class CLI {
    *   function.
    * @param optnames Ordered array of recognized optimization names.  */
   public static void parse(String args[], String optnames[]) {
-    String ext = ".out";
     String targetStr = "";
 
     opts = new boolean[optnames.length];
