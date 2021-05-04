@@ -16,6 +16,15 @@ public class Defs {
     // didnt differentiate variable size between int and bool
     public static Integer varSize = 8;
     public static Integer callRegCount = 6;
+
+    public static Boolean isAnyOptimizationEnabled() {
+        Boolean enabled = false;
+        for (int i = 0; i < CLI.opts.length; i++) {
+            enabled = enabled || CLI.opts[i];
+        }
+        return enabled;
+    }
+
     public static Boolean isGCSEEnabled() {
         return CLI.opts[0];
     }
