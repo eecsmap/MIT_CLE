@@ -20,18 +20,22 @@ public class CMethod {
         Map<CBlock, String> jmpMap = new HashMap<>();
         Map<String, CBlock> labelMap = new HashMap<>();
         for (int i = 0; i < aMethod.size(); i++) {
+            Boolean hasPred = i > 0;
+            Boolean hasSucc = i < aMethod.size() - 1;
             ALine line = aMethod.get(i);
             // condition jump
             if (line instanceof AJmpLine) {
+                String inst = ((AJmpLine)line).getInst();
                 Label label = ((AJmpLine)line).getLabel();
-                if (label.equals(Defs.EXIT_ARRAY_OUTBOUND_LABEL)) {
-                    continue;
+                if (!label.equals(Defs.EXIT_ARRAY_OUTBOUND_LABEL)) {
+                    CBlock block = new CBlock(aMethod.subLines(last, i + 1));
+                    jmpMap.put(block, label.toString());
+                    this.blocks.add(block);
+                    last = i + 1;
                 }
-                CBlock block = new CBlock(aMethod.subLines(last, i + 1));
-                jmpMap.put(block, label.toString());
-                this.blocks.add(block);
-                last = i + 1;
-                continue;
+                if (inst.equals("jmp")) {
+                    hasSucc = false;
+                }
             }
             // must be used
             if (line instanceof ALabelLine) {
@@ -41,12 +45,8 @@ public class CMethod {
                 this.blocks.add(block);
                 last = i;
             }
-        }
-        // link to next
-        this.blocks.get(0).addSucc(this.blocks.get(1));
-        for (int i = 1; i < this.blocks.size() - 1; i++) {
-            this.blocks.get(i).addPred(this.blocks.get(i-1));
-            this.blocks.get(i).addSucc(this.blocks.get(i+1));
+            if (hasPred) this.blocks.get(i).addPred(this.blocks.get(i-1));
+            if (hasSucc) this.blocks.get(i).addSucc(this.blocks.get(i+1));
         }
         this.blocks.get(this.blocks.size()-1).addPred(this.blocks.get(this.blocks.size()-2));
         // link to jmp
