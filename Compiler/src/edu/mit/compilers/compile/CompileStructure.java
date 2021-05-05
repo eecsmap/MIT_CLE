@@ -1,6 +1,6 @@
 package edu.mit.compilers.compile;
 
-import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AMethod;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Bool;
 import edu.mit.compilers.asm.basic.Label;
@@ -15,13 +15,13 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileStructure {
-    public static final void binaryOpExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
+    public static final void binaryOpExpr(Integer operator, AMethod leftCodes, AMethod rightCodes, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Boolean pushlOp = false;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
-        ABlock glueCodes = new ABlock();
+        AMethod glueCodes = new AMethod();
         if (operator == DecafParserTokenTypes.SLASH || operator == DecafParserTokenTypes.PERCENT) {
             Reg resultReg = operator == DecafParserTokenTypes.SLASH ? Reg.rax : Reg.rdx;
             Reg divisor = Manager.newTmpReg();
@@ -55,12 +55,12 @@ public class CompileStructure {
         }
     }
 
-    public static final void binaryBoolExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
+    public static final void binaryBoolExpr(Integer operator, AMethod leftCodes, AMethod rightCodes, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
-        ABlock glueCodes = new ABlock();
+        AMethod glueCodes = new AMethod();
         String jmpOp = operator == DecafScannerTokenTypes.AND ? "je" : "jne";
         Label endLabel = new Label();
         if (lOp instanceof Reg) {
@@ -96,12 +96,12 @@ public class CompileStructure {
     }
 
 
-    public static final void binaryCompExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
+    public static final void binaryCompExpr(Integer operator, AMethod leftCodes, AMethod rightCodes, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
-        ABlock glueCodes = new ABlock();
+        AMethod glueCodes = new AMethod();
         glueCodes.add(
             asm.bin("movq", lOp, resReg),
             asm.bin("cmpq", rOp, resReg),
@@ -114,7 +114,7 @@ public class CompileStructure {
         Manager.tmpPush(resReg);
     }
 
-    public static final void minusExpr(ABlock codes) {
+    public static final void minusExpr(AMethod codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = Manager.newTmpReg();
         Oprand op = Manager.tmpPop();
@@ -129,7 +129,7 @@ public class CompileStructure {
         }
     }
 
-    public static final void exclamExpr(ABlock codes) {
+    public static final void exclamExpr(AMethod codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = Manager.newTmpReg();
         Oprand op = Manager.tmpPop();
@@ -145,7 +145,7 @@ public class CompileStructure {
         }
     }
 
-    public static final void charLiteral(char theChar, ABlock codes) {
+    public static final void charLiteral(char theChar, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Reg tmpReg = Manager.newTmpReg();
         int ascii = theChar;
@@ -155,21 +155,21 @@ public class CompileStructure {
         Manager.tmpPush(tmpReg);
     }
 
-    public static final void tkBreak(ABlock codes) {
+    public static final void tkBreak(AMethod codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.jmp("jmp", Manager.getBreakLabel())
         );
     }
 
-    public static final void tkContinue(ABlock codes) {
+    public static final void tkContinue(AMethod codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.jmp("jmp", Manager.getContinueLabel())
         );
     }
 
-    public static final void tkReturn(VarType expectedReturnType, ABlock codes) {
+    public static final void tkReturn(VarType expectedReturnType, AMethod codes) {
         if (!Program.shouldCompile()) return;
         if (expectedReturnType.isVoid()) {
             Manager.tmpPop();

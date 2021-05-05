@@ -4,23 +4,21 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mit.compilers.cfg.CMethod;
-
-public class ABlock {
+public class AMethod {
     private List<ALine> aLines = new ArrayList<>();
 
-    public ABlock() {}
+    public AMethod() {}
 
     public void add(ALine... lines) {
         for (int i = 0; i < lines.length; i++)
             this.aLines.add(lines[i]);
     }
 
-    public void addAll(ABlock rhs) {
+    public void addAll(AMethod rhs) {
         this.aLines.addAll(rhs.aLines);
     }
 
-    public void addLeftAll(ABlock rhs) {
+    public void addLeftAll(AMethod rhs) {
         this.aLines.addAll(0, rhs.aLines);
     }
 

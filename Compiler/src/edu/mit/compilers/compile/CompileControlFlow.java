@@ -1,6 +1,6 @@
 package edu.mit.compilers.compile;
 
-import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AMethod;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
@@ -10,7 +10,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileControlFlow {
-    public static final void ifFlow(Boolean hasElse, ABlock codesCondition, ABlock codesIfExecution, ABlock codesElseExecution, ABlock codes) {
+    public static final void ifFlow(Boolean hasElse, AMethod codesCondition, AMethod codesIfExecution, AMethod codesElseExecution, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Label ifExecutionEndLabel = new Label();
         Label ifElseEndLabel = new Label();
@@ -47,7 +47,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("if - end"));
     }
 
-    public static final void forFlow(ABlock codesInit, ABlock codesCondition, ABlock codesIncrement, ABlock codesExecution, ABlock codes) {
+    public static final void forFlow(AMethod codesInit, AMethod codesCondition, AMethod codesIncrement, AMethod codesExecution, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Label conditionBeginLabel = new Label();
@@ -84,7 +84,7 @@ public class CompileControlFlow {
         codes.add(asm.cmt("for loop - end"));
     }
 
-    public static final void whileFlow(ABlock codesCondition, ABlock codesExecution, ABlock codes) {
+    public static final void whileFlow(AMethod codesCondition, AMethod codesExecution, AMethod codes) {
         if (!Program.shouldCompile()) return;
         Label executionBeginLabel = new Label();
         Oprand conditionOp = Manager.tmpPop();

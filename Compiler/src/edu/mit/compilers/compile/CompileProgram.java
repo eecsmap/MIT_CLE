@@ -2,7 +2,7 @@ package edu.mit.compilers.compile;
 
 import java.util.List;
 
-import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AMethod;
 import edu.mit.compilers.asm.asm;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
@@ -11,9 +11,9 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.syntax.Program;
 
 public class CompileProgram {
-    public static void addROData(List<String> stringLiteralList, List<Label> stringLiteralLabelList, ABlock codes) {
+    public static void addROData(List<String> stringLiteralList, List<Label> stringLiteralLabelList, AMethod codes) {
         if (!Program.shouldCompile() || stringLiteralList.isEmpty()) return;
-        ABlock rodata = new ABlock();
+        AMethod rodata = new AMethod();
         rodata.add(
             asm.nonDir(".text"),
             asm.uniDir(".section", ".rodata")
@@ -27,7 +27,7 @@ public class CompileProgram {
         codes.addLeftAll(rodata);
     }
 
-    public static void addArrayOutBoundReturn(ABlock codes) {
+    public static void addArrayOutBoundReturn(AMethod codes) {
         if (!Program.shouldCompile()) return;
         codes.add(
             asm.label(Defs.EXIT_ARRAY_OUTBOUND_LABEL),
