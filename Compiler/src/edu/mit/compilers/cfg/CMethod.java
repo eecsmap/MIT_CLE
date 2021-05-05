@@ -19,10 +19,10 @@ public class CMethod {
 
     public CMethod(AMethod aMethod) {
         int last = 0;
-        Map<CBlock, String> jMap = new HashMap<>();
-        Map<String, CBlock> lMap = new HashMap<>();
-        Set<CBlock> blocksEndWithJmp = new HashSet<>();
-        for (int i = 0; i < aMethod.size(); i++) {
+        Map<Integer, String> jMap = new HashMap<>();
+        Map<String, Integer> lMap = new HashMap<>();
+        Set<Integer> blocksEndWithJmp = new HashSet<>();
+        for (int i = 0, blockIndex = 0; i < aMethod.size(); i++, blockIndex = this.blocks.size()) {
             ALine line = aMethod.get(i);
             // condition jump
             if (line instanceof AJmpLine) {
@@ -31,18 +31,18 @@ public class CMethod {
                     continue;
                 }
                 CBlock block = new CBlock(aMethod.subLines(last, i + 1));
-                jMap.put(block, label.toString());
+                jMap.put(blockIndex, label.toString());
+                if (((AJmpLine)line).getInst().equals("jmp")) {
+                    blocksEndWithJmp.add(blockIndex);
+                }
                 this.blocks.add(block);
                 last = i + 1;
-                if (((AJmpLine)line).getInst().equals("jmp")) {
-                    blocksEndWithJmp.add(block);
-                }
             }
             // must be used
             if (line instanceof ALabelLine) {
                 Label label = ((ALabelLine)line).getLabel();
                 CBlock block = new CBlock(aMethod.subLines(last, i));
-                lMap.put(label.toString(), block);
+                lMap.put(label.toString(), blockIndex + 1);
                 this.blocks.add(block);
                 last = i;
             }
@@ -52,17 +52,17 @@ public class CMethod {
         this.blocks.get(0).addSucc(this.blocks.get(1));
         for (int i = 1; i < this.blocks.size() - 1; i++) {
             this.blocks.get(i).addPred(this.blocks.get(i-1));
-            if (!blocksEndWithJmp.contains(this.blocks.get(i))) {
+            if (!blocksEndWithJmp.contains(i)) {
                 this.blocks.get(i).addSucc(this.blocks.get(i+1));
             }
         }
         this.blocks.get(this.blocks.size()-1).addPred(this.blocks.get(this.blocks.size()-2));
         // link to jmp
-        for (Map.Entry<CBlock, String> entry : jMap.entrySet()) {
-            CBlock from = entry.getKey();
-            CBlock to = lMap.get(entry.getValue());
-            from.addSucc(from);
-            to.addSucc(from);
+        for (Map.Entry<Integer, String> entry : jMap.entrySet()) {
+            CBlock from = this.blocks.get(entry.getKey());
+            CBlock to = this.blocks.get(lMap.get(entry.getValue()));
+            from.addSucc(to);
+            to.addPred(from);
         }
         // some block may be mergeable but it's OK, at least it 
         // keeps current block order and won't affect the results.
