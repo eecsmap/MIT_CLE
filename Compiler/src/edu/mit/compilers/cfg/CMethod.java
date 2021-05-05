@@ -31,4 +31,14 @@ public class CMethod {
         this.blocks = blocks.subList(1, blocks.size());
         this.exit = new CBlock(aMethod.subLines(last, aMethod.size()));
     }
+
+    public AMethod makeAMethod() {
+        AMethod method = new AMethod();
+        method.addAll(this.entry.getALines());
+        for (int i = 0; i < this.blocks.size(); i++) {
+            method.addAll(this.blocks.get(i).getALines());
+        }
+        method.addAll(this.exit.getALines());
+        return method;
+    }
 }

@@ -18,6 +18,10 @@ public class AMethod {
         this.aLines.addAll(rhs.aLines);
     }
 
+    public void addAll(List<ALine> aLines) {
+        this.aLines.addAll(aLines);
+    }
+
     public void addLeftAll(AMethod rhs) {
         this.aLines.addAll(0, rhs.aLines);
     }

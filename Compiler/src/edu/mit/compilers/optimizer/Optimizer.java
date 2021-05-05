@@ -10,17 +10,15 @@ public class Optimizer {
     private Optimizer() {}
 
     public static AProgram optimize(AProgram program) {
+        if (!Defs.isAnyOptimizationEnabled()) return program;
         List<CMethod> methods;
-        if (Defs.isAnyOptimizationEnabled()) {
-            // TODO: maybe split ABlock and get Available Expression
-            methods = program.split();
-            if (Defs.isGCSEEnabled()) {
-                methods.forEach(GCSE::globalCommonSubexpressionElimination);
-            }
+        // TODO: maybe split ABlock and get Available Expression
+        methods = program.split();
+        if (Defs.isGCSEEnabled()) {
+            methods.forEach(GCSE::globalCommonSubexpressionElimination);
         }
-        if (Defs.isAnyOptimizationEnabled()) {
-            // TODO: recover methods to ABlock
-        }
+        // TODO: recover methods to ABlock
+        program.join(methods);
         return program;
     }
 }

@@ -33,6 +33,14 @@ public class AProgram {
         return methods;
     }
 
+    public void join(List<CMethod> methods) {
+        this.methods = new ArrayList<>();
+        for (int i = 0; i < methods.size(); i++) {
+            this.methods.add(methods.get(i).makeAMethod());
+        }
+        return;
+    }
+
     public void print(PrintStream stream) {
         this.globalHead.print(stream);
         for (int i = 0; i < this.methods.size(); i++) {
