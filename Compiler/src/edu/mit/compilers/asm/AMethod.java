@@ -26,6 +26,10 @@ public class AMethod {
         return aLines.get(i);
     }
 
+    public List<ALine> subLines(int start, int end) {
+        return this.aLines.subList(start, end);
+    }
+
     public int size() {
         return aLines.size();
     }

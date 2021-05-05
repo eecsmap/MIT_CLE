@@ -64,12 +64,8 @@ public class asm {
         return new AStrLine(String.format("\t%s\t%s", directive, fst));
     }
 
-    public static final AStrLine label(Label lable) {
-        return new AStrLine(lable.toString() + ":");
-    }
-
-    public static final AStrLine label(String lableStr) {
-        return new AStrLine(lableStr + ":");
+    public static final ALabelLine label(Label lable) {
+        return new ALabelLine(lable);
     }
 
     public static final AStrLine cmt(String... comments) {
@@ -94,7 +90,7 @@ public class asm {
             uniDir(".align", alignStr),
             binDir(".type", func, "@object"),
             binDir(".size", func, sizeStr),
-            label(func),
+            label(new Label(func)),
             uniDir(".zero", sizeStr)
         );
 
@@ -113,7 +109,7 @@ public class asm {
         codes.add(
             uniDir(".globl", name),
             binDir(".type", name, "@function"),
-            label(name),
+            label(new Label(name)),
             uni("pushq", Reg.rbp),
             bin("movq", Reg.rsp, Reg.rbp),
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
