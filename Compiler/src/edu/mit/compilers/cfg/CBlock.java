@@ -5,9 +5,9 @@ import java.util.List;
 import edu.mit.compilers.asm.ALine;
 
 public class CBlock {
-    private List<CBlock> pred;
-    private List<CBlock> succ;
-    private List<ALine> aLines;
+    List<CBlock> pred;
+    List<CBlock> succ;
+    List<ALine> aLines;
 
     void addPred(CBlock pred) {
         this.pred.add(pred);
@@ -19,9 +19,5 @@ public class CBlock {
 
     public CBlock(List<ALine> aLines) {
         this.aLines = aLines;
-    }
-
-    public List<ALine> getALines() {
-        return this.aLines;
     }
 }

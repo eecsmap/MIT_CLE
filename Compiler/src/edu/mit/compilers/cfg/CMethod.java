@@ -56,13 +56,14 @@ public class CMethod {
             from.addSucc(from);
             to.addSucc(from);
         }
-        // merge
+        // some block may be mergeable but it's OK, at least it 
+        // keeps current block order and won't affect the results.
     }
 
     public AMethod makeAMethod() {
         AMethod method = new AMethod();
         for (int i = 0; i < this.blocks.size(); i++) {
-            method.addAll(this.blocks.get(i).getALines());
+            method.addAll(this.blocks.get(i).aLines);
         }
         return method;
     }
