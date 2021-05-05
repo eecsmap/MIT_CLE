@@ -21,6 +21,10 @@ public class Label {
         this.name = name;
     }
 
+    public Boolean equals(Label rhs) {
+        return this.name.equals(rhs.name);
+    }
+
     public String toString() {
         return this.name;
     }

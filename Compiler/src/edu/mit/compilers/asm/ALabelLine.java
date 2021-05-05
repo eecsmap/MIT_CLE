@@ -9,6 +9,10 @@ public class ALabelLine extends ALine {
         this.label = label;
     }
 
+    public Label getLabel() {
+        return this.label;
+    }
+
     @Override
     public String toString() {
         return this.label.toString() + ":";
