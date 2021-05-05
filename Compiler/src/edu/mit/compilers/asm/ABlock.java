@@ -4,6 +4,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.mit.compilers.cfg.CMethod;
+
 public class ABlock {
     private List<ALine> aLines = new ArrayList<>();
 

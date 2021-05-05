@@ -9,7 +9,7 @@ import antlr.Token;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
 import edu.mit.compilers.ast.AstWithPosition;
-import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AProgram;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.grammar.*;
 import edu.mit.compilers.syntax.Program;
@@ -124,12 +124,12 @@ class Main {
         if (CLI.debug) {
             Err.setTrace();
         }
-        ABlock codes = new ABlock();
-        Program.irParse(t, codes);
+        AProgram program = new AProgram();
+        Program.irParse(t, program);
         if(Err.hasError()) {
             System.exit(1);
         } else {
-            codes.print(outputStream);
+            program.print(outputStream);
         }
     }
 }

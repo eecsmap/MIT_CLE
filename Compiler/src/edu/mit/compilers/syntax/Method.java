@@ -6,6 +6,7 @@ import java.util.List;
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
 import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AProgram;
 import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileMethod;
@@ -15,7 +16,7 @@ import edu.mit.compilers.defs.Defs.ActionType;
 import edu.mit.compilers.tools.Err;
 
 class Method {
-    static AST declare(AST t, ABlock codes) {
+    static AST declare(AST t, AProgram program) {
         for (; t != null && AstUtils.isID(t); t = t.getNextSibling()) {
             // parse method type
             AST c = t.getFirstChild();
@@ -43,9 +44,11 @@ class Method {
             }
             methodDesc.setParamsList(params);
             // parse block
+            ABlock codesWrappedMethod = new ABlock();
             ABlock codesMethod = new ABlock();
             Structure.block(c, codesMethod);
-            CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codes);
+            CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codesWrappedMethod);
+            program.addMethod(codesWrappedMethod);
             Manager.leaveScope();
         }
         return t;
