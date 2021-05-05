@@ -74,8 +74,8 @@ public class asm {
         return new AStrLine("\t# " + String.join(", ", comments));
     }
 
-    public static final AMethod globalDecl(String func, Integer size) {
-        AMethod codes = new AMethod();
+    public static final ABlock globalDecl(String func, Integer size) {
+        ABlock codes = new ABlock();
         String sizeStr = Integer.toString(size);
         String alignStr = Integer.toString(calculateAlign(size));
         if (isFirstGlobalVariable) {
@@ -97,9 +97,9 @@ public class asm {
         return codes;
     }
 
-    public static final AMethod methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
+    public static final ABlock methodDeclStart(String name, List<Descriptor> argsDesc, Integer bytesToAllocate) {
         // call stack initialization
-        AMethod codes = new AMethod();
+        ABlock codes = new ABlock();
         if (isFirstFunction) {
             codes.add(
                 nonDir(".text")
@@ -123,8 +123,8 @@ public class asm {
         return codes;
     }
 
-    public static final AMethod methodDeclEnd(Label returnLabel, boolean returnIsVoid) {
-        AMethod codes = new AMethod();
+    public static final ABlock methodDeclEnd(Label returnLabel, boolean returnIsVoid) {
+        ABlock codes = new ABlock();
         if (!returnIsVoid)
         codes.add(
             asm.bin("movq", new Num(1L), Reg.rax),
@@ -141,8 +141,8 @@ public class asm {
         return codes;
     }
 
-    public static final AMethod methodCall(String name, List<Oprand> argsList) {
-        AMethod codes = new AMethod();
+    public static final ABlock methodCall(String name, List<Oprand> argsList) {
+        ABlock codes = new ABlock();
         Integer argsCount = argsList.size();
         for (int i = argsCount - 1; i >= 0; i--) {
             Oprand oprand = argsList.get(i);
@@ -165,8 +165,8 @@ public class asm {
         return codes;
     }
 
-    public static final AMethod saveRegs(List<Addr> addrs) {
-        AMethod codes = new AMethod();
+    public static final ABlock saveRegs(List<Addr> addrs) {
+        ABlock codes = new ABlock();
         List<Reg> regsToSave = Manager.getUsedCallerSavedRegs();
         isRAXused = false;
         if (regsToSave.size() > 0) {
@@ -192,8 +192,8 @@ public class asm {
         return codes;
     }
 
-    public static final AMethod recoverRegs(List<Addr> addrs) {
-        AMethod codes = new AMethod();
+    public static final ABlock recoverRegs(List<Addr> addrs) {
+        ABlock codes = new ABlock();
         List<Reg> regsToRecover = Manager.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(

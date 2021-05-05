@@ -5,7 +5,7 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
-import edu.mit.compilers.asm.AMethod;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.AProgram;
 import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.ast.AstUtils;
@@ -44,8 +44,8 @@ class Method {
             }
             methodDesc.setParamsList(params);
             // parse block
-            AMethod codesWrappedMethod = new AMethod();
-            AMethod codesMethod = new AMethod();
+            ABlock codesWrappedMethod = new ABlock();
+            ABlock codesMethod = new ABlock();
             Structure.block(c, codesMethod);
             CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codesWrappedMethod);
             program.addMethod(codesWrappedMethod);
@@ -55,7 +55,7 @@ class Method {
     }
 
     // return method type
-    static VarType call(AST t, AMethod codes, boolean needReturnValue) {
+    static VarType call(AST t, ABlock codes, boolean needReturnValue) {
         String methodName = t.getText();
         Descriptor desc = Manager.getDesc(methodName);
         if (desc != null && !desc.getType().isMethod()) {

@@ -10,14 +10,14 @@ import java.util.Set;
 import edu.mit.compilers.asm.AJmpLine;
 import edu.mit.compilers.asm.ALabelLine;
 import edu.mit.compilers.asm.ALine;
-import edu.mit.compilers.asm.AMethod;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.defs.Defs;
 
 public class CMethod {
     private List<CBlock> blocks = new ArrayList<>();
 
-    public CMethod(AMethod aMethod) {
+    public CMethod(ABlock aMethod) {
         int last = 0;
         Map<Integer, String> jMap = new HashMap<>();
         Map<String, Integer> lMap = new HashMap<>();
@@ -69,8 +69,8 @@ public class CMethod {
         return;
     }
 
-    public AMethod makeAMethod() {
-        AMethod method = new AMethod();
+    public ABlock makeAMethod() {
+        ABlock method = new ABlock();
         for (int i = 0; i < this.blocks.size(); i++) {
             method.addAll(this.blocks.get(i).aLines);
         }

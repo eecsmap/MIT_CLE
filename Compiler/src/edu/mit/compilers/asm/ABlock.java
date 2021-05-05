@@ -4,17 +4,17 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AMethod {
+public class ABlock {
     private List<ALine> aLines = new ArrayList<>();
 
-    public AMethod() {}
+    public ABlock() {}
 
     public void add(ALine... lines) {
         for (int i = 0; i < lines.length; i++)
             this.aLines.add(lines[i]);
     }
 
-    public void addAll(AMethod rhs) {
+    public void addAll(ABlock rhs) {
         this.aLines.addAll(rhs.aLines);
     }
 
@@ -22,7 +22,7 @@ public class AMethod {
         this.aLines.addAll(aLines);
     }
 
-    public void addLeftAll(AMethod rhs) {
+    public void addLeftAll(ABlock rhs) {
         this.aLines.addAll(0, rhs.aLines);
     }
 

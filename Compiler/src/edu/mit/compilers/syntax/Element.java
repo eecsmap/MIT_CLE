@@ -1,7 +1,7 @@
 package edu.mit.compilers.syntax;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.AMethod;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.asm.basic.Num;
 import edu.mit.compilers.compile.CompileElement;
 import edu.mit.compilers.defs.VarType;
@@ -11,7 +11,7 @@ import edu.mit.compilers.st.Manager;
 import edu.mit.compilers.tools.Err;
 
 public class Element {
-    static VarType arrayElement(AST t, ActionType action, AMethod codes) {
+    static VarType arrayElement(AST t, ActionType action, ABlock codes) {
         ArrayDesc desc = Manager.getArray(t.getText());
         if (desc == null) {
             Err.errNotDefined(t, t.getText());

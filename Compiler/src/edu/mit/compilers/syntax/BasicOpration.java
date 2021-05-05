@@ -1,7 +1,7 @@
 package edu.mit.compilers.syntax;
 
 import antlr.collections.AST;
-import edu.mit.compilers.asm.AMethod;
+import edu.mit.compilers.asm.ABlock;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileBasicOperation;
 import edu.mit.compilers.defs.VarType;
@@ -12,7 +12,7 @@ import edu.mit.compilers.tools.Err;
 
 public class BasicOpration {
     // return lType
-    private static VarType leftValue(AST t, AMethod codes) {
+    private static VarType leftValue(AST t, ABlock codes) {
         AST c = t.getFirstChild();
         String lID = c.getText();
         Descriptor lDesc = Manager.getDesc(lID);
@@ -30,7 +30,7 @@ public class BasicOpration {
     }
 
     // =, +=, -=
-    private static void binaryAssign(AST t, String op, AMethod codes) {
+    private static void binaryAssign(AST t, String op, ABlock codes) {
         VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
         c = c.getNextSibling();
@@ -42,7 +42,7 @@ public class BasicOpration {
     }
 
     // ++, --
-    private static void unaryAssign(AST t, AMethod codes) {
+    private static void unaryAssign(AST t, ABlock codes) {
         VarType lType = leftValue(t, codes);
         AST c = t.getFirstChild();
         if (lType != null && !lType.isInt()) {
@@ -52,12 +52,12 @@ public class BasicOpration {
     }
 
     // only =, forwarder
-    static void simpleAssign(AST t, AMethod codes) {
+    static void simpleAssign(AST t, ABlock codes) {
         binaryAssign(t, "=", codes);
     }
 
     // +=, -=, =, ++, --, forwarder
-    static void moreAssign(AST t, AMethod codes) {
+    static void moreAssign(AST t, ABlock codes) {
         String op = t.getText();
         if (AstUtils.isBinaryAssignOp(t)) {
             binaryAssign(t, op, codes);
@@ -66,12 +66,12 @@ public class BasicOpration {
         }
     }
 
-    static VarType relOps(AST t, AMethod codes) {
+    static VarType relOps(AST t, ABlock codes) {
         AST c = t.getFirstChild();
         AST cc = c.getFirstChild();
-        AMethod codesCondition = new AMethod();
-        AMethod codesIfExecution = new AMethod();
-        AMethod codesElseExecution = new AMethod();
+        ABlock codesCondition = new ABlock();
+        ABlock codesIfExecution = new ABlock();
+        ABlock codesElseExecution = new ABlock();
         VarType cond = Structure.expr(cc, ActionType.LOAD, codesCondition);
         if (!cond.isBool()) {
             Err.errType(t, VarType.BOOL, cond);

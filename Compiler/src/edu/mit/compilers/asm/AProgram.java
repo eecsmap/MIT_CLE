@@ -7,21 +7,21 @@ import java.util.List;
 import edu.mit.compilers.cfg.CMethod;
 
 public class AProgram {
-    private AMethod globalHead = new AMethod();
-    private List<AMethod> methods = new ArrayList<>();
-    private AMethod globalTail = new AMethod();
+    private ABlock globalHead = new ABlock();
+    private List<ABlock> methods = new ArrayList<>();
+    private ABlock globalTail = new ABlock();
 
     public AProgram() {}
 
-    public AMethod getHead() {
+    public ABlock getHead() {
         return this.globalHead;
     }
 
-    public AMethod getTail() {
+    public ABlock getTail() {
         return this.globalTail;
     }
 
-    public void addMethod(AMethod method) {
+    public void addMethod(ABlock method) {
         this.methods.add(method);
     }
 
