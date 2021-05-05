@@ -12,12 +12,10 @@ public class Optimizer {
     public static AProgram optimize(AProgram program) {
         if (!Defs.isAnyOptimizationEnabled()) return program;
         List<CMethod> methods;
-        // TODO: maybe split ABlock and get Available Expression
         methods = program.split();
         if (Defs.isGCSEEnabled()) {
             methods.forEach(GCSE::globalCommonSubexpressionElimination);
         }
-        // TODO: recover methods to ABlock
         program.join(methods);
         return program;
     }
