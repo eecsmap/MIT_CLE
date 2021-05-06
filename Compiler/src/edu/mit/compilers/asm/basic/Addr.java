@@ -8,15 +8,17 @@ public class Addr extends Oprand {
     private String varName = "";
 
     // for global variable
-    public Addr(String str, Boolean isStringLiteral) {
+    public Addr(String varName, Boolean isStringLiteral) {
+        super();
         this.isVarGlobal = true;
-        this.str = String.format("%s(%%rip)", str);
+        this.str = String.format("%s(%%rip)", varName);
         this.isStringLiteral = isStringLiteral;
-        this.varName = str;
+        this.varName = varName;
     }
 
     // local variable
     public Addr(Integer offset, String varName) {
+        super();
         this.isVarGlobal = false;
         this.offset = offset;
         this.str = String.format("%d(%%rbp)", this.offset);

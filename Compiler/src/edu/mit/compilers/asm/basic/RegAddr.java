@@ -10,6 +10,7 @@ public class RegAddr extends Oprand {
 
     // local array
     public RegAddr(Integer offset, Reg index, String varName) {
+        super();
         this.str = String.format("%d(%%rbp, %s, 8)", offset, index);
         this.varName = varName;
         this.reservedRegs.add(index);
@@ -17,6 +18,7 @@ public class RegAddr extends Oprand {
 
     // global array index
     public RegAddr(Reg index, String varName) {
+        super();
         this.str = String.format("0(, %s, 8)", index);
         this.varName = varName;
         this.reservedRegs.add(index);

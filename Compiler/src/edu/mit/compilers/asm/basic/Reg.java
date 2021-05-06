@@ -28,11 +28,13 @@ public class Reg extends Oprand {
     private String tmpName = "";
 
     private Reg(String regName, String tmpName) {
+        super();
         this.regName = regName;
         this.tmpName = tmpName;
     }
 
     public Reg(Reg parent, String tmpName) {
+        super();
         this.regName = parent.getRegName();
         this.dWord = parent.dWord;
         this.word = parent.word;
