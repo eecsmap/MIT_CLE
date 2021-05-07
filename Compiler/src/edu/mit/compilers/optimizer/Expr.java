@@ -39,4 +39,8 @@ public class Expr {
     public boolean contains(Oprand op) {
         return this.primeProduct.divideAndRemainder(op.getPrime())[1].equals(BigInteger.ZERO) ;
     }
+
+    public boolean equals(Expr rhs) {
+        return this.type.equals(rhs.type) && this.privateLong == rhs.privateLong && this.primeProduct.equals(rhs.primeProduct);
+    }
 }
