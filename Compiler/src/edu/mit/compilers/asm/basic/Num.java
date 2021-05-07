@@ -21,4 +21,8 @@ public class Num extends Oprand {
     public String getName() {
         return "";
     }
+
+    public Long getValue() {
+        return this.num;
+    }
 }

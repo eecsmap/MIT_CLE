@@ -69,6 +69,10 @@ public class CMethod {
         return;
     }
 
+    public List<CBlock> getBlocks() {
+        return this.blocks;
+    }
+
     public ABlock makeAMethod() {
         ABlock method = new ABlock();
         for (int i = 0; i < this.blocks.size(); i++) {
