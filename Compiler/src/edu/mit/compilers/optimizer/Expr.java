@@ -21,17 +21,19 @@ public class Expr {
         this.primeProduct = primeProduct;
     }
 
-    public void put(Oprand op) {
+    public Expr makePut(Oprand op) {
+        Expr res = new Expr(this.type, this.privateLong, this.primeProduct);
         if (op instanceof Num) {
             Long value = ((Num)op).getValue();
-            if (this.type.equals(Type.ADD)) {
-                this.privateLong += value;
+            if (res.type.equals(Type.ADD)) {
+                res.privateLong += value;
             } else {
-                this.privateLong *= value;
+                res.privateLong *= value;
             }
         } else {
-            this.primeProduct = this.primeProduct.multiply(op.getPrime());
+            res.primeProduct = res.primeProduct.multiply(op.getPrime());
         }
+        return res;
     }
 
     public boolean contains(Oprand op) {
