@@ -17,24 +17,37 @@ public class EBlock {
 
     public EBlock() {}
 
-    public void union(EBlock rhs) {
+    public Boolean union(EBlock rhs) {
+        Boolean changed = false;
         for (Expr expr: rhs.set) {
-            this.set.add(expr);
+            if (!this.set.contains(expr)) {
+                changed = true;
+                this.set.add(expr);
+            }
         }
+        return changed;
     }
 
-    public void intersect(EBlock rhs) {
+    public Boolean intersect(EBlock rhs) {
+        Boolean changed = false;
         for (Iterator<Expr> i = this.set.iterator(); i.hasNext();) {
             Expr expr = i.next();
             if (!rhs.set.contains(expr)) {
+                changed = true;
                 i.remove();
             }
         }
+        return changed;
     }
 
-    public void subtract(EBlock rhs) {
+    public Boolean subtract(EBlock rhs) {
+        Boolean changed = false;
         for (Expr expr: rhs.set) {
-            this.set.remove(expr);
+            if (this.set.contains(expr)) {
+                changed = true;
+                this.set.remove(expr);
+            }
         }
+        return changed;
     }
 }
