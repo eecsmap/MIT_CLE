@@ -21,6 +21,12 @@ public class Expr {
         this.primeProduct = primeProduct;
     }
 
+    public Expr(Expr rhs) {
+        this.type = rhs.type;
+        this.privateLong = rhs.privateLong;
+        this.primeProduct = rhs.primeProduct;
+    }
+
     public Expr makePut(Oprand op) {
         Expr res = new Expr(this.type, this.privateLong, this.primeProduct);
         if (op instanceof Num) {

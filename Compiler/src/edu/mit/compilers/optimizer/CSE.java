@@ -50,14 +50,18 @@ public class CSE {
                 int i = iter.next();
                 iter.remove();
 
+                // TODO: full set
                 AEin.set(i, E);
                 for (Integer p: blocks.get(i).getPred()) {
                     AEin.get(i).intersect(AEout.get(p));
                 }
 
-                AEout.set(i, GEN[n] U (IN[n] - KILL[n]));
+                EBlock newAEout = new EBlock(AEin.get(i));
+                newAEout.subtract(Kill.get(i));
+                newAEout.union(Eval.get(i));
 
-                if (OUT[n] changed) {
+                if (!newAEout.equals(AEout.get(i))) {
+                    AEout.set(i, newAEout);
                     for (Integer s: blocks.get(i).getSucc()) {
                         changed.add(s);
                     }

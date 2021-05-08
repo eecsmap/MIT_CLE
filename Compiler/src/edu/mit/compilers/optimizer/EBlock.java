@@ -17,6 +17,10 @@ public class EBlock {
 
     public EBlock() {}
 
+    public EBlock(EBlock rhs) {
+        this.set.addAll(rhs.set);
+    }
+
     public Boolean union(EBlock rhs) {
         Boolean changed = false;
         for (Expr expr: rhs.set) {
@@ -49,5 +53,17 @@ public class EBlock {
             }
         }
         return changed;
+    }
+
+    public boolean equals(EBlock rhs) {
+        if (this.set.size() != rhs.set.size()) {
+            return false;
+        }
+        for (Expr expr: rhs.set) {
+            if (!this.set.contains(expr)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
