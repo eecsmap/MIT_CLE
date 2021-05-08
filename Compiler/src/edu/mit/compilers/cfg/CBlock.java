@@ -6,23 +6,23 @@ import java.util.List;
 import edu.mit.compilers.asm.ALine;
 
 public class CBlock {
-    List<CBlock> pred = new ArrayList<>();
-    List<CBlock> succ = new ArrayList<>();
+    List<Integer> pred = new ArrayList<>();
+    List<Integer> succ = new ArrayList<>();
     List<ALine> aLines;
 
-    void addPred(CBlock pred) {
+    void addPred(Integer pred) {
         this.pred.add(pred);
     }
 
-    void addSucc(CBlock succ) {
+    void addSucc(Integer succ) {
         this.succ.add(succ);
     }
 
-    public List<CBlock> getPred() {
+    public List<Integer> getPred() {
         return this.pred;
     }
 
-    public List<CBlock> getSucc() {
+    public List<Integer> getSucc() {
         return this.succ;
     }
 

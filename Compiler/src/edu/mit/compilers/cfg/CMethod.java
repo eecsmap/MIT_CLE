@@ -49,20 +49,20 @@ public class CMethod {
         }
         this.blocks.add(new CBlock(aMethod.subLines(last, aMethod.size())));
         // link to next
-        this.blocks.get(0).addSucc(this.blocks.get(1));
+        this.blocks.get(0).addSucc(1);
         for (int i = 1; i < this.blocks.size() - 1; i++) {
-            this.blocks.get(i).addPred(this.blocks.get(i-1));
+            this.blocks.get(i).addPred(i-1);
             if (!blocksEndWithJmp.contains(i)) {
-                this.blocks.get(i).addSucc(this.blocks.get(i+1));
+                this.blocks.get(i).addSucc(i+1);
             }
         }
-        this.blocks.get(this.blocks.size()-1).addPred(this.blocks.get(this.blocks.size()-2));
+        this.blocks.get(this.blocks.size()-1).addPred(this.blocks.size()-2);
         // link to jmp
         for (Map.Entry<Integer, String> entry : jMap.entrySet()) {
-            CBlock from = this.blocks.get(entry.getKey());
-            CBlock to = this.blocks.get(lMap.get(entry.getValue()));
-            from.addSucc(to);
-            to.addPred(from);
+            Integer from = entry.getKey();
+            Integer to = lMap.get(entry.getValue());
+            this.blocks.get(from).addSucc(to);
+            this.blocks.get(to).addPred(from);
         }
         // some block may be mergeable but it's OK, at least it 
         // keeps current block order and won't affect the results.
