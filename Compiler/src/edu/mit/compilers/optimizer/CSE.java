@@ -1,10 +1,10 @@
 package edu.mit.compilers.optimizer;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import edu.mit.compilers.cfg.CBlock;
 import edu.mit.compilers.cfg.CMethod;
@@ -36,32 +36,36 @@ public class CSE {
         List<EBlock> AEout = new ArrayList<>();
         List<EBlock> Eval = new ArrayList<>();
         List<EBlock> Kill = new ArrayList<>();
-        Deque<Integer> changed = new ArrayDeque<>();
+        Set<Integer> changed = new HashSet<>();
         int N = blocks.size();
         for (int i = 0; i < N; i++) {
             AEin.add(new EBlock());
             AEout.add(new EBlock());
             Eval.add(evalGen(blocks.get(0)));
             Kill.add(killGen(blocks.get(0)));
-            changed.addLast(i);
+            changed.add(i);
         }
-        changed.removeFirst();
+        changed.remove(0);
         // fix point algo
         while (!changed.isEmpty()) {
-            int i = changed.removeFirst();
-            AEin.set(i, fullSet);
-            for (Integer p: blocks.get(i).getPred()) {
-                AEin.get(i).intersect(AEout.get(p));
-            }
+            for (Iterator<Integer> iter = changed.iterator(); iter.hasNext();) {
+                int i = iter.next();
+                iter.remove();
 
-            EBlock newAEout = new EBlock(AEin.get(i));
-            newAEout.subtract(Kill.get(i));
-            newAEout.union(Eval.get(i));
+                AEin.set(i, fullSet);
+                for (Integer p: blocks.get(i).getPred()) {
+                    AEin.get(i).intersect(AEout.get(p));
+                }
 
-            if (!newAEout.equals(AEout.get(i))) {
-                AEout.set(i, newAEout);
-                for (Integer s: blocks.get(i).getSucc()) {
-                    changed.addLast(s);
+                EBlock newAEout = new EBlock(AEin.get(i));
+                newAEout.subtract(Kill.get(i));
+                newAEout.union(Eval.get(i));
+
+                if (!newAEout.equals(AEout.get(i))) {
+                    AEout.set(i, newAEout);
+                    for (Integer s: blocks.get(i).getSucc()) {
+                        changed.add(s);
+                    }
                 }
             }
         }
