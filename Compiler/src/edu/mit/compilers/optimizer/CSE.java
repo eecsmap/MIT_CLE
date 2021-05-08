@@ -34,40 +34,34 @@ public class CSE {
         List<EBlock> AEout = new ArrayList<>();
         List<EBlock> Eval = new ArrayList<>();
         List<EBlock> Kill = new ArrayList<>();
+        Set<Integer> changed = new HashSet<>();
         int N = blocks.size();
-        while (AEin.size() < N) {
+        for (int i = 0; i < N; i++) {
             AEin.add(new EBlock());
             AEout.add(new EBlock());
             Eval.add(evalGen(blocks.get(0)));
             Kill.add(killGen(blocks.get(0)));
+            changed.add(i);
         }
+        changed.remove(0);
         // fix point algo
-        Set<EBlock> changed = new HashSet<>();
         while (!changed.isEmpty()) {
-            for (Iterator<EBlock> i = changed.iterator(); i.hasNext();) {
-                EBlock block = i.next();
-                i.remove();
-                /*
-                for all nodes n in N
-                    OUT[n] = E; // OUT[n] = E - KILL[n];
-                IN[Entry] = emptyset;
-                OUT[Entry] = GEN[Entry];
-                Changed = N - { Entry }; // N = all nodes in graph
-                
-                while (Changed != emptyset)
-                    choose a node n in Changed;
-                    Changed = Changed - { n };
-                
-                    IN[n] = E; // E is set of all expressions
-                    for all nodes p in predecessors(n)
-                        IN[n] = IN[n] ∩ OUT[p];
-                
-                    OUT[n] = GEN[n] U (IN[n] - KILL[n]);
-                
-                    if (OUT[n] changed)
-                        for all nodes s in successors(n)
-                            Changed = Changed U { s };
-                */
+            for (Iterator<Integer> iter = changed.iterator(); iter.hasNext();) {
+                int i = iter.next();
+                iter.remove();
+
+                AEin.set(i, E);
+                for (Integer p: blocks.get(i).getPred()) {
+                    AEin.get(i).intersect(AEout.get(p));
+                }
+
+                AEout.set(i, GEN[n] U (IN[n] - KILL[n]));
+
+                if (OUT[n] changed) {
+                    for (Integer s: blocks.get(i).getSucc()) {
+                        changed.add(s);
+                    }
+                }
             }
         }
     }

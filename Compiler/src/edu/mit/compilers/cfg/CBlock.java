@@ -18,6 +18,14 @@ public class CBlock {
         this.succ.add(succ);
     }
 
+    public List<CBlock> getPred() {
+        return this.pred;
+    }
+
+    public List<CBlock> getSucc() {
+        return this.succ;
+    }
+
     public CBlock(List<ALine> aLines) {
         this.aLines = aLines;
     }
