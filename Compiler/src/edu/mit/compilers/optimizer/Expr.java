@@ -40,6 +40,16 @@ public class Expr {
         return this.primeProduct.divideAndRemainder(op.getPrime())[1].equals(BigInteger.ZERO) ;
     }
 
+    public int compare(Expr rhs) {
+        if (this.type.equals(Type.ADD) && rhs.type.equals(Type.MUL)) {
+            return -1;
+        }
+        if (this.privateLong != rhs.privateLong) {
+            return (this.privateLong > rhs.privateLong) ? 1 : -1;
+        }
+        return this.primeProduct.compareTo(rhs.primeProduct);
+    }
+
     public boolean equals(Expr rhs) {
         return this.type.equals(rhs.type) && this.privateLong == rhs.privateLong && this.primeProduct.equals(rhs.primeProduct);
     }
