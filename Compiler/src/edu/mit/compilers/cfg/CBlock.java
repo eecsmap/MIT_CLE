@@ -29,4 +29,8 @@ public class CBlock {
     public CBlock(List<ALine> aLines) {
         this.aLines = aLines;
     }
+
+    public List<ALine> getLines() {
+        return this.aLines;
+    }
 }

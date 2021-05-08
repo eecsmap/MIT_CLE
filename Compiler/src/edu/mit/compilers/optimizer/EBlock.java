@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import edu.mit.compilers.asm.basic.Oprand;
+
 
 public class EBlock {
     private TreeSet<Expr> set = new TreeSet<Expr>(
@@ -19,6 +21,18 @@ public class EBlock {
 
     public EBlock(EBlock rhs) {
         this.set.addAll(rhs.set);
+    }
+
+    public void add(Expr expr) {
+        this.set.add(expr);
+    }
+
+    public void eval(String inst, Oprand l, Oprand r) {
+        // TODO
+    }
+
+    public void eval(String inst, Oprand op) {
+        // TODO
     }
 
     public Boolean union(EBlock rhs) {

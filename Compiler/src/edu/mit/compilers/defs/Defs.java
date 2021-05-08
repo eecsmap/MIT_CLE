@@ -17,6 +17,9 @@ public class Defs {
     public static Integer varSize = 8;
     public static Integer callRegCount = 6;
 
+    public static String regSaveStart = "save - start";
+    public static String regRecoverEnd = "recover - end";
+
     public static Boolean isAnyOptimizationEnabled() {
         Boolean enabled = false;
         for (int i = 0; i < CLI.opts.length; i++) {

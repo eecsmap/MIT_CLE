@@ -171,7 +171,7 @@ public class asm {
         isRAXused = false;
         if (regsToSave.size() > 0) {
             codes.add(
-                asm.cmt("save - start")
+                asm.cmt(Defs.regSaveStart)
             );
         }
         for (Reg reg: regsToSave) {
@@ -209,7 +209,7 @@ public class asm {
         }
         if (regsToRecover.size() > 0) {
             codes.add(
-                asm.cmt("recover - end")
+                asm.cmt(Defs.regRecoverEnd)
             );
         }
         return codes;
