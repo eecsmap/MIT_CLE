@@ -43,11 +43,11 @@ public class CSE {
                 }
             }
         }
-        return null;
+        return block;
     }
 
+    // TODO: replace with List of variables (assigned in this block)
     public static EBlock killGen(CBlock codes) {
-        // TODO
         return null;
     }
 
