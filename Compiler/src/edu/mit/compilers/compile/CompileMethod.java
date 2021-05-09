@@ -44,12 +44,10 @@ public class CompileMethod {
             codes.addAll(asm.methodCall(methodName, argsList));
             if (asm.isRAXused) {
                 codes.add(
-                    // removed methodName here
-                    asm.bin("movq", new Reg(Reg.rax, ""), res)
+                    asm.bin("movq", new Reg(Reg.rax, methodName + "()"), res)
                 );
             } else {
-                // removed methodName here
-                res = new Reg(Reg.rax, "");
+                res = new Reg(Reg.rax, methodName + "()");
             }
             codes.addAll(asm.recoverRegs(addrs));
             Manager.tmpPush(res);

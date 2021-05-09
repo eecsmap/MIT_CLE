@@ -148,7 +148,7 @@ public class Manager {
     public static final Reg newTmpReg() {
         for(Reg reg: Defs.callerSavedReg) {
             if (!callerSavedRegsUsage.containsKey(reg.getRegName())) {
-                String name = String.format("tmp%d", tmpCounter++);
+                String name = String.format("@tmp%d", tmpCounter++);
                 return new Reg(reg, name);
             }
         }
@@ -159,7 +159,7 @@ public class Manager {
     public static final Reg newTmpReg(Reg exclude) {
         for(Reg reg: Defs.callerSavedReg) {
             if (!callerSavedRegsUsage.containsKey(reg.getRegName()) && exclude.getRegName() != reg.getRegName()) {
-                String name = String.format("tmp%d", tmpCounter++);
+                String name = String.format("@tmp%d", tmpCounter++);
                 return new Reg(reg, name);
             }
         }
@@ -168,8 +168,8 @@ public class Manager {
 
     public static final Addr newTmpAddr() {
         localOffsetIncrement();
-        String name = String.format("tmp%d", tmpCounter++);
-        return new Addr(varOffset, name);
+        String tmpName = String.format("@tmp%d", tmpCounter++);
+        return new Addr(varOffset, tmpName);
     }
 
     public static final Integer bytesToAllocate() {
