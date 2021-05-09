@@ -2,8 +2,11 @@ package edu.mit.compilers.cfg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import edu.mit.compilers.asm.ALine;
+import edu.mit.compilers.optimizer.EBlock.ModifyAction;
 
 public class CBlock {
     List<Integer> pred = new ArrayList<>();
@@ -32,5 +35,20 @@ public class CBlock {
 
     public List<ALine> getLines() {
         return this.aLines;
+    }
+
+    public void modify(TreeMap<Integer, ModifyAction> toModify) {
+        for (Entry<Integer, ModifyAction> entry: toModify.entrySet()) {
+            int lineNumber = entry.getKey();
+            ModifyAction action = entry.getValue();
+            if (action.equals(ModifyAction.SAVE)) {
+                //
+            } else if (action.equals(ModifyAction.DELETE)) {
+                this.aLines.remove(lineNumber);
+            } else if (action.equals(ModifyAction.REPLACE)) {
+                int replaceLine = action.getLineNumber();
+                //
+            }
+        }
     }
 }

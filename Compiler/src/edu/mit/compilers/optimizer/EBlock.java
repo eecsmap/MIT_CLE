@@ -1,5 +1,6 @@
 package edu.mit.compilers.optimizer;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,35 +14,35 @@ import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.optimizer.Expr.Type;
 
-class ModifyAction {
-    static ModifyAction SAVE = new ModifyAction(1);
-    static ModifyAction DELETE = new ModifyAction(2);
-    static ModifyAction REPLACE = new ModifyAction(3);
-
-    private int innerType;
-    private int lineNumer;
-    public ModifyAction(int innerType) {
-        this.innerType = innerType;
-    }
-
-    public ModifyAction addLineNumber(int lineNumber) {
-        ModifyAction res = new ModifyAction(this.innerType);
-        res.lineNumer = lineNumber;
-        return res;
-    }
-
-    public int lineNumber() {
-        return this.lineNumer;
-    }
-
-    public boolean equals(ModifyAction rhs) {
-        return this.innerType == rhs.innerType;
-    }
-}
-
 
 public class EBlock {
-    private TreeMap<Integer, ModifyAction> toModify = new TreeMap<>();
+    public static class ModifyAction {
+        public static ModifyAction SAVE = new ModifyAction(1);
+        public static ModifyAction DELETE = new ModifyAction(2);
+        public static ModifyAction REPLACE = new ModifyAction(3);
+    
+        private int innerType;
+        private int lineNumer;
+        public ModifyAction(int innerType) {
+            this.innerType = innerType;
+        }
+    
+        public ModifyAction addLineNumber(int lineNumber) {
+            ModifyAction res = new ModifyAction(this.innerType);
+            res.lineNumer = lineNumber;
+            return res;
+        }
+    
+        public int getLineNumber() {
+            return this.lineNumer;
+        }
+        
+        public boolean equals(ModifyAction rhs) {
+            return this.innerType == rhs.innerType;
+        }
+    }
+
+    private TreeMap<Integer, ModifyAction> toModify = new TreeMap<>(Collections.reverseOrder());
     private TreeSet<Expr> set = new TreeSet<Expr>(
         new Comparator<Expr>() {
             @Override
@@ -173,6 +174,10 @@ public class EBlock {
             changed = changed || this.kill(var);
         }
         return changed;
+    }
+
+    public TreeMap<Integer, ModifyAction> getModify() {
+        return this.toModify;
     }
 
     public boolean equals(EBlock rhs) {

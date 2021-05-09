@@ -48,6 +48,7 @@ public class CSE {
                 }
             }
         }
+        codes.modify(block.getModify());
         return block;
     }
 
