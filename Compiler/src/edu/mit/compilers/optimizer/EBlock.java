@@ -3,6 +3,7 @@ package edu.mit.compilers.optimizer;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import edu.mit.compilers.asm.basic.Addr;
@@ -30,7 +31,19 @@ public class EBlock {
         this.set.add(expr);
     }
 
-    public BigInteger process(String inst, Oprand l, Oprand r) {
+    public boolean kill(Oprand var) {
+        boolean changed = false;
+        for (Iterator<Expr> iter = this.set.iterator(); iter.hasNext();) {
+            Expr expr = iter.next();
+            if (expr.contains(var)) {
+                changed = true;
+                iter.remove();
+            }
+        }
+        return changed;
+    }
+
+    public Oprand process(String inst, Oprand l, Oprand r) {
         // tmp registers
         if (r instanceof Reg) {
             Reg rReg = (Reg)r;
@@ -38,7 +51,7 @@ public class EBlock {
                 return null;
             }
             if (inst.equals("movq")) {
-
+                
             } else if (inst.equals("addq")) {
 
             } else if (inst.equals("subq")) {
@@ -54,7 +67,8 @@ public class EBlock {
                 return null;
             }
             if (inst.equals("movq")) {
-
+                this.kill(r);
+                return r;
             } else if (inst.equals("addq")) {
 
             } else if (inst.equals("subq")) {
@@ -66,8 +80,9 @@ public class EBlock {
         return null;
     }
 
-    public void process(String inst, Oprand op) {
+    public Oprand process(String inst, Oprand op) {
         // TODO
+        return null;
     }
 
     public Boolean union(EBlock rhs) {
@@ -93,13 +108,10 @@ public class EBlock {
         return changed;
     }
 
-    public Boolean subtract(EBlock rhs) {
+    public Boolean subtract(List<Oprand> toRemove) {
         Boolean changed = false;
-        for (Expr expr: rhs.set) {
-            if (this.set.contains(expr)) {
-                changed = true;
-                this.set.remove(expr);
-            }
+        for (Oprand var: toRemove) {
+            changed = changed || this.kill(var);
         }
         return changed;
     }

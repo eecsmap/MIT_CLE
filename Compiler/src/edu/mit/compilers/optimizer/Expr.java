@@ -43,7 +43,7 @@ public class Expr {
     }
 
     public boolean contains(Oprand op) {
-        return this.primeProduct.divideAndRemainder(op.getPrime())[1].equals(BigInteger.ZERO) ;
+        return this.primeProduct.divideAndRemainder(op.getPrime())[1].equals(BigInteger.ZERO);
     }
 
     public int compare(Expr rhs) {

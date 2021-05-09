@@ -20,13 +20,13 @@ public class CSE {
     private CSE() {}
 
     // local cse: generate EVAL and KILL
-    public static EBlock localCSE(CBlock codes, List<BigInteger> kill) {
+    public static EBlock localCSE(CBlock codes, List<Oprand> kill) {
         EBlock block = new EBlock();
         List<ALine> lines = codes.getLines();
         for (int i = 0; i < lines.size(); i++) {
             ALine line = lines.get(i);
             if (line instanceof AInstLine) {
-                BigInteger toKill = null;
+                Oprand toKill = null;
                 if (((AInstLine)line).getOpCount() == 2) {
                     String inst = ((AInstLine)line).getInst();
                     Oprand l = ((AInstLine)line).getLeft();
@@ -64,13 +64,13 @@ public class CSE {
         List<EBlock> AEin = new ArrayList<>();
         List<EBlock> AEout = new ArrayList<>();
         List<EBlock> Eval = new ArrayList<>();
-        List<List<BigInteger>> Kill = new ArrayList<>();
+        List<List<Oprand>> Kill = new ArrayList<>();
         Set<Integer> changed = new HashSet<>();
         int N = blocks.size();
         for (int i = 0; i < N; i++) {
             AEin.add(new EBlock());
             AEout.add(new EBlock());
-            List<BigInteger> killList = new ArrayList<>();
+            List<Oprand> killList = new ArrayList<>();
             Eval.add(localCSE(blocks.get(i), killList));
             Kill.add(killList);
             changed.add(i);
