@@ -56,6 +56,9 @@ public class ABlock {
     }
 
     public void print(PrintStream stream) {
-        this.aLines.forEach(stream::println);
+        for (ALine line: this.aLines) {
+            stream.println(line);
+        }
+        // this.aLines.forEach(stream::println);
     }
 }

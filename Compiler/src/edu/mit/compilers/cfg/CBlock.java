@@ -47,6 +47,7 @@ public class CBlock {
             ModifyAction action = entry.getValue();
             if (action.equals(ModifyAction.SAVE)) {
                 Addr tmp = action.getTmpAddr();
+                assert (tmp != null);
                 AInstLine line = (AInstLine)this.aLines.get(lineNumber);
                 this.aLines.add(lineNumber + 1,
                     new AInstLine("movq", line.getRight(), tmp)
@@ -62,6 +63,7 @@ public class CBlock {
                 Addr tmp = correspondingSave.getTmpAddr();
                 AInstLine line = (AInstLine)this.aLines.get(lineNumber);
                 Oprand dst = line.getRight();
+                assert (tmp != null && dst != null);
                 this.aLines.remove(lineNumber);
                 this.aLines.add(lineNumber,
                     new AInstLine("movq", tmp, dst)

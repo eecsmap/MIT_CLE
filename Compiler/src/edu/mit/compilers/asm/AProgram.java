@@ -30,6 +30,7 @@ public class AProgram {
         for (int i = 0; i < this.methods.size(); i++) {
             methods.add(new CMethod(this.methods.get(i)));
         }
+        this.methods.clear();
         return methods;
     }
 

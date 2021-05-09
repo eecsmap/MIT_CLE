@@ -94,7 +94,7 @@ public class EBlock {
         this.toModify.put(deleteLine, ModifyAction.DELETE);
     }
 
-    private void replace(int replaceLine) {
+    private void replace(int deleteLine, int replaceLine) {
         this.toModify.put(replaceLine, ModifyAction.REPLACE.addLineNumber(replaceLine));
     }
 
@@ -121,7 +121,7 @@ public class EBlock {
                 && tmp2Exp.get(rReg.getName()).getCount() == 2) {
                 this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
                 this.delete(lineNumber);
-                this.replace(lineNumber - 1);
+                this.replace(lineNumber - 1, tmp2Exp.get(rReg.getName()).getLineNumber());
             }
             if (newExpr != null && newExpr == true) {
                 this.set.add(tmp2Exp.get(rReg.getName()));
