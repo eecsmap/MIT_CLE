@@ -4,7 +4,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Oprand;
+import edu.mit.compilers.asm.basic.Reg;
 
 
 public class EBlock {
@@ -29,6 +31,15 @@ public class EBlock {
 
     public void eval(String inst, Oprand l, Oprand r) {
         // TODO
+        if (r instanceof Reg) {
+            Reg rReg = (Reg)r;
+            if (!rReg.isTmp()) {
+                return;
+            }
+        }
+        if (r instanceof Addr) {
+            
+        }
     }
 
     public void eval(String inst, Oprand op) {
