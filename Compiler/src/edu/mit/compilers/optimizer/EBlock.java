@@ -117,7 +117,9 @@ public class EBlock {
                 newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
             if (newExpr) {
-                if (this.set.contains(tmp2Exp.get(rReg.getName()))) {
+                if (this.set.contains(tmp2Exp.get(rReg.getName())) 
+                    && tmp2Exp.get(rReg.getName()).getCount() == 2 
+                    && tmp2Exp.get(rReg.getName()).getLineNumber() != lineNumber) {
                     this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
                     this.delete(lineNumber);
                     this.replace(lineNumber - 1);

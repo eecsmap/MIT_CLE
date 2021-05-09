@@ -82,9 +82,8 @@ public class CMethod {
         return this.varOffset;
     }
 
-    public void changeOffset(Integer offset) {
+    public void changeOffset() {
         // line is `subq $X, %rsp`
-        Manager.setOffset(offset);
         ALine line = this.blocks.get(1).aLines.get(3);
         if (line instanceof AInstLine) {
             AInstLine instLine = (AInstLine)line;

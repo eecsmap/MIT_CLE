@@ -86,6 +86,10 @@ public class Expr {
         return this.lineNumber;
     }
 
+    public int getCount() {
+        return this.varCount;
+    }
+
     public String toString() {
         return this.str;
     }
