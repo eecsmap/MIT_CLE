@@ -19,18 +19,22 @@ public class Expr {
         }
     }
 
-    private int varCount = 0;
+    private int varCount;
+    private String str = "";
     private Type type;
     private Long privateLong;
     private BigInteger primeProduct;
 
     public Expr(Oprand op) {
+        this.varCount = 1;
         this.type = Type.DEFAULT;
         if (op instanceof Num) {
             this.privateLong = ((Num)op).getValue();
         } else {
             this.primeProduct = op.getPrime();
         }
+        // debug
+        this.str = op.toString();
     }
 
     // public Expr(Expr rhs) {
@@ -39,9 +43,9 @@ public class Expr {
     //     this.primeProduct = rhs.primeProduct;
     // }
 
-    public void put(Type type, Oprand op) {
+    public boolean put(Type type, Oprand op) {
         if (this.varCount >= 2) {
-            return;
+            return false;
         }
         this.type = type;
         this.varCount++;
@@ -57,6 +61,9 @@ public class Expr {
         } else {
             this.primeProduct = this.primeProduct.multiply(op.getPrime());
         }
+        // debug
+        this.str += ", " + op.toString();
+        return true;
     }
 
     // public Expr makePut(Oprand op) {

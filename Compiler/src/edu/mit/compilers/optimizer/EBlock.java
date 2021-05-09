@@ -3,8 +3,8 @@ package edu.mit.compilers.optimizer;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import edu.mit.compilers.asm.basic.Addr;
@@ -54,15 +54,20 @@ public class EBlock {
             if (!rReg.isTmp()) {
                 return null;
             }
+            boolean newExpr = false;
             if (inst.equals("movq")) {
                 tmp2Exp.remove(rReg.getName());
                 tmp2Exp.put(rReg.getName(), new Expr(l));
             } else if (inst.equals("addq")) {
-                tmp2Exp.get(rReg.getName()).put(Type.ADD, l);
+                newExpr = tmp2Exp.get(rReg.getName()).put(Type.ADD, l);
             } else if (inst.equals("subq")) {
-                tmp2Exp.get(rReg.getName()).put(Type.SUB, l);
+                newExpr = tmp2Exp.get(rReg.getName()).put(Type.SUB, l);
             } else if (inst.equals("imulq")) {
-                tmp2Exp.get(rReg.getName()).put(Type.MUL, l);
+                newExpr = tmp2Exp.get(rReg.getName()).put(Type.MUL, l);
+            }
+            if (newExpr) {
+                this.set.add(tmp2Exp.get(rReg.getName()));
+                CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
             }
         }
         // non-tmp variables
@@ -116,7 +121,7 @@ public class EBlock {
         return changed;
     }
 
-    public Boolean subtract(List<Oprand> toRemove) {
+    public Boolean subtract(Set<Oprand> toRemove) {
         Boolean changed = false;
         for (Oprand var: toRemove) {
             changed = changed || this.kill(var);
