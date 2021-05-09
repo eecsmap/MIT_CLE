@@ -13,6 +13,32 @@ import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.optimizer.Expr.Type;
 
+class ModifyAction {
+    static ModifyAction SAVE = new ModifyAction(1);
+    static ModifyAction DELETE = new ModifyAction(2);
+    static ModifyAction REPLACE = new ModifyAction(3);
+
+    private int innerType;
+    private int lineNumer;
+    public ModifyAction(int innerType) {
+        this.innerType = innerType;
+    }
+
+    public ModifyAction addLineNumber(int lineNumber) {
+        ModifyAction res = new ModifyAction(this.innerType);
+        res.lineNumer = lineNumber;
+        return res;
+    }
+
+    public int lineNumber() {
+        return this.lineNumer;
+    }
+
+    public boolean equals(ModifyAction rhs) {
+        return this.innerType == rhs.innerType;
+    }
+}
+
 
 public class EBlock {
     private TreeMap<Integer, ModifyAction> toModify = new TreeMap<>();
@@ -24,11 +50,6 @@ public class EBlock {
             }
         }
     );
-
-    private enum ModifyAction {
-        SAVE,
-        DELETE,
-    }
 
     private Map<String, Expr> tmp2Exp = new HashMap<>();
 
@@ -58,16 +79,13 @@ public class EBlock {
         this.toModify.put(saveLine, ModifyAction.SAVE);
     }
 
-    private void delete(int... deleteLines) {
-        for (int i = 0; i < deleteLines.length; i++) {
-            this.toModify.put(deleteLines[i], ModifyAction.DELETE);
-        }
+    private void delete(int deleteLine) {
+        this.toModify.put(deleteLine, ModifyAction.DELETE);
     }
 
-    private void replace(int saveLine, int... deleteLines) {
-        this.save(saveLine);
-        this.delete(deleteLines);
-    } 
+    private void replace(int replaceLine) {
+        this.toModify.put(replaceLine, ModifyAction.REPLACE.addLineNumber(replaceLine));
+    }
 
     public Oprand process(int lineNumber, String inst, Oprand l, Oprand r) {
         // tmp registers
@@ -89,7 +107,9 @@ public class EBlock {
             }
             if (newExpr) {
                 if (this.set.contains(tmp2Exp.get(rReg.getName()))) {
-                    this.replace(tmp2Exp.get(rReg.getName()).getLineNumber(), lineNumber, lineNumber - 1);
+                    this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
+                    this.delete(lineNumber);
+                    this.replace(lineNumber - 1);
                 } else {
                     this.set.add(tmp2Exp.get(rReg.getName()));
                     CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
