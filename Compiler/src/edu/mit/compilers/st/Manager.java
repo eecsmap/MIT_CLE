@@ -211,6 +211,10 @@ public class Manager {
     }
 
     // for optimization
+    public static void setOffset(int offset) {
+        varOffset = offset;
+    }
+
     public static void enterOptimizationScope(int offset) {
         tmpCounter = 0;
         varOffset = offset;

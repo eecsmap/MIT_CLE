@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import edu.mit.compilers.asm.AInstLine;
 import edu.mit.compilers.asm.ALine;
 import edu.mit.compilers.asm.basic.Addr;
+import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.optimizer.EBlock.ModifyAction;
 import edu.mit.compilers.st.Manager;
 
@@ -58,6 +59,13 @@ public class CBlock {
                 if (correspondingSave.getTmpAddr() == null) {
                     correspondingSave.setTmpAddr(Manager.newTmpAddrForOptimization());
                 }
+                Addr tmp = correspondingSave.getTmpAddr();
+                AInstLine line = (AInstLine)this.aLines.get(lineNumber);
+                Oprand dst = line.getRight();
+                this.aLines.remove(lineNumber);
+                this.aLines.add(lineNumber,
+                    new AInstLine("movq", tmp, dst)
+                );
             }
         }
     }

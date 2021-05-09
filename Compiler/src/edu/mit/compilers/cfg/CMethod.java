@@ -16,6 +16,7 @@ import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.asm.basic.Num;
 import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.defs.Defs;
+import edu.mit.compilers.st.Manager;
 
 public class CMethod {
     private String methodName;
@@ -73,6 +74,7 @@ public class CMethod {
         }
         // some block may be mergeable but it's OK, at least it 
         // keeps current block order and won't affect the results.
+        aMethod.clear();
         return;
     }
 
@@ -82,14 +84,15 @@ public class CMethod {
 
     public void changeOffset(Integer offset) {
         // line is `subq $X, %rsp`
+        Manager.setOffset(offset);
         ALine line = this.blocks.get(1).aLines.get(3);
         if (line instanceof AInstLine) {
             AInstLine instLine = (AInstLine)line;
             if (instLine.getOpCount() == 2 && instLine.getRight().toString().equals("%rsp")) {
-                instLine.setLeft(new Num(Long.valueOf(offset)));
+                instLine.setLeft(new Num(Long.valueOf(Manager.bytesToAllocate())));
             } else {
                 this.blocks.get(1).aLines.add(3,
-                    new AInstLine("subq", new Num(Long.valueOf(offset)), Reg.rsp)
+                    new AInstLine("subq", new Num(Long.valueOf(Manager.bytesToAllocate())), Reg.rsp)
                 );
             }
         }

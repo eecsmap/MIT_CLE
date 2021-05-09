@@ -38,11 +38,19 @@ public class ABlock {
     }
 
     public List<ALine> subLines(int start, int end) {
-        return this.aLines.subList(start, end);
+        List<ALine> res = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            res.add(this.aLines.get(i));
+        }
+        return res;
     }
 
     public int size() {
         return aLines.size();
+    }
+
+    public void clear() {
+        this.aLines.clear();
     }
 
     public void print(PrintStream stream) {
