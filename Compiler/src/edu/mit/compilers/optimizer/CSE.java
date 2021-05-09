@@ -9,6 +9,7 @@ import edu.mit.compilers.asm.AInstLine;
 import edu.mit.compilers.asm.ALine;
 import edu.mit.compilers.asm.AStrLine;
 import edu.mit.compilers.asm.basic.Oprand;
+import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.cfg.CBlock;
 import edu.mit.compilers.cfg.CMethod;
 import edu.mit.compilers.defs.Defs;
@@ -30,6 +31,11 @@ public class CSE {
                     String inst = ((AInstLine)line).getInst();
                     Oprand l = ((AInstLine)line).getLeft();
                     Oprand r = ((AInstLine)line).getRight();
+                    if (r instanceof Reg) {
+                        if (((Reg)r).getName().endsWith("()")) {
+                            continue;
+                        }
+                    }
                     toKill = block.process(i, inst, l, r);
                 } else if (((AInstLine)line).getOpCount() == 1) {
                     String inst = ((AInstLine)line).getInst();
@@ -43,6 +49,10 @@ public class CSE {
             if (line instanceof AStrLine) {
                 AStrLine strLine = (AStrLine)line;
                 if (strLine.toString().endsWith(Defs.regSaveStart)) {
+                    // skip register save and recover
+                    while (!lines.get(++i).toString().endsWith(Defs.regSaveEnd));
+                }
+                if (strLine.toString().endsWith(Defs.regRecoverStart)) {
                     // skip register save and recover
                     while (!lines.get(++i).toString().endsWith(Defs.regRecoverEnd));
                 }

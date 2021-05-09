@@ -18,6 +18,8 @@ public class Defs {
     public static Integer callRegCount = 6;
 
     public static String regSaveStart = "save - start";
+    public static String regSaveEnd = "save - end";
+    public static String regRecoverStart = "recover - start";
     public static String regRecoverEnd = "recover - end";
 
     public static Boolean isAnyOptimizationEnabled() {

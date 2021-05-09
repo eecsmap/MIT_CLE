@@ -186,7 +186,7 @@ public class asm {
         }
         if (regsToSave.size() > 0) {
             codes.add(
-                asm.cmt("save - end")
+                asm.cmt(Defs.regSaveEnd)
             );
         }
         return codes;
@@ -197,7 +197,7 @@ public class asm {
         List<Reg> regsToRecover = Manager.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(
-                asm.cmt("recover - start")
+                asm.cmt(Defs.regRecoverStart)
             );
         }
         int i = 0;
