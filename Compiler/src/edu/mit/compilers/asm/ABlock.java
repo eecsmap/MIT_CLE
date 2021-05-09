@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ABlock {
-    public String methodName;
-    public int varOffset;
+    private int varOffset;
 
     private List<ALine> aLines = new ArrayList<>();
 
     public ABlock() {}
-    public ABlock(String methodName, int varOffset) {
-        this.methodName = methodName;
+    public ABlock(int varOffset) {
         this.varOffset = varOffset;
     }
 
@@ -43,6 +41,10 @@ public class ABlock {
             res.add(this.aLines.get(i));
         }
         return res;
+    }
+
+    public int getVarOffset() {
+        return this.varOffset;
     }
 
     public int size() {

@@ -19,13 +19,11 @@ import edu.mit.compilers.defs.Defs;
 import edu.mit.compilers.st.Manager;
 
 public class CMethod {
-    private String methodName;
     private int varOffset;
     private List<CBlock> blocks = new ArrayList<>();
 
     public CMethod(ABlock aMethod) {
-        this.methodName = aMethod.methodName;
-        this.varOffset = aMethod.varOffset;
+        this.varOffset = aMethod.getVarOffset();
         int last = 0;
         Map<Integer, String> jMap = new HashMap<>();
         Map<String, Integer> lMap = new HashMap<>();
