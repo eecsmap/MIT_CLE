@@ -37,6 +37,10 @@ public class Addr extends Oprand {
         return this.isStringLiteral;
     }
 
+    public boolean isTmp() {
+        return this.varName.startsWith("@");
+    }
+
     @Override
     public String toString() {
         return this.str;

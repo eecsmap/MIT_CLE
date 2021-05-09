@@ -1,5 +1,6 @@
 package edu.mit.compilers.optimizer;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,21 +19,26 @@ public class CSE {
     static EBlock fullSet;
     private CSE() {}
 
-    public static EBlock evalGen(CBlock codes) {
+    // local cse: generate EVAL and KILL
+    public static EBlock localCSE(CBlock codes, List<BigInteger> kill) {
         EBlock block = new EBlock();
         List<ALine> lines = codes.getLines();
         for (int i = 0; i < lines.size(); i++) {
             ALine line = lines.get(i);
             if (line instanceof AInstLine) {
+                BigInteger toKill = null;
                 if (((AInstLine)line).getOpCount() == 2) {
                     String inst = ((AInstLine)line).getInst();
                     Oprand l = ((AInstLine)line).getLeft();
                     Oprand r = ((AInstLine)line).getRight();
-                    block.eval(inst, l, r);
+                    toKill = block.process(inst, l, r);
                 } else if (((AInstLine)line).getOpCount() == 1) {
                     String inst = ((AInstLine)line).getInst();
                     Oprand op = ((AInstLine)line).getLeft();
-                    block.eval(inst, op);
+                    toKill = block.process(inst, op);
+                }
+                if (toKill != null) {
+                    kill.add(toKill);
                 }
             }
             if (line instanceof AStrLine) {
@@ -44,11 +50,6 @@ public class CSE {
             }
         }
         return block;
-    }
-
-    // TODO: replace with List of variables (assigned in this block)
-    public static EBlock killGen(CBlock codes) {
-        return null;
     }
 
     // global common subexpression elimination
@@ -63,14 +64,15 @@ public class CSE {
         List<EBlock> AEin = new ArrayList<>();
         List<EBlock> AEout = new ArrayList<>();
         List<EBlock> Eval = new ArrayList<>();
-        List<EBlock> Kill = new ArrayList<>();
+        List<List<BigInteger>> Kill = new ArrayList<>();
         Set<Integer> changed = new HashSet<>();
         int N = blocks.size();
         for (int i = 0; i < N; i++) {
             AEin.add(new EBlock());
             AEout.add(new EBlock());
-            Eval.add(evalGen(blocks.get(i)));
-            Kill.add(killGen(blocks.get(i)));
+            List<BigInteger> killList = new ArrayList<>();
+            Eval.add(localCSE(blocks.get(i), killList));
+            Kill.add(killList);
             changed.add(i);
         }
         changed.remove(0);

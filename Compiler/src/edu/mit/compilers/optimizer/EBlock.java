@@ -1,5 +1,6 @@
 package edu.mit.compilers.optimizer;
 
+import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -29,20 +30,43 @@ public class EBlock {
         this.set.add(expr);
     }
 
-    public void eval(String inst, Oprand l, Oprand r) {
-        // TODO
+    public BigInteger process(String inst, Oprand l, Oprand r) {
+        // tmp registers
         if (r instanceof Reg) {
             Reg rReg = (Reg)r;
             if (!rReg.isTmp()) {
-                return;
+                return null;
+            }
+            if (inst.equals("movq")) {
+
+            } else if (inst.equals("addq")) {
+
+            } else if (inst.equals("subq")) {
+
+            } else if (inst.equals("imulq")) {
+
             }
         }
+        // non-tmp variables
         if (r instanceof Addr) {
-            
+            Addr rAddr = (Addr)r;
+            if (rAddr.isTmp()) {
+                return null;
+            }
+            if (inst.equals("movq")) {
+
+            } else if (inst.equals("addq")) {
+
+            } else if (inst.equals("subq")) {
+
+            } else if (inst.equals("imulq")) {
+                
+            }
         }
+        return null;
     }
 
-    public void eval(String inst, Oprand op) {
+    public void process(String inst, Oprand op) {
         // TODO
     }
 
