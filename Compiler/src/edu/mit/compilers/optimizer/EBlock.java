@@ -105,7 +105,7 @@ public class EBlock {
             if (!rReg.isTmp()) {
                 return null;
             }
-            boolean newExpr = false;
+            Boolean newExpr = null;
             if (inst.equals("movq")) {
                 tmp2Exp.remove(rReg.getName());
                 tmp2Exp.put(rReg.getName(), new Expr(l));
@@ -116,17 +116,16 @@ public class EBlock {
             } else if (inst.equals("imulq")) {
                 newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
-            if (newExpr) {
-                if (this.set.contains(tmp2Exp.get(rReg.getName())) 
-                    && tmp2Exp.get(rReg.getName()).getCount() == 2 
-                    && tmp2Exp.get(rReg.getName()).getLineNumber() != lineNumber) {
-                    this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
-                    this.delete(lineNumber);
-                    this.replace(lineNumber - 1);
-                } else {
-                    this.set.add(tmp2Exp.get(rReg.getName()));
-                    CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
-                }
+            if (newExpr != null && newExpr == false
+                && this.set.contains(tmp2Exp.get(rReg.getName())) 
+                && tmp2Exp.get(rReg.getName()).getCount() == 2) {
+                this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
+                this.delete(lineNumber);
+                this.replace(lineNumber - 1);
+            }
+            if (newExpr != null && newExpr == true) {
+                this.set.add(tmp2Exp.get(rReg.getName()));
+                CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
             }
         }
         // non-tmp variables
