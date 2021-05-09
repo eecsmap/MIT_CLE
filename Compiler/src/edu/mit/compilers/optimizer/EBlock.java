@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import edu.mit.compilers.asm.basic.Addr;
@@ -14,6 +15,7 @@ import edu.mit.compilers.optimizer.Expr.Type;
 
 
 public class EBlock {
+    private TreeMap<Integer, ModifyAction> toModify = new TreeMap<>();
     private TreeSet<Expr> set = new TreeSet<Expr>(
         new Comparator<Expr>() {
             @Override
@@ -22,6 +24,11 @@ public class EBlock {
             }
         }
     );
+
+    private enum ModifyAction {
+        SAVE,
+        DELETE,
+    }
 
     private Map<String, Expr> tmp2Exp = new HashMap<>();
 
@@ -47,7 +54,22 @@ public class EBlock {
         return changed;
     }
 
-    public Oprand process(String inst, Oprand l, Oprand r) {
+    private void save(int saveLine) {
+        this.toModify.put(saveLine, ModifyAction.SAVE);
+    }
+
+    private void delete(int... deleteLines) {
+        for (int i = 0; i < deleteLines.length; i++) {
+            this.toModify.put(deleteLines[i], ModifyAction.DELETE);
+        }
+    }
+
+    private void replace(int saveLine, int... deleteLines) {
+        this.save(saveLine);
+        this.delete(deleteLines);
+    } 
+
+    public Oprand process(int lineNumber, String inst, Oprand l, Oprand r) {
         // tmp registers
         if (r instanceof Reg) {
             Reg rReg = (Reg)r;
@@ -59,15 +81,19 @@ public class EBlock {
                 tmp2Exp.remove(rReg.getName());
                 tmp2Exp.put(rReg.getName(), new Expr(l));
             } else if (inst.equals("addq")) {
-                newExpr = tmp2Exp.get(rReg.getName()).put(Type.ADD, l);
+                newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.ADD, l);
             } else if (inst.equals("subq")) {
-                newExpr = tmp2Exp.get(rReg.getName()).put(Type.SUB, l);
+                newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.SUB, l);
             } else if (inst.equals("imulq")) {
-                newExpr = tmp2Exp.get(rReg.getName()).put(Type.MUL, l);
+                newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
             if (newExpr) {
-                this.set.add(tmp2Exp.get(rReg.getName()));
-                CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
+                if (this.set.contains(tmp2Exp.get(rReg.getName()))) {
+                    this.replace(tmp2Exp.get(rReg.getName()).getLineNumber(), lineNumber, lineNumber - 1);
+                } else {
+                    this.set.add(tmp2Exp.get(rReg.getName()));
+                    CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
+                }
             }
         }
         // non-tmp variables
@@ -93,7 +119,7 @@ public class EBlock {
         return null;
     }
 
-    public Oprand process(String inst, Oprand op) {
+    public Oprand process(int lineNumber, String inst, Oprand op) {
         // TODO
         return null;
     }

@@ -20,6 +20,7 @@ public class Expr {
     }
 
     private int varCount;
+    private int lineNumber;
     private String str = "";
     private Type type;
     private Long privateLong;
@@ -39,7 +40,7 @@ public class Expr {
         this.str = op.toString();
     }
 
-    public boolean put(Type type, Oprand op) {
+    public boolean put(int lineNumber, Type type, Oprand op) {
         if (this.varCount >= 2) {
             return false;
         }
@@ -57,6 +58,7 @@ public class Expr {
         } else {
             this.primeProduct = this.primeProduct.multiply(op.getPrime());
         }
+        this.lineNumber = lineNumber;
         // debug
         this.str += ", " + op.toString();
         return true;
@@ -78,6 +80,10 @@ public class Expr {
 
     public boolean equals(Expr rhs) {
         return this.type.equals(rhs.type) && this.privateLong == rhs.privateLong && this.primeProduct.equals(rhs.primeProduct);
+    }
+
+    public int getLineNumber() {
+        return this.lineNumber;
     }
 
     public String toString() {

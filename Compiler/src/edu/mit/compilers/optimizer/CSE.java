@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.mit.compilers.asm.AInstLine;
 import edu.mit.compilers.asm.ALine;
@@ -15,6 +16,7 @@ import edu.mit.compilers.defs.Defs;
 
 public class CSE {
     static EBlock fullSet;
+    // lines number to be deleted
     private CSE() {}
 
     // local cse: generate EVAL and KILL
@@ -29,11 +31,11 @@ public class CSE {
                     String inst = ((AInstLine)line).getInst();
                     Oprand l = ((AInstLine)line).getLeft();
                     Oprand r = ((AInstLine)line).getRight();
-                    toKill = block.process(inst, l, r);
+                    toKill = block.process(i, inst, l, r);
                 } else if (((AInstLine)line).getOpCount() == 1) {
                     String inst = ((AInstLine)line).getInst();
                     Oprand op = ((AInstLine)line).getLeft();
-                    toKill = block.process(inst, op);
+                    toKill = block.process(i, inst, op);
                 }
                 if (toKill != null) {
                     kill.add(toKill);
