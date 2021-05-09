@@ -5,6 +5,7 @@ import java.util.List;
 import edu.mit.compilers.asm.AProgram;
 import edu.mit.compilers.cfg.CMethod;
 import edu.mit.compilers.defs.Defs;
+import edu.mit.compilers.st.Manager;
 
 public class Optimizer {
     private Optimizer() {}
@@ -14,7 +15,10 @@ public class Optimizer {
         List<CMethod> methods;
         methods = program.split();
         if (Defs.isGCSEEnabled()) {
-            methods.forEach(CSE::globalCSE);
+            for (CMethod method: methods) {
+                Manager.enterOptimizationScope(method.getOffset());
+                CSE.globalCSE(method);
+            }
         }
         program.join(methods);
         return program;

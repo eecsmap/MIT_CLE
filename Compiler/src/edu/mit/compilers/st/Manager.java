@@ -209,4 +209,16 @@ public class Manager {
         callerSavedRegsUsage.forEach((k, v) -> res.add(v));
         return res;
     }
+
+    // for optimization
+    public static void enterOptimizationScope(int offset) {
+        tmpCounter = 0;
+        varOffset = offset;
+    }
+
+    public static final Addr newTmpAddrForOptimization() {
+        localOffsetIncrement();
+        String tmpName = String.format("@tmp_OPT%d", tmpCounter++);
+        return new Addr(varOffset, tmpName);
+    }
 }

@@ -44,7 +44,7 @@ class Method {
             }
             methodDesc.setParamsList(params);
             // parse block
-            ABlock codesWrappedMethod = new ABlock();
+            ABlock codesWrappedMethod = new ABlock(methodDesc.getText(), Manager.getOffset());
             ABlock codesMethod = new ABlock();
             Structure.block(c, codesMethod);
             CompileMethod.declare(t.getText(), returnType, paramsDesc, codesMethod, codesWrappedMethod);

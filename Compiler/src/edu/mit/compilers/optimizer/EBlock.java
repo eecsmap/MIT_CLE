@@ -23,6 +23,8 @@ public class EBlock {
     
         private int innerType;
         private int lineNumer;
+        private Addr tmpAddrForSave = null;
+
         public ModifyAction(int innerType) {
             this.innerType = innerType;
         }
@@ -31,6 +33,14 @@ public class EBlock {
             ModifyAction res = new ModifyAction(this.innerType);
             res.lineNumer = lineNumber;
             return res;
+        }
+
+        public void setTmpAddr(Addr tmp) {
+            this.tmpAddrForSave = tmp;
+        }
+
+        public Addr getTmpAddr() {
+            return this.tmpAddrForSave;
         }
     
         public int getLineNumber() {

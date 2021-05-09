@@ -15,9 +15,13 @@ import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.defs.Defs;
 
 public class CMethod {
+    private String methodName;
+    private int varOffset;
     private List<CBlock> blocks = new ArrayList<>();
 
     public CMethod(ABlock aMethod) {
+        this.methodName = aMethod.methodName;
+        this.varOffset = aMethod.varOffset;
         int last = 0;
         Map<Integer, String> jMap = new HashMap<>();
         Map<String, Integer> lMap = new HashMap<>();
@@ -67,6 +71,10 @@ public class CMethod {
         // some block may be mergeable but it's OK, at least it 
         // keeps current block order and won't affect the results.
         return;
+    }
+
+    public int getOffset() {
+        return this.varOffset;
     }
 
     public List<CBlock> getBlocks() {

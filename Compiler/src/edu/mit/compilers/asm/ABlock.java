@@ -5,9 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ABlock {
+    public String methodName;
+    public int varOffset;
+
     private List<ALine> aLines = new ArrayList<>();
 
     public ABlock() {}
+    public ABlock(String methodName, int varOffset) {
+        this.methodName = methodName;
+        this.varOffset = varOffset;
+    }
 
     public void add(ALine... lines) {
         for (int i = 0; i < lines.length; i++)
