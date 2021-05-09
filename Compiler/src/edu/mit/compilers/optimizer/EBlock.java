@@ -1,13 +1,16 @@
 package edu.mit.compilers.optimizer;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Oprand;
 import edu.mit.compilers.asm.basic.Reg;
+import edu.mit.compilers.optimizer.Expr.Type;
 
 
 public class EBlock {
@@ -19,6 +22,8 @@ public class EBlock {
             }
         }
     );
+
+    private Map<String, Expr> tmp2Exp = new HashMap<>();
 
     public EBlock() {}
 
@@ -50,13 +55,14 @@ public class EBlock {
                 return null;
             }
             if (inst.equals("movq")) {
-                
+                tmp2Exp.remove(rReg.getName());
+                tmp2Exp.put(rReg.getName(), new Expr(l));
             } else if (inst.equals("addq")) {
-
+                tmp2Exp.get(rReg.getName()).put(Type.ADD, l);
             } else if (inst.equals("subq")) {
-
+                tmp2Exp.get(rReg.getName()).put(Type.SUB, l);
             } else if (inst.equals("imulq")) {
-
+                tmp2Exp.get(rReg.getName()).put(Type.MUL, l);
             }
         }
         // non-tmp variables
