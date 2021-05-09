@@ -14,7 +14,7 @@ public class Optimizer {
         List<CMethod> methods;
         methods = program.split();
         if (Defs.isGCSEEnabled()) {
-            methods.forEach(CSE::commonSubexpressionElimination);
+            methods.forEach(CSE::globalCSE);
         }
         program.join(methods);
         return program;

@@ -19,7 +19,7 @@ public class CSE {
     private CSE() {}
 
     // local cse: generate EVAL and KILL
-    public static EBlock localCSE(CBlock codes, Set<Oprand> kill) {
+    private static EBlock localCSE(CBlock codes, Set<Oprand> kill) {
         EBlock block = new EBlock();
         List<ALine> lines = codes.getLines();
         for (int i = 0; i < lines.size(); i++) {
@@ -52,7 +52,7 @@ public class CSE {
     }
 
     // global common subexpression elimination
-    public static void commonSubexpressionElimination(CMethod method) {
+    public static void globalCSE(CMethod method) {
         // 1. get available expressions
         // 2. run gcse on each method
         // 3. CBlock should provide a list for saving commands
@@ -77,10 +77,9 @@ public class CSE {
         changed.remove(0);
         // fix point algo
         while (!changed.isEmpty()) {
-            for (Iterator<Integer> iter = changed.iterator(); iter.hasNext();) {
-                int i = iter.next();
-                iter.remove();
-
+            Set<Integer> tmpChanged = new HashSet<>(changed);
+            changed.clear();
+            for (int i: tmpChanged) {
                 AEin.set(i, fullSet);
                 for (Integer p: blocks.get(i).getPred()) {
                     AEin.get(i).intersect(AEout.get(p));
