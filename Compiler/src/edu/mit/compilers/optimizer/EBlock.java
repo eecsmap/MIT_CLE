@@ -95,7 +95,7 @@ public class EBlock {
     }
 
     private void replace(int deleteLine, int replaceLine) {
-        this.toModify.put(replaceLine, ModifyAction.REPLACE.addLineNumber(replaceLine));
+        this.toModify.put(deleteLine, ModifyAction.REPLACE.addLineNumber(replaceLine));
     }
 
     public Oprand process(int lineNumber, String inst, Oprand l, Oprand r) {
@@ -116,12 +116,13 @@ public class EBlock {
             } else if (inst.equals("imulq")) {
                 newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
-            if (newExpr != null && newExpr == false
+            if (newExpr != null && newExpr == true
                 && this.set.contains(tmp2Exp.get(rReg.getName())) 
-                && tmp2Exp.get(rReg.getName()).getCount() == 2) {
+                && tmp2Exp.get(rReg.getName()).getCount() == 2
+                && tmp2Exp.get(rReg.getName()).getLineNumber() != lineNumber) {
                 this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
-                this.delete(lineNumber);
-                this.replace(lineNumber - 1, tmp2Exp.get(rReg.getName()).getLineNumber());
+                this.delete(lineNumber - 1);
+                this.replace(lineNumber, tmp2Exp.get(rReg.getName()).getLineNumber());
             }
             if (newExpr != null && newExpr == true) {
                 this.set.add(tmp2Exp.get(rReg.getName()));
