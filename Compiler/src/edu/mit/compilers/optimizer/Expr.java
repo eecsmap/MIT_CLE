@@ -39,12 +39,6 @@ public class Expr {
         this.str = op.toString();
     }
 
-    // public Expr(Expr rhs) {
-    //     this.type = rhs.type;
-    //     this.privateLong = rhs.privateLong;
-    //     this.primeProduct = rhs.primeProduct;
-    // }
-
     public boolean put(Type type, Oprand op) {
         if (this.varCount >= 2) {
             return false;
@@ -67,21 +61,6 @@ public class Expr {
         this.str += ", " + op.toString();
         return true;
     }
-
-    // public Expr makePut(Oprand op) {
-    //     Expr res = new Expr(this.type, this.privateLong, this.primeProduct);
-    //     if (op instanceof Num) {
-    //         Long value = ((Num)op).getValue();
-    //         if (res.type.equals(Type.ADD)) {
-    //             res.privateLong += value;
-    //         } else {
-    //             res.privateLong *= value;
-    //         }
-    //     } else {
-    //         res.primeProduct = res.primeProduct.multiply(op.getPrime());
-    //     }
-    //     return res;
-    // }
 
     public boolean contains(Oprand op) {
         return this.primeProduct.divideAndRemainder(op.getPrime())[1].equals(BigInteger.ZERO);
