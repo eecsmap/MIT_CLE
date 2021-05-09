@@ -30,7 +30,9 @@ public class Expr {
         this.type = Type.DEFAULT;
         if (op instanceof Num) {
             this.privateLong = ((Num)op).getValue();
+            this.primeProduct = new BigInteger("1");
         } else {
+            this.privateLong = 0L;
             this.primeProduct = op.getPrime();
         }
         // debug
@@ -97,5 +99,9 @@ public class Expr {
 
     public boolean equals(Expr rhs) {
         return this.type.equals(rhs.type) && this.privateLong == rhs.privateLong && this.primeProduct.equals(rhs.primeProduct);
+    }
+
+    public String toString() {
+        return this.str;
     }
 }
