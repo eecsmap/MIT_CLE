@@ -18,6 +18,7 @@ public class Optimizer {
             for (CMethod method: methods) {
                 Manager.enterOptimizationScope(method.getOffset());
                 CSE.globalCSE(method);
+                method.changeOffset(Manager.getOffset());
             }
         }
         program.join(methods);

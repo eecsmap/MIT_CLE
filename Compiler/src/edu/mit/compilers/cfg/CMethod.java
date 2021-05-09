@@ -11,7 +11,10 @@ import edu.mit.compilers.asm.AJmpLine;
 import edu.mit.compilers.asm.ALabelLine;
 import edu.mit.compilers.asm.ALine;
 import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AInstLine;
 import edu.mit.compilers.asm.basic.Label;
+import edu.mit.compilers.asm.basic.Num;
+import edu.mit.compilers.asm.basic.Reg;
 import edu.mit.compilers.defs.Defs;
 
 public class CMethod {
@@ -75,6 +78,21 @@ public class CMethod {
 
     public int getOffset() {
         return this.varOffset;
+    }
+
+    public void changeOffset(Integer offset) {
+        // line is `subq $X, %rsp`
+        ALine line = this.blocks.get(1).aLines.get(3);
+        if (line instanceof AInstLine) {
+            AInstLine instLine = (AInstLine)line;
+            if (instLine.getOpCount() == 2 && instLine.getRight().toString().equals("%rsp")) {
+                instLine.setLeft(new Num(Long.valueOf(offset)));
+            } else {
+                this.blocks.get(1).aLines.add(3,
+                    new AInstLine("subq", new Num(Long.valueOf(offset)), Reg.rsp)
+                );
+            }
+        }
     }
 
     public List<CBlock> getBlocks() {
