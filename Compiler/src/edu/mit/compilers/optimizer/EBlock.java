@@ -1,6 +1,5 @@
 package edu.mit.compilers.optimizer;
 
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +26,7 @@ public class EBlock {
         this.set.addAll(rhs.set);
     }
 
-    public void add(Expr expr) {
+    public void eval(Expr expr) {
         this.set.add(expr);
     }
 
@@ -70,11 +69,14 @@ public class EBlock {
                 this.kill(r);
                 return r;
             } else if (inst.equals("addq")) {
-
+                this.kill(r);
+                return r;
             } else if (inst.equals("subq")) {
-
+                this.kill(r);
+                return r;
             } else if (inst.equals("imulq")) {
-                
+                this.kill(r);
+                return r;
             }
         }
         return null;
