@@ -116,9 +116,10 @@ public class EBlock {
                 newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
             if (newExpr != null && newExpr == true && this.expr2lineno.containsKey(tmp2Exp.get(rReg.getName()))) {
-                this.save(this.expr2lineno.get(tmp2Exp.get(rReg.getName())));
+                int saveLine = this.expr2lineno.get(tmp2Exp.get(rReg.getName()));
+                this.save(saveLine);
                 this.delete(lineNumber - 1);
-                this.replace(lineNumber, tmp2Exp.get(rReg.getName()).getLineNumber());
+                this.replace(lineNumber, saveLine);
             }
             if (newExpr != null && newExpr == true) {
                 this.eval(tmp2Exp.get(rReg.getName()), lineNumber);
