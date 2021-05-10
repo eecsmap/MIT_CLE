@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Oprand;
@@ -53,7 +52,7 @@ public class EBlock {
     }
 
     private TreeMap<Integer, ModifyAction> toModify = new TreeMap<>(Collections.reverseOrder());
-    private TreeSet<Expr> set = new TreeSet<Expr>(
+    private TreeMap<Expr, Integer> expr2lineno = new TreeMap<>(
         new Comparator<Expr>() {
             @Override
             public int compare(Expr lhs, Expr rhs) {
@@ -67,16 +66,16 @@ public class EBlock {
     public EBlock() {}
 
     public EBlock(EBlock rhs) {
-        this.set.addAll(rhs.set);
+        this.expr2lineno.putAll(rhs.expr2lineno);
     }
 
-    public void eval(Expr expr) {
-        this.set.add(expr);
+    public void eval(Expr expr, Integer lineNumber) {
+        this.expr2lineno.put(expr, lineNumber);
     }
 
     public boolean kill(Oprand var) {
         boolean changed = false;
-        for (Iterator<Expr> iter = this.set.iterator(); iter.hasNext();) {
+        for (Iterator<Expr> iter = this.expr2lineno.keySet().iterator(); iter.hasNext();) {
             Expr expr = iter.next();
             if (expr.contains(var)) {
                 changed = true;
@@ -116,16 +115,14 @@ public class EBlock {
             } else if (inst.equals("imulq")) {
                 newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
-            if (newExpr != null && newExpr == true
-                && this.set.contains(tmp2Exp.get(rReg.getName())) 
-                && tmp2Exp.get(rReg.getName()).getLineNumber() != lineNumber) {
-                this.save(tmp2Exp.get(rReg.getName()).getLineNumber());
+            if (newExpr != null && newExpr == true && this.expr2lineno.containsKey(tmp2Exp.get(rReg.getName()))) {
+                this.save(this.expr2lineno.get(tmp2Exp.get(rReg.getName())));
                 this.delete(lineNumber - 1);
                 this.replace(lineNumber, tmp2Exp.get(rReg.getName()).getLineNumber());
             }
             if (newExpr != null && newExpr == true) {
-                this.set.add(tmp2Exp.get(rReg.getName()));
-                CSE.fullSet.set.add(tmp2Exp.get(rReg.getName()));
+                this.eval(tmp2Exp.get(rReg.getName()), lineNumber);
+                CSE.fullSet.expr2lineno.put(tmp2Exp.get(rReg.getName()), lineNumber);
             }
         }
         // non-tmp variables
@@ -158,10 +155,10 @@ public class EBlock {
 
     public Boolean union(EBlock rhs) {
         Boolean changed = false;
-        for (Expr expr: rhs.set) {
-            if (!this.set.contains(expr)) {
+        for (Expr expr: rhs.expr2lineno.keySet()) {
+            if (!this.expr2lineno.containsKey(expr)) {
                 changed = true;
-                this.set.add(expr);
+                this.expr2lineno.put(expr, 0);
             }
         }
         return changed;
@@ -169,9 +166,9 @@ public class EBlock {
 
     public Boolean intersect(EBlock rhs) {
         Boolean changed = false;
-        for (Iterator<Expr> i = this.set.iterator(); i.hasNext();) {
+        for (Iterator<Expr> i = this.expr2lineno.keySet().iterator(); i.hasNext();) {
             Expr expr = i.next();
-            if (!rhs.set.contains(expr)) {
+            if (!rhs.expr2lineno.containsKey(expr)) {
                 changed = true;
                 i.remove();
             }
@@ -192,11 +189,11 @@ public class EBlock {
     }
 
     public boolean equals(EBlock rhs) {
-        if (this.set.size() != rhs.set.size()) {
+        if (this.expr2lineno.size() != rhs.expr2lineno.size()) {
             return false;
         }
-        for (Expr expr: rhs.set) {
-            if (!this.set.contains(expr)) {
+        for (Expr expr: rhs.expr2lineno.keySet()) {
+            if (!this.expr2lineno.containsKey(expr)) {
                 return false;
             }
         }
