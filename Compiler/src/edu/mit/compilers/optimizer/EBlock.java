@@ -34,6 +34,11 @@ public class EBlock {
             return res;
         }
 
+        public ModifyAction newAction() {
+            ModifyAction res = new ModifyAction(this.innerType);
+            return res;
+        }
+
         public void setTmpAddr(Addr tmp) {
             this.tmpAddrForSave = tmp;
         }
@@ -86,7 +91,7 @@ public class EBlock {
     }
 
     private void save(int saveLine) {
-        this.toModify.put(saveLine, ModifyAction.SAVE);
+        this.toModify.put(saveLine, ModifyAction.SAVE.newAction());
     }
 
     private void delete(int deleteLine) {
@@ -115,15 +120,16 @@ public class EBlock {
             } else if (inst.equals("imulq")) {
                 newExpr = tmp2Exp.get(rReg.getName()).put(lineNumber, Type.MUL, l);
             }
-            if (newExpr != null && newExpr == true && this.expr2lineno.containsKey(tmp2Exp.get(rReg.getName()))) {
-                int saveLine = this.expr2lineno.get(tmp2Exp.get(rReg.getName()));
+            Expr expr = tmp2Exp.get(rReg.getName());
+            if (newExpr != null && newExpr == true && this.expr2lineno.containsKey(expr)) {
+                int saveLine = this.expr2lineno.get(expr);
                 this.save(saveLine);
                 this.delete(lineNumber - 1);
                 this.replace(lineNumber, saveLine);
             }
-            if (newExpr != null && newExpr == true) {
-                this.eval(tmp2Exp.get(rReg.getName()), lineNumber);
-                CSE.fullSet.expr2lineno.put(tmp2Exp.get(rReg.getName()), lineNumber);
+            if (newExpr != null && newExpr == true && !this.expr2lineno.containsKey(expr)) {
+                this.eval(expr, lineNumber);
+                CSE.fullSet.expr2lineno.put(expr, lineNumber);
             }
         }
         // non-tmp variables
