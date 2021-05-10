@@ -64,10 +64,9 @@ public class CBlock {
                 AInstLine line = (AInstLine)this.aLines.get(lineNumber);
                 Oprand dst = line.getRight();
                 assert (tmp != null && dst != null);
-                this.aLines.remove(lineNumber);
                 AInstLine newLine = new AInstLine("movq", tmp, dst);
                 newLine.addComment(tmp.getName(), dst.getName());
-                this.aLines.add(lineNumber, newLine);
+                this.aLines.set(lineNumber, newLine);
             }
         }
     }
