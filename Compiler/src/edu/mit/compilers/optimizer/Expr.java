@@ -33,7 +33,7 @@ public class Expr {
             this.privateLong = ((Num)op).getValue();
             this.primeProduct = new BigInteger("1");
         } else {
-            this.privateLong = 0L;
+            this.privateLong = 1L;
             this.primeProduct = op.getPrime();
         }
         // debug
@@ -57,6 +57,9 @@ public class Expr {
             }
         } else {
             this.primeProduct = this.primeProduct.multiply(op.getPrime());
+            if (this.type.equals(Type.SUB)) {
+                this.primeProduct = this.primeProduct.multiply(op.getPrime());
+            }
         }
         this.lineNumber = lineNumber;
         // debug
