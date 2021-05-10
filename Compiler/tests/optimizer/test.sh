@@ -33,11 +33,12 @@ for file in $PWD/input/*.dcf; do
   cp $orig_input $input;
   msg=""
   if runcompiler_opt $file $asm; then
-    if gcc -o $binary -L${orig_pwd}/lib $asm -l6035 -lpthread; then
+    if gcc -no-pie -o $binary -L${orig_pwd}/lib $asm -l6035 -lpthread; then
       cd $workingdir
       if timeout -sKILL 10 $binary > $timing_opt; then
         if ! diff -q $output $golden > /dev/null; then
           msg="File $file output mismatch.";
+          cat $output > "/home/philoy/MIT_CLE/Compiler/tmp.output"
         fi
       else
         msg="Program failed to run or exited unexpectedly.";
@@ -50,7 +51,7 @@ for file in $PWD/input/*.dcf; do
   fi
   cd "$orig_pwd";
   if runcompiler_unopt $file $asm; then
-    if gcc -o $binary -L${orig_pwd}/lib $asm -l6035 -lpthread; then
+    if gcc -no-pie -o $binary -L${orig_pwd}/lib $asm -l6035 -lpthread; then
       cd $workingdir
       if timeout -sKILL 10 $binary > $timing_unopt; then
         if ! diff -q $output $golden > /dev/null; then

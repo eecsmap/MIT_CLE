@@ -19,7 +19,7 @@ public class CompileField {
             Integer topOffset = Manager.getDesc(name).getAddr().getOffset();
             for (int i = 0; i < cap; i++) {
                 codes.add(
-                    asm.bin("movq", new Num(0L), new Addr(topOffset + 8 * i, "array init"))
+                    asm.bin("movq", new Num(0L), new Addr(topOffset + 8 * i, "@array_init"))
                 );
             }
         }

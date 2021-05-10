@@ -11,6 +11,14 @@ public class AJmpLine extends ALine {
         this.label = label;
     }
 
+    public String getInst() {
+        return this.inst;
+    }
+
+    public Label getLabel() {
+        return this.label;
+    }
+
     @Override
     public String toString() {
         return "\t" + this.inst + "\t" + this.label;

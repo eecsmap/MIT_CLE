@@ -2,8 +2,11 @@
 
 ## Progress
 ✔Passed all tests: p1, p2, p3\
-❌Partially passed: -\
-❓WIP: p4, p5
+❌Partially passed: p4\
+❓WIP: p5
+### Note
+1. implemented local CSE for p4, supports `addq, subq, imulq` only, no significant efficiency change
+2. the global CSE was done 80%, but no time already, will consider finishing it in the future
 
 ## Course Link
 https://github.com/6035/fa19

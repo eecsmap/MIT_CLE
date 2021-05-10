@@ -28,23 +28,25 @@ public class Reg extends Oprand {
     private String tmpName = "";
 
     private Reg(String regName, String tmpName) {
+        super();
         this.regName = regName;
         this.tmpName = tmpName;
     }
 
+    private Reg(String regName, String dWord, String word, String bite) {
+        this.regName = regName;
+        this.dWord = dWord;
+        this.word = word;
+        this.bite = bite;
+    }
+
     public Reg(Reg parent, String tmpName) {
+        super();
         this.regName = parent.getRegName();
         this.dWord = parent.dWord;
         this.word = parent.word;
         this.bite = parent.bite;
         this.tmpName = tmpName;
-    }
-
-    public Reg(String regName, String dWord, String word, String bite) {
-        this.regName = regName;
-        this.dWord = dWord;
-        this.word = word;
-        this.bite = bite;
     }
 
     public Reg dWord() {
@@ -61,6 +63,10 @@ public class Reg extends Oprand {
 
     public String getRegName() {
         return this.regName;
+    }
+
+    public boolean isTmp() {
+        return this.tmpName.length() > 0;
     }
 
     @Override

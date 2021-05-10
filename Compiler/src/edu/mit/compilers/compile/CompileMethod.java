@@ -42,9 +42,13 @@ public class CompileMethod {
             Reg res = Manager.newTmpReg();
             codes.addAll(asm.saveRegs(addrs));
             codes.addAll(asm.methodCall(methodName, argsList));
-            codes.add(
-                asm.bin("movq", Reg.rax, res)
-            );
+            if (asm.isRAXused) {
+                codes.add(
+                    asm.bin("movq", new Reg(Reg.rax, methodName + "()"), res)
+                );
+            } else {
+                res = new Reg(Reg.rax, methodName + "()");
+            }
             codes.addAll(asm.recoverRegs(addrs));
             Manager.tmpPush(res);
         } else {

@@ -17,6 +17,7 @@ import edu.mit.compilers.syntax.Program;
 public class CompileStructure {
     public static final void binaryOpExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {
         if (!Program.shouldCompile()) return;
+        Boolean pushlOp = false;
         Reg resReg = Manager.newTmpReg();
         Oprand rOp = Manager.tmpPop();
         Oprand lOp = Manager.tmpPop();
@@ -32,15 +33,26 @@ public class CompileStructure {
                 asm.bin("movq", resultReg, resReg)
             );     
         } else {
-            glueCodes.add(
-                asm.bin("movq", lOp, resReg),
-                asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, resReg)
-            );
+            if (lOp instanceof Reg) {
+                glueCodes.add(
+                    asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, lOp)
+                );
+                pushlOp = true;
+            } else {
+                glueCodes.add(
+                    asm.bin("movq", lOp, resReg),
+                    asm.bin(Defs.binaryOpToken2Inst.get(operator), rOp, resReg)
+                );
+            }
         }
         codes.addAll(leftCodes);
         codes.addAll(rightCodes);
         codes.addAll(glueCodes);
-        Manager.tmpPush(resReg);
+        if (pushlOp) {
+            Manager.tmpPush(lOp);
+        } else {
+            Manager.tmpPush(resReg);
+        }
     }
 
     public static final void binaryBoolExpr(Integer operator, ABlock leftCodes, ABlock rightCodes, ABlock codes) {

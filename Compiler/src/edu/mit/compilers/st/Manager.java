@@ -37,9 +37,9 @@ public class Manager {
     private static Map<String, Reg> callerSavedRegsUsage = new TreeMap<>();
 
     // enter a method
-    public static void enterScope(VarType methodReturnType) {
+    public static void enterScope(VarType methodReturnType, String methodName) {
         returnType = methodReturnType;
-        returnLabel = new Label();
+        returnLabel = new Label(".E" + methodName);
         symbolTable = new SymbolTable(symbolTable);
     }
 
@@ -54,11 +54,13 @@ public class Manager {
 
     public static void leaveScope() {
         if (!contextStack.empty()) {
+            // exit loop
             if (contextStack.pop()) {
                 continueLabelStack.pop();
                 breakLabelStack.pop();
             }
         } else {
+            // finish functin declaration
             varOffset = 0;
             tmpCounter = 0;
             tmpStack.clear();
@@ -146,7 +148,7 @@ public class Manager {
     public static final Reg newTmpReg() {
         for(Reg reg: Defs.callerSavedReg) {
             if (!callerSavedRegsUsage.containsKey(reg.getRegName())) {
-                String name = String.format("tmp%d", tmpCounter++);
+                String name = String.format("@tmp%d", tmpCounter++);
                 return new Reg(reg, name);
             }
         }
@@ -157,7 +159,7 @@ public class Manager {
     public static final Reg newTmpReg(Reg exclude) {
         for(Reg reg: Defs.callerSavedReg) {
             if (!callerSavedRegsUsage.containsKey(reg.getRegName()) && exclude.getRegName() != reg.getRegName()) {
-                String name = String.format("tmp%d", tmpCounter++);
+                String name = String.format("@tmp%d", tmpCounter++);
                 return new Reg(reg, name);
             }
         }
@@ -166,8 +168,8 @@ public class Manager {
 
     public static final Addr newTmpAddr() {
         localOffsetIncrement();
-        String name = String.format("tmp%d", tmpCounter++);
-        return new Addr(varOffset, name);
+        String tmpName = String.format("@tmp%d", tmpCounter++);
+        return new Addr(varOffset, tmpName);
     }
 
     public static final Integer bytesToAllocate() {
@@ -206,5 +208,21 @@ public class Manager {
         List<Reg> res = new ArrayList<>();
         callerSavedRegsUsage.forEach((k, v) -> res.add(v));
         return res;
+    }
+
+    // for optimization
+    public static void setOffset(int offset) {
+        varOffset = offset;
+    }
+
+    public static void enterOptimizationScope(int offset) {
+        tmpCounter = 0;
+        varOffset = offset;
+    }
+
+    public static final Addr newTmpAddrForOptimization() {
+        localOffsetIncrement();
+        String tmpName = String.format("@tmp_OPT%d", tmpCounter++);
+        return new Addr(varOffset, tmpName);
     }
 }

@@ -5,12 +5,13 @@ import java.util.List;
 
 import antlr.collections.AST;
 import edu.mit.compilers.st.*;
-import edu.mit.compilers.asm.ABlock;
+import edu.mit.compilers.asm.AProgram;
 import edu.mit.compilers.asm.basic.Addr;
 import edu.mit.compilers.asm.basic.Label;
 import edu.mit.compilers.ast.AstUtils;
 import edu.mit.compilers.compile.CompileProgram;
 import edu.mit.compilers.defs.VarType;
+import edu.mit.compilers.optimizer.Optimizer;
 import edu.mit.compilers.tools.Err;
 
 
@@ -31,17 +32,19 @@ public class Program {
     }
 
     // parse an AST to IRTree with the help of Symbol Tree
-    public static void irParse(AST t, ABlock codes) {
+    public static void irParse(AST t, AProgram program) {
         // treat import Symbol Table as special one
-        compile = (codes != null);
+        compile = (program != null);
         t = importDecl(t);
-        t = Field.declare(t, codes);
-        t = Method.declare(t, codes);
+        t = Field.declare(t, program.getHead());
+        t = Method.declare(t, program);
         if (Manager.getMethod("main") == null) {
             Err.errMainNotDefined(t);
         }
-        CompileProgram.addROData(stringLiteralList, stringLiteralLabelList, codes);
-        CompileProgram.addArrayOutBoundReturn(codes);
+        CompileProgram.addROData(stringLiteralList, stringLiteralLabelList, program.getHead());
+        CompileProgram.addArrayOutBoundReturn(program.getTail());
+
+        program = Optimizer.optimize(program);
     }
 
     // return the next AST to parse

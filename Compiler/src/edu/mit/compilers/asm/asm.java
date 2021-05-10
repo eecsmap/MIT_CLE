@@ -15,6 +15,7 @@ import java.util.List;
 public class asm {
     private static boolean isFirstGlobalVariable = true;
     private static boolean isFirstFunction = true;
+    public static boolean isRAXused = false;
 
     private static final Integer calculateAlign(Integer size) {
         int align = 4;
@@ -63,12 +64,8 @@ public class asm {
         return new AStrLine(String.format("\t%s\t%s", directive, fst));
     }
 
-    public static final AStrLine label(Label lable) {
-        return new AStrLine(lable.toString() + ":");
-    }
-
-    public static final AStrLine label(String lableStr) {
-        return new AStrLine(lableStr + ":");
+    public static final ALabelLine label(Label lable) {
+        return new ALabelLine(lable);
     }
 
     public static final AStrLine cmt(String... comments) {
@@ -93,7 +90,7 @@ public class asm {
             uniDir(".align", alignStr),
             binDir(".type", func, "@object"),
             binDir(".size", func, sizeStr),
-            label(func),
+            label(new Label(func)),
             uniDir(".zero", sizeStr)
         );
 
@@ -112,7 +109,7 @@ public class asm {
         codes.add(
             uniDir(".globl", name),
             binDir(".type", name, "@function"),
-            label(name),
+            label(new Label(name)),
             uni("pushq", Reg.rbp),
             bin("movq", Reg.rsp, Reg.rbp),
             bin("subq", new Num(Long.valueOf(bytesToAllocate)), Reg.rsp)
@@ -171,9 +168,10 @@ public class asm {
     public static final ABlock saveRegs(List<Addr> addrs) {
         ABlock codes = new ABlock();
         List<Reg> regsToSave = Manager.getUsedCallerSavedRegs();
+        isRAXused = false;
         if (regsToSave.size() > 0) {
             codes.add(
-                asm.cmt("save - start")
+                asm.cmt(Defs.regSaveStart)
             );
         }
         for (Reg reg: regsToSave) {
@@ -182,10 +180,13 @@ public class asm {
                 asm.bin("movq", reg, addr)
             );
             addrs.add(addr);
+            if (reg.getRegName().equals("rax")) {
+                isRAXused = true;
+            }
         }
         if (regsToSave.size() > 0) {
             codes.add(
-                asm.cmt("save - end")
+                asm.cmt(Defs.regSaveEnd)
             );
         }
         return codes;
@@ -196,7 +197,7 @@ public class asm {
         List<Reg> regsToRecover = Manager.getUsedCallerSavedRegs();
         if (regsToRecover.size() > 0) {
             codes.add(
-                asm.cmt("recover - start")
+                asm.cmt(Defs.regRecoverStart)
             );
         }
         int i = 0;
@@ -208,7 +209,7 @@ public class asm {
         }
         if (regsToRecover.size() > 0) {
             codes.add(
-                asm.cmt("recover - end")
+                asm.cmt(Defs.regRecoverEnd)
             );
         }
         return codes;

@@ -32,6 +32,14 @@ public class AInstLine extends ALine {
         return this.oprands.get(1);
     }
 
+    public void setLeft(Oprand Left) {
+        this.oprands.set(0, Left);
+    }
+
+    public void setRight(Oprand right) {
+        this.oprands.set(1, right);
+    }
+
     public Integer getOpCount() {
         return this.oprands.size();
     }
