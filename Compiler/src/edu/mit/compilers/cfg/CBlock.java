@@ -49,9 +49,9 @@ public class CBlock {
                 Addr tmp = action.getTmpAddr();
                 assert (tmp != null);
                 AInstLine line = (AInstLine)this.aLines.get(lineNumber);
-                this.aLines.add(lineNumber + 1,
-                    new AInstLine("movq", line.getRight(), tmp)
-                );
+                AInstLine newLine = new AInstLine("movq", line.getRight(), tmp);
+                newLine.addComment(line.getRight().getName(), tmp.getName());
+                this.aLines.add(lineNumber + 1, newLine);
             } else if (action.equals(ModifyAction.DELETE)) {
                 this.aLines.remove(lineNumber);
             } else if (action.equals(ModifyAction.REPLACE)) {
@@ -65,9 +65,9 @@ public class CBlock {
                 Oprand dst = line.getRight();
                 assert (tmp != null && dst != null);
                 this.aLines.remove(lineNumber);
-                this.aLines.add(lineNumber,
-                    new AInstLine("movq", tmp, dst)
-                );
+                AInstLine newLine = new AInstLine("movq", tmp, dst);
+                newLine.addComment(tmp.getName(), dst.getName());
+                this.aLines.add(lineNumber, newLine);
             }
         }
     }
