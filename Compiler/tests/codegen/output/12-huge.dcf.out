@@ -68,10 +68,10 @@ after n
 after first if
 after second if
 after third if
--155 -156 240 -30after fourth if
+-155 -120 240 -30after fourth if
 done b gurp
 After gurps
--263 -214 -491 -453
+-263 -214 -491 -489
 Top of loop
 top of gurp
 done j
@@ -142,7 +142,7 @@ after n
 after first if
 after second if
 after third if
--171 -178 245 -37after fourth if
+-171 -130 245 -37after fourth if
 done b gurp
 After gurps
--273 -397 -909 -511
+-273 -397 -909 -559
